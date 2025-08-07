@@ -1,7 +1,10 @@
 {
-  "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "cd votantes-backend && npm install",
-    "startCommand": "cd votantes-backend && npm run start"
-  }
+  "services": [
+    {
+      "name": "backend",
+      "rootDir": "votantes-backend",
+      "startCommand": "npm start",
+      "buildCommand": "npm install"
+    }
+  ]
 }
