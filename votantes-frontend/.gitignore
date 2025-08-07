@@ -1,0 +1,20 @@
+# Archivos temporales de Excel
+*.xlsx~
+~$*.xlsx
+
+# Carpetas comunes que no quieres rastrear
+node_modules/
+dist/
+build/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Configuración de entorno
+.env
+
+# Archivos de log
+*.log
+
+
