@@ -1,15 +1,27 @@
 import pg from 'pg';
+import dotenv from 'dotenv';
 
-// Configuración de la conexión
-const pool = new pg.Pool({
-  user: 'postgres',           // tu usuario de PostgreSQL
-  host: 'localhost',
-  database: 'votantes',       // nombre de la base de datos que creaste
-  password: 'MasterKey',    // tu contraseña (cámbiala)
-  port: 5432,                 // puerto por defecto
-});
+dotenv.config(); // Para leer variables de entorno
 
-// Exportamos una función de consulta reutilizable
+const { Pool } = pg;
+
+// Si existe DATABASE_URL (Railway) la usa, si no usa tu config local
+const pool = new Pool(
+  process.env.DATABASE_URL
+    ? {
+        connectionString: process.env.DATABASE_URL,
+        ssl: { rejectUnauthorized: false } // Necesario para conexión segura
+      }
+    : {
+        user: 'postgres',           
+        host: 'localhost',
+        database: 'votantes',       
+        password: 'MasterKey',    
+        port: 5432
+      }
+);
+
+// Función de consulta reutilizable
 const db = {
   query: (text, params) => pool.query(text, params),
 };
