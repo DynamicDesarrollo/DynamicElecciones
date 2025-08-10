@@ -29,11 +29,7 @@ import authRoutes from './routes/auth.routes.js';
 
 const app = express();
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL, // lee del .env
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
 
