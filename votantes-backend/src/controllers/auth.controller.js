@@ -18,18 +18,24 @@ export const login = async (req, res) => {
     const result = await db.query(
       `SELECT * FROM usuarios WHERE correo = $1`,
       [correo]
+
     );
 
     const usuario = result.rows[0];
 
+    console.log('Intento de login:', correo, '| password:', password, '| hash:', usuario?.password);
+
     if (!usuario) {
+      console.log('Usuario no encontrado:', correo);
       return res.status(401).json({ error: 'Usuario no encontrado' });
     }
 
     // Comparar contraseñas
     const passwordValida = await bcrypt.compare(password, usuario.password);
+    console.log('Resultado bcrypt.compare:', passwordValida);
 
     if (!passwordValida) {
+      console.log('Contraseña incorrecta para:', correo);
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
 
