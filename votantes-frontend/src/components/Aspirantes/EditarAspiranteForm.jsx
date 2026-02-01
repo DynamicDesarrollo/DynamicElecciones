@@ -2,6 +2,30 @@ import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function EditarAspiranteForm({ aspirante, onAspiranteActualizado }) {
+      const [partidos, setPartidos] = useState([]);
+      const [municipios, setMunicipios] = useState([]);
+      const [alcaldias, setAlcaldias] = useState([]);
+
+      useEffect(() => {
+        const token = localStorage.getItem("token");
+        const headers = { Authorization: `Bearer ${token}` };
+        const fetchData = async () => {
+          try {
+            const [resPar, resMun, resAlc] = await Promise.all([
+              fetch(`${import.meta.env.VITE_API_URL}/api/partidos`, { headers }),
+              fetch(`${import.meta.env.VITE_API_URL}/api/municipios`, { headers }),
+              fetch(`${import.meta.env.VITE_API_URL}/api/alcaldia`, { headers }),
+            ]);
+            setPartidos(await resPar.json());
+            setMunicipios(await resMun.json());
+            setAlcaldias(await resAlc.json());
+          } catch (error) {
+            // Puedes mostrar un toast si quieres
+          }
+        };
+        fetchData();
+      }, []);
+    console.log('EditarAspiranteForm recibe aspirante:', aspirante);
   const [form, setForm] = useState({
     nombre_completo: "",
     cedula: "",
@@ -40,7 +64,7 @@ export default function EditarAspiranteForm({ aspirante, onAspiranteActualizado 
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/concejo/${aspirante.id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/concejo/${aspirante.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -132,36 +156,48 @@ export default function EditarAspiranteForm({ aspirante, onAspiranteActualizado 
 
       {/* Estos campos los puedes convertir a select si ya tienes los datos de partidos, municipios, etc. */}
       <div className="mb-3">
-        <label className="form-label">ID Partido</label>
-        <input
+        <label className="form-label">Partido</label>
+        <select
           name="partido_id"
           value={form.partido_id}
           onChange={handleChange}
-          type="text"
           className="form-control"
-        />
+        >
+          <option value="">Seleccione un partido</option>
+          {partidos.map((p) => (
+            <option key={p.id} value={p.id}>{p.nombre}</option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-3">
-        <label className="form-label">ID Municipio</label>
-        <input
+        <label className="form-label">Municipio</label>
+        <select
           name="municipio_id"
           value={form.municipio_id}
           onChange={handleChange}
-          type="text"
           className="form-control"
-        />
+        >
+          <option value="">Seleccione un municipio</option>
+          {municipios.map((m) => (
+            <option key={m.id} value={m.id}>{m.nombre}</option>
+          ))}
+        </select>
       </div>
 
       <div className="mb-3">
-        <label className="form-label">ID Alcaldía</label>
-        <input
+        <label className="form-label">Alcaldía</label>
+        <select
           name="alcaldia_id"
           value={form.alcaldia_id}
           onChange={handleChange}
-          type="text"
           className="form-control"
-        />
+        >
+          <option value="">Seleccione una alcaldía</option>
+          {alcaldias.map((a) => (
+            <option key={a.id} value={a.id}>{a.nombre_completo || a.nombre}</option>
+          ))}
+        </select>
       </div>
 
       <button className="btn btn-primary" type="submit">

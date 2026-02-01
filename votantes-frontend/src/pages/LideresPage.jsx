@@ -26,7 +26,7 @@ export default function LideresPage() {
   const cargarLideres = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/lideres`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/lideres`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -189,9 +189,9 @@ export default function LideresPage() {
                 <tr key={l.id}>
                   <td>{l.nombre_completo}</td>
                   <td>{l.cedula || "—"}</td>
-                  <td>{l.municipio || "—"}</td>
+                  <td>{l.municipio_nombre || "—"}</td>
                   <td>{l.telefono || "—"}</td>
-                  <td>{l.barrio || "—"}</td>
+                  <td>{l.barrio_nombre || "—"}</td>
                   <td className="text-center">
                     <button
                       className="btn btn-sm btn-warning me-2"

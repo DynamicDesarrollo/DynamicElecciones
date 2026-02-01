@@ -25,8 +25,8 @@ export default function AsistenciaPage() {
       const headers = { Authorization: `Bearer ${usuario.token}` };
 
       const [vtRes, asRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/votantes/total`, { headers }),
-        fetch(`${import.meta.env.VITE_API_URL}/asistencia/resumen`, { headers }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/votantes/total`, { headers }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/asistencia/resumen`, { headers }),
       ]);
 
       if (vtRes.ok) {

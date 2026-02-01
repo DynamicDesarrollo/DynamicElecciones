@@ -49,7 +49,7 @@ export default function VotantesPage() {
       });
 
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/votantes/filtrar?${query}`,
+        `${import.meta.env.VITE_API_URL}/api/votantes/filtrar?${query}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

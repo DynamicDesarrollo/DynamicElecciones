@@ -8,7 +8,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 import CrearAspiranteForm from "../components/Aspirantes/CrearAspiranteForm";
-//import EditarAspiranteForm from "../components/Aspirantes/EditarAspiranteForm";
+import EditarAspiranteForm from "../components/Aspirantes/EditarAspiranteForm";
 
 export default function AspirantesConcejoPage() {
     const [aspirantes, setAspirantes] = useState([]);
@@ -26,7 +26,7 @@ export default function AspirantesConcejoPage() {
     const cargarAspirantes = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/concejo`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/concejo`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -65,20 +65,23 @@ export default function AspirantesConcejoPage() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${import.meta.env.VITE_API_URL}/concejo/${id}`, {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/concejo/${id}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` },
             });
 
             if (res.ok) {
                 toast.success("🗑️ Aspirante eliminado correctamente");
-                cargarAspirantes();
+            } else if (res.status === 404) {
+                toast.warning("El aspirante ya no existe. Refrescando lista...");
             } else {
                 toast.error("❌ No se pudo eliminar el aspirante");
             }
+            cargarAspirantes();
         } catch (err) {
             toast.error("❌ Error al eliminar aspirante");
             console.error(err);
+            cargarAspirantes();
         }
     };
 
@@ -213,7 +216,10 @@ export default function AspirantesConcejoPage() {
                                         <button
                                             className="btn btn-sm btn-danger"
                                             title="Eliminar"
-                                            onClick={() => eliminarAspirante(a.id)}
+                                            onClick={() => {
+                                                console.log("Intentando eliminar:", a);
+                                                eliminarAspirante(a.id);
+                                            }}
                                         >
                                             <i className="bi bi-trash"></i>
                                         </button>

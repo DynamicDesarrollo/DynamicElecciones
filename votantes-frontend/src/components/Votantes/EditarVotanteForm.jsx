@@ -33,10 +33,10 @@ export default function EditarVotanteForm({ votante, onVotanteActualizado }) {
     const cargarDatos = async () => {
       try {
         const [munRes, barRes, lidRes, lugaresRes] = await Promise.all([
-          fetch(`${import.meta.env.VITE_API_URL}/municipios`, { headers }),
-          fetch(`${import.meta.env.VITE_API_URL}/barrios`, { headers }),
-          fetch(`${import.meta.env.VITE_API_URL}/lideres`, { headers }),
-          fetch(`${import.meta.env.VITE_API_URL}/lugares`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/municipios`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/barrios`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/lideres`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/lugares`, { headers }),
         ]);
 
         setMunicipios(await munRes.json());
@@ -61,7 +61,7 @@ export default function EditarVotanteForm({ votante, onVotanteActualizado }) {
       try {
         const token = localStorage.getItem("token");
         const res = await fetch(
-          `${import.meta.env.VITE_API_URL}/mesas?lugar_id=${formulario.lugar_id}`,
+          `${import.meta.env.VITE_API_URL}/api/mesas?lugar_id=${formulario.lugar_id}`,
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -122,7 +122,7 @@ export default function EditarVotanteForm({ votante, onVotanteActualizado }) {
       const token = localStorage.getItem("token");
 
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/votantes/${votante.id}`,
+        `${import.meta.env.VITE_API_URL}/api/votantes/${votante.id}`,
         {
           method: "PUT",
           headers: {

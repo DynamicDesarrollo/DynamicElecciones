@@ -19,8 +19,8 @@ export default function InformesPage() {
     try {
       const endpoint =
         vista === "votantes"
-          ? "/informes/votantes-duplicados"
-          : "/informes/asistencias-duplicadas";
+          ? "/api/informes/votantes-duplicados"
+          : "/api/informes/asistencias-duplicadas";
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
         headers: { Authorization: `Bearer ${usuario.token}` },

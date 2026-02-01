@@ -26,7 +26,7 @@ export default function AspirantesAlcaldiaPage() {
   const cargarAspirantes = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/alcaldia`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/alcaldia`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();

@@ -19,7 +19,7 @@ export default function CrearAspiranteAlcaldiaForm({ onAspiranteCreado }) {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/alcaldia`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/alcaldia`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,10 +30,10 @@ export default function CrearAspiranteAlcaldiaForm({ onAspiranteCreado }) {
 
       if (!res.ok) throw new Error("Error al guardar");
 
-      toast.success("✅ Aspirante guardado correctamente");
+      toast.success("\u2705 Aspirante guardado correctamente");
       onAspiranteCreado();
     } catch (error) {
-      toast.error("❌ Error al guardar el aspirante");
+      toast.error("\u274c Error al guardar el aspirante");
       console.error(error);
     }
   };

@@ -26,9 +26,9 @@ export default function CrearAspiranteForm({ onAspiranteCreado }) {
     const fetchData = async () => {
       try {
         const [resMun, resPar, resAlc] = await Promise.all([
-          fetch(`${import.meta.env.VITE_API_URL}/municipios`, { headers }),
-          fetch(`${import.meta.env.VITE_API_URL}/partidos`, { headers }),
-          fetch(`${import.meta.env.VITE_API_URL}/alcaldia`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/municipios`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/partidos`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/alcaldia`, { headers }),
         ]);
 
         setMunicipios(await resMun.json());
@@ -58,7 +58,7 @@ export default function CrearAspiranteForm({ onAspiranteCreado }) {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/concejo`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/concejo`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -37,11 +37,11 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
 
     const cargarDatos = async () => {
       const [munRes, barRes, lidRes, mesasRes, lugaresRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/municipios`, { headers }),
-        fetch(`${import.meta.env.VITE_API_URL}/barrios`, { headers }),
-        fetch(`${import.meta.env.VITE_API_URL}/lideres`, { headers }),
-        fetch(`${import.meta.env.VITE_API_URL}/mesas`, { headers }),
-        fetch(`${import.meta.env.VITE_API_URL}/lugares`, { headers }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/municipios`, { headers }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/barrios`, { headers }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/lideres`, { headers }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/mesas`, { headers }),
+        fetch(`${import.meta.env.VITE_API_URL}/api/lugares`, { headers }),
       ]);
 
       setMunicipios(await munRes.json());
@@ -84,7 +84,7 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/votantes`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/votantes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

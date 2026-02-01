@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 export default function CrearLiderForm({ onLiderCreado }) {
+    const [municipios, setMunicipios] = useState([]);
+    const [barrios, setBarrios] = useState([]);
   const [formData, setFormData] = useState({
     nombre_completo: "",
     cedula: "",
@@ -17,19 +19,23 @@ export default function CrearLiderForm({ onLiderCreado }) {
   const [aspirantes, setAspirantes] = useState([]);
 
   useEffect(() => {
-    const cargarAspirantes = async () => {
+    const cargarDatos = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/concejo`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setAspirantes(data);
+        const headers = { Authorization: `Bearer ${token}` };
+        const [resAsp, resMun, resBar] = await Promise.all([
+          fetch(`${import.meta.env.VITE_API_URL}/api/concejo`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/municipios`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/barrios`, { headers }),
+        ]);
+        setAspirantes(await resAsp.json());
+        setMunicipios(await resMun.json());
+        setBarrios(await resBar.json());
       } catch (err) {
-        toast.error("❌ Error al cargar aspirantes");
+        toast.error("❌ Error al cargar datos de selección");
       }
     };
-    cargarAspirantes();
+    cargarDatos();
   }, []);
 
   const handleChange = (e) => {
@@ -40,7 +46,7 @@ export default function CrearLiderForm({ onLiderCreado }) {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/lideres`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/lideres`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,24 +116,32 @@ export default function CrearLiderForm({ onLiderCreado }) {
 
         <div className="col-md-6">
           <label className="form-label">Municipio</label>
-          <input
-            type="text"
+          <select
             name="municipio"
-            className="form-control"
+            className="form-select"
             value={formData.municipio}
             onChange={handleChange}
-          />
+          >
+            <option value="">Seleccione un municipio</option>
+            {municipios.map((m) => (
+              <option key={m.id} value={m.id}>{m.nombre}</option>
+            ))}
+          </select>
         </div>
 
         <div className="col-md-6">
           <label className="form-label">Barrio</label>
-          <input
-            type="text"
+          <select
             name="barrio"
-            className="form-control"
+            className="form-select"
             value={formData.barrio}
             onChange={handleChange}
-          />
+          >
+            <option value="">Seleccione un barrio</option>
+            {barrios.map((b) => (
+              <option key={b.id} value={b.id}>{b.nombre}</option>
+            ))}
+          </select>
         </div>
 
         <div className="col-md-6">
