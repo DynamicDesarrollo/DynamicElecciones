@@ -31,6 +31,13 @@ export default function LideresPage() {
       });
 
       const data = await res.json();
+      // Validar que la respuesta sea un array antes de usar .filter
+      if (!Array.isArray(data)) {
+        setLideres([]);
+        setTotalPaginas(1);
+        toast.error("❌ Error al cargar líderes: respuesta inválida");
+        return;
+      }
 
       const filtrados = data.filter((l) =>
         l.nombre_completo.toLowerCase().includes(filtroNombre.toLowerCase()) &&
