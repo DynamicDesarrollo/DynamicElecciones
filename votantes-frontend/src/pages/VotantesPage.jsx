@@ -255,19 +255,19 @@ export default function VotantesPage() {
         </>
       )}
     </>
-      {/* Modal para crear/editar votante */}
-      <div
-        className="modal fade"
-        tabIndex="-1"
-        ref={modalRef}
-        id="modalVotante"
-      >
-        <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">
-                {votanteAEditar ? "Editar Votante" : "Registrar Nuevo Votante"}
-              </h5>
+    {/* Modal para crear/editar votante */}
+    <div
+      className="modal fade"
+      tabIndex="-1"
+      ref={modalRef}
+      id="modalVotante"
+    >
+      <div className="modal-dialog modal-lg modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header">
+            <h5 className="modal-title">
+              {votanteAEditar ? "Editar Votante" : "Registrar Nuevo Votante"}
+            </h5>
               <button
                 type="button"
                 className="btn-close"
