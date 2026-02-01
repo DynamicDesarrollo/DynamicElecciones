@@ -254,20 +254,19 @@ export default function VotantesPage() {
           </div>
         </>
       )}
-    </>
-    {/* Modal para crear/editar votante */}
-    <div
-      className="modal fade"
-      tabIndex="-1"
-      ref={modalRef}
-      id="modalVotante"
-    >
-      <div className="modal-dialog modal-lg modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title">
-              {votanteAEditar ? "Editar Votante" : "Registrar Nuevo Votante"}
-            </h5>
+      {/* Modal para crear/editar votante */}
+      <div
+        className="modal fade"
+        tabIndex="-1"
+        ref={modalRef}
+        id="modalVotante"
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">
+                {votanteAEditar ? "Editar Votante" : "Registrar Nuevo Votante"}
+              </h5>
               <button
                 type="button"
                 className="btn-close"
@@ -275,9 +274,7 @@ export default function VotantesPage() {
                 aria-label="Close"
               ></button>
             </div>
-            {console.log("Votante a editar:", votanteAEditar)}
             <div className="modal-body">
-
               {votanteAEditar ? (
                 <EditarVotanteForm
                   votante={votanteAEditar}
