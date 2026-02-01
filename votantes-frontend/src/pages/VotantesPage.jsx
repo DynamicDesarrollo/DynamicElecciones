@@ -202,11 +202,7 @@ export default function VotantesPage() {
   return (
     <>
       <h2 className="mb-4">📋 Lista de Votantes</h2>
-      <div className="row mb-3">
-          </button>
-        </div>
-      </div>
-
+      <div className="row mb-3"></div>
       {loading ? (
         <p>Cargando votantes...</p>
       ) : (
@@ -222,7 +218,6 @@ export default function VotantesPage() {
                   <th>Ciudad</th>
                   <th>Aspirante Concejo</th>
                   <th>Lider</th>
-
                   <th className="text-center">Acciones</th>
                 </tr>
               </thead>
@@ -230,7 +225,7 @@ export default function VotantesPage() {
                 {renderVotantes()}
                 {votantes.length === 0 && (
                   <tr>
-                    <td colSpan="6" className="text-center">
+                    <td colSpan="8" className="text-center">
                       No hay votantes registrados
                     </td>
                   </tr>
@@ -238,7 +233,6 @@ export default function VotantesPage() {
               </tbody>
             </table>
           </div>
-
           <div className="d-flex justify-content-between align-items-center mt-3">
             <button
               className="btn btn-primary"
@@ -247,11 +241,9 @@ export default function VotantesPage() {
             >
               ← Anterior
             </button>
-
             <span className="fw-bold">
               Página {page} de {totalPages}
             </span>
-
             <button
               className="btn btn-primary"
               onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
@@ -262,7 +254,7 @@ export default function VotantesPage() {
           </div>
         </>
       )}
-
+    </>
       {/* Modal para crear/editar votante */}
       <div
         className="modal fade"
