@@ -16,9 +16,9 @@ export default function EditarAspiranteForm({ aspirante, onAspiranteActualizado 
               fetch(`${import.meta.env.VITE_API_URL}/api/municipios`, { headers }),
               fetch(`${import.meta.env.VITE_API_URL}/api/alcaldia`, { headers }),
             ]);
-            setPartidos(await resPar.json());
-            setMunicipios(await resMun.json());
-            setAlcaldias(await resAlc.json());
+            setPartidos(Array.isArray(await resPar.json()) ? await resPar.json() : []);
+            setMunicipios(Array.isArray(await resMun.json()) ? await resMun.json() : []);
+            setAlcaldias(Array.isArray(await resAlc.json()) ? await resAlc.json() : []);
           } catch (error) {
             // Puedes mostrar un toast si quieres
           }

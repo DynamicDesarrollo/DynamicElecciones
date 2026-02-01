@@ -70,7 +70,7 @@ export default function DashboardPage() {
         if (!res.ok) throw new Error("Error al obtener datos del gráfico");
 
         const data = await res.json();
-        setDatosGrafico(data);
+        setDatosGrafico(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("Error al cargar gráfica:", err);
       }

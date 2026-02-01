@@ -28,9 +28,9 @@ export default function CrearLiderForm({ onLiderCreado }) {
           fetch(`${import.meta.env.VITE_API_URL}/api/municipios`, { headers }),
           fetch(`${import.meta.env.VITE_API_URL}/api/barrios`, { headers }),
         ]);
-        setAspirantes(await resAsp.json());
-        setMunicipios(await resMun.json());
-        setBarrios(await resBar.json());
+        setAspirantes(Array.isArray(await resAsp.json()) ? await resAsp.json() : []);
+        setMunicipios(Array.isArray(await resMun.json()) ? await resMun.json() : []);
+        setBarrios(Array.isArray(await resBar.json()) ? await resBar.json() : []);
       } catch (err) {
         toast.error("❌ Error al cargar datos de selección");
       }

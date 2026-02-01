@@ -66,7 +66,7 @@ export default function AsistenciaPage() {
     setLastAsistencia(null);
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/asistencia?cedula=${encodeURIComponent(cedula)}`,
+        `${import.meta.env.VITE_API_URL}/api/asistencia?cedula=${encodeURIComponent(cedula)}`,
         {
           headers: { Authorization: `Bearer ${usuario.token}` },
         }
@@ -112,7 +112,7 @@ export default function AsistenciaPage() {
       puesto_control: puestoControl,
     });
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/asistencia`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/asistencia`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

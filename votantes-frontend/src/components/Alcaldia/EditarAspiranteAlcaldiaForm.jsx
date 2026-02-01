@@ -17,7 +17,7 @@ export default function EditarAspiranteAlcaldiaForm({ aspirante, onAspiranteActu
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/alcaldia/${aspirante.id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/alcaldia/${aspirante.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

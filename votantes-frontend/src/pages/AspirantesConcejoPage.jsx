@@ -32,10 +32,10 @@ export default function AspirantesConcejoPage() {
 
             const data = await res.json();
 
-            const filtrados = data.filter((a) =>
+            const filtrados = Array.isArray(data) ? data.filter((a) =>
                 a.nombre_completo.toLowerCase().includes(filtroNombre.toLowerCase()) &&
                 (a.cedula || "").toLowerCase().includes(filtroCedula.toLowerCase())
-            );
+            ) : [];
 
             setTotalPaginas(Math.ceil(filtrados.length / aspirantesPorPagina));
             setAspirantes(

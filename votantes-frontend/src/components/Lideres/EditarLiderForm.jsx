@@ -34,11 +34,11 @@ export default function EditarLiderForm({ lider, onLiderActualizado }) {
     const cargarAspirantes = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/concejo`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/concejo`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
-        setAspirantes(data);
+        setAspirantes(Array.isArray(data) ? data : []);
       } catch (err) {
         toast.error("❌ Error al cargar aspirantes");
       }
@@ -59,7 +59,7 @@ export default function EditarLiderForm({ lider, onLiderActualizado }) {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/lideres/${lider.id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/lideres/${lider.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

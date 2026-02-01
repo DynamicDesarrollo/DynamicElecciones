@@ -38,6 +38,9 @@ export default function CrearAspiranteAlcaldiaForm({ onAspiranteCreado }) {
     }
   };
 
+  // Example: Add array validation before .map usage if rendering aspirantes elsewhere
+  // {Array.isArray(aspirantes) ? aspirantes.map(...) : null}
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="mb-3">

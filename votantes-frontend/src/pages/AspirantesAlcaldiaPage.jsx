@@ -31,10 +31,10 @@ export default function AspirantesAlcaldiaPage() {
       });
       const data = await res.json();
 
-      const filtrados = data.filter((a) =>
+      const filtrados = Array.isArray(data) ? data.filter((a) =>
         a.nombre_completo.toLowerCase().includes(filtroNombre.toLowerCase()) &&
         (a.cedula || "").toLowerCase().includes(filtroCedula.toLowerCase())
-      );
+      ) : [];
 
       setTotalPaginas(Math.ceil(filtrados.length / aspirantesPorPagina));
       setAspirantes(
@@ -64,7 +64,7 @@ export default function AspirantesAlcaldiaPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/alcaldia/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/alcaldia/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

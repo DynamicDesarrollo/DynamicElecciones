@@ -44,11 +44,11 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
         fetch(`${import.meta.env.VITE_API_URL}/api/lugares`, { headers }),
       ]);
 
-      setMunicipios(await munRes.json());
-      setBarrios(await barRes.json());
-      setLideres(await lidRes.json());
-      setMesas(await mesasRes.json());
-      setLugares(await lugaresRes.json());
+      setMunicipios(Array.isArray(await munRes.json()) ? await munRes.json() : []);
+      setBarrios(Array.isArray(await barRes.json()) ? await barRes.json() : []);
+      setLideres(Array.isArray(await lidRes.json()) ? await lidRes.json() : []);
+      setMesas(Array.isArray(await mesasRes.json()) ? await mesasRes.json() : []);
+      setLugares(Array.isArray(await lugaresRes.json()) ? await lugaresRes.json() : []);
     };
 
     cargarDatos();

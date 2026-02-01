@@ -42,8 +42,17 @@ export default function InformesPage() {
     if (usuario?.token) fetchDatos();
   }, [vista]);
 
+  // Add array validation before .map usage (example for rendering datos)
+  const renderDatos = () => {
+    return Array.isArray(datos) ? datos.map((d, idx) => (
+      <tr key={idx}>
+        {/* Render your data fields here */}
+      </tr>
+    )) : null;
+  };
+
   const exportarExcel = () => {
-    const hoja = XLSX.utils.json_to_sheet(datos);
+    const hoja = XLSX.utils.json_to_sheet(Array.isArray(datos) ? datos : []);
     const libro = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(libro, hoja, "Informe");
     XLSX.writeFile(libro, `informe_${vista}.xlsx`);

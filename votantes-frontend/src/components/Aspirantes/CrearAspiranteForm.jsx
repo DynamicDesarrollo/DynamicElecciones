@@ -31,9 +31,9 @@ export default function CrearAspiranteForm({ onAspiranteCreado }) {
           fetch(`${import.meta.env.VITE_API_URL}/api/alcaldia`, { headers }),
         ]);
 
-        setMunicipios(await resMun.json());
-        setPartidos(await resPar.json());
-        setAlcaldias(await resAlc.json());
+        setMunicipios(Array.isArray(await resMun.json()) ? await resMun.json() : []);
+        setPartidos(Array.isArray(await resPar.json()) ? await resPar.json() : []);
+        setAlcaldias(Array.isArray(await resAlc.json()) ? await resAlc.json() : []);
       } catch (error) {
         toast.error("Error al cargar datos de selección");
         console.error(error);

@@ -104,7 +104,7 @@ export default function VotantesPage() {
     const token = localStorage.getItem("token");
 
     const res = await fetch(
-      `${import.meta.env.VITE_API_URL}/votantes/${id}`,
+      `${import.meta.env.VITE_API_URL}/api/votantes/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -174,43 +174,34 @@ export default function VotantesPage() {
       <h2 className="mb-4">📋 Lista de Votantes</h2>
 
       <div className="row mb-3">
-        <div className="col-md-4">
-          <label>Buscar por Nombre o Cédula</label>
-          <input
-            className="form-control"
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-          />
-        </div>
-
-        <div className="col-md-2">
-          <label>Activo</label>
-          <select
-            className="form-select"
-            value={activo}
-            onChange={(e) => setActivo(e.target.value)}
-          >
-            <option value="">-- Todos --</option>
-            <option value="true">Sí</option>
-            <option value="false">No</option>
-          </select>
-        </div>
-
-        <div className="col-md-6 d-flex align-items-end gap-2">
-          <button className="btn btn-secondary" onClick={aplicarFiltro}>
-            🔍 Filtrar
-          </button>
-          <button className="btn btn-outline-dark" onClick={limpiarFiltros}>
-            Limpiar
-          </button>
-          <button className="btn btn-outline-success btn-sm" onClick={exportarExcel}>
-                    📄 Excel
-                </button>
-                <button className="btn btn-outline-danger btn-sm" onClick={exportarPDF}>
-                    🧾 PDF
-                </button>
-          <button className="btn btn-primary ms-auto" onClick={abrirModalCrear}>
-            <i className="bi bi-plus-circle me-1"></i> Nuevo Votante
+      // Add array validation before .map usage (example for rendering votantes)
+      const renderVotantes = () => {
+        return Array.isArray(votantes) ? votantes.map((v) => (
+          <tr key={v.id}>
+            <td>{v.nombre_completo}</td>
+            <td>{v.cedula || "—"}</td>
+            <td>{v.municipio_nombre || "—"}</td>
+            <td>{v.telefono || "—"}</td>
+            <td>{v.barrio_nombre || "—"}</td>
+            <td className="text-center">
+              <button
+                className="btn btn-sm btn-warning me-2"
+                title="Editar"
+                onClick={() => abrirModalEditar(v)}
+              >
+                <i className="bi bi-pencil-square"></i>
+              </button>
+              <button
+                className="btn btn-sm btn-danger"
+                title="Eliminar"
+                onClick={() => eliminarVotante(v.id)}
+              >
+                <i className="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+        )) : null;
+      };
           </button>
         </div>
       </div>
