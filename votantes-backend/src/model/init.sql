@@ -44,7 +44,13 @@ CREATE TABLE IF NOT EXISTS aspirantes_concejo (
 CREATE TABLE IF NOT EXISTS lideres (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   nombre_completo VARCHAR(150) NOT NULL,
-  aspirante_concejo_id UUID REFERENCES aspirantes_concejo(id) ON DELETE SET NULL
+  aspirante_concejo_id UUID REFERENCES aspirantes_concejo(id) ON DELETE SET NULL,
+  municipio UUID REFERENCES municipios(id),
+  barrio UUID REFERENCES barrios(id),
+  cedula VARCHAR(20),
+  direccion TEXT,
+  telefono VARCHAR(20),
+  fecha_nace DATE
 );
 
 -- 🔹 Tabla: Prospectos Votantes

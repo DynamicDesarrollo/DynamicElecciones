@@ -4,6 +4,7 @@ import {
   createVotante,
   updateVotante,
   deleteVotante,
+  getTotalVotantes
 } from '../controllers/votantes.controller.js';
 
 import { filtrarVotantes } from '../controllers/reportes.controller.js';
@@ -20,8 +21,12 @@ router.get('/', getVotantes);
 router.post('/', createVotante);
 router.put('/:id', updateVotante);
 router.delete('/:id', deleteVotante);
+
 router.get('/votantes', verificarToken, getVotantes); // 👈 Aquí debe estar el middleware
 router.get('/filtrar', filtrarVotantes); // ✅ Agrega esta línea
+
+// Nueva ruta para el total de votantes
+router.get('/total', getTotalVotantes);
 
 
 export default router;

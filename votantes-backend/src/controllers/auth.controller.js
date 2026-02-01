@@ -1,5 +1,5 @@
 import db from '../utils/db.js';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
@@ -30,9 +30,13 @@ export const login = async (req, res) => {
       return res.status(401).json({ error: 'Usuario no encontrado' });
     }
 
-    // Comparar contraseñas
+    // Logs detallados para depuración
+    console.log('--- DEPURACIÓN bcrypt ---');
+    console.log('Password recibido:', password, '| Hash en BD:', usuario.password);
+    console.log('Tipo de password:', typeof password, '| Tipo de hash:', typeof usuario.password);
     const passwordValida = await bcrypt.compare(password, usuario.password);
     console.log('Resultado bcrypt.compare:', passwordValida);
+    console.log('-------------------------');
 
     if (!passwordValida) {
       console.log('Contraseña incorrecta para:', correo);

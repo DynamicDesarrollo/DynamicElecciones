@@ -24,7 +24,9 @@ import resumenVotantesRoutes from './routes/reportes.routes.js';
 import asistenciaRoutes from './routes/asistencia.routes.js';
 import informesRoutes from "./routes/informes.routes.js";
 //Ruras AUth
+console.log('Antes de importar authRoutes');
 import authRoutes from './routes/auth.routes.js'; 
+console.log('Después de importar authRoutes');
 
 
 const app = express();
@@ -51,7 +53,6 @@ app.use('/api/filtrarvotantes', filtrarVotantesRoutes);
 app.use('/api/resumenvotantess', resumenVotantesRoutes);
 // Rutas de asistencias
 app.use('/api/asistencia', asistenciaRoutes);
-app.use('/api/votantes', asistenciaRoutes);
 
 // Rutas de informes
 app.use('/api/informes', informesRoutes);
@@ -62,6 +63,7 @@ app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => res.send('API de Votantes Activa'));
 
+console.log('Valor de process.env.PORT:', process.env.PORT);
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);

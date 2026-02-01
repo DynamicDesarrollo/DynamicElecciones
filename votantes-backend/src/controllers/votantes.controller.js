@@ -1,3 +1,13 @@
+// Obtener el total de votantes (para dashboard/asistencia)
+export const getTotalVotantes = async (req, res) => {
+  try {
+    const result = await db.query('SELECT COUNT(*) AS total FROM prospectos_votantes');
+    res.json({ total: parseInt(result.rows[0].total) });
+  } catch (err) {
+    console.error('❌ Error al obtener total de votantes:', err);
+    res.status(500).json({ error: 'Error al obtener total de votantes' });
+  }
+};
 import db from '../utils/db.js';
 
 // ✅ Obtener todos los votantes
