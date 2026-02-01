@@ -11,6 +11,36 @@ import CrearVotanteForm from "../components/Votantes/CrearVotanteForm";
 import EditarVotanteForm from "../components/Votantes/EditarVotanteForm";
 
 export default function VotantesPage() {
+    // Render votantes with array validation
+    const renderVotantes = () => {
+      return Array.isArray(votantes) ? votantes.map((v) => (
+        <tr key={v.id}>
+          <td>{v.cedula}</td>
+          <td>{v.nombre_completo}</td>
+          <td>{v.telefono}</td>
+          <td>{v.barrio_nombre}</td>
+          <td>{v.municipio_nombre}</td>
+          <td>{v.concejo_nombre}</td>
+          <td>{v.lider_nombre}</td>
+          <td className="text-center">
+            <button
+              className="btn btn-sm btn-warning me-2"
+              title="Editar"
+              onClick={() => abrirModalEditar(v)}
+            >
+              <i className="bi bi-pencil-square"></i>
+            </button>
+            <button
+              className="btn btn-sm btn-danger"
+              title="Eliminar"
+              onClick={() => eliminarVotante(v.id)}
+            >
+              <i className="bi bi-trash"></i>
+            </button>
+          </td>
+        </tr>
+      )) : null;
+    };
   const { usuario } = useAuth();
 
   const [votantes, setVotantes] = useState([]);
@@ -226,31 +256,7 @@ export default function VotantesPage() {
                 </tr>
               </thead>
               <tbody>
-                {votantes.map((v) => (
-                  <tr key={v.id}>
-                    <td>{v.cedula}</td>
-                    <td>{v.nombre_completo}</td>
-                    <td>{v.telefono}</td>
-                    <td>{v.barrio_nombre}</td>
-                    <td>{v.municipio_nombre}</td>
-                    <td>{v.concejo_nombre}</td>
-                    <td>{v.lider_nombre}</td>
-                    <td className="text-center">
-                      <button
-                        className="btn btn-sm btn-warning me-2"
-                        onClick={() => abrirModalEditar(v)}
-                      >
-                        <i className="bi bi-pencil-square"></i>
-                      </button>
-                      <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => eliminarVotante(v.id)}
-                      >
-                        <i className="bi bi-trash"></i>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {renderVotantes()}
                 {votantes.length === 0 && (
                   <tr>
                     <td colSpan="6" className="text-center">
