@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 // Crear usuario
 exports.crearUsuario = async (req, res) => {
   try {
-    const { nombre, correo, password, rol, aspirante_concejo_id, aspirante_alcaldia_id } = req.body;
+    const { nombre, correo, password, rol, tipoAspirante } = req.body;
     if (!nombre || !correo || !password) {
       return res.status(400).json({ error: 'Faltan campos obligatorios.' });
     }
@@ -17,9 +17,9 @@ exports.crearUsuario = async (req, res) => {
     const hash = await bcrypt.hash(password, 10);
     // Insertar usuario
     const result = await db.query(
-      `INSERT INTO usuarios (nombre, correo, password, rol, aspirante_concejo_id, aspirante_alcaldia_id)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [nombre, correo, hash, rol || 'admin', aspirante_concejo_id || null, aspirante_alcaldia_id || null]
+      `INSERT INTO usuarios (nombre, correo, password, rol, tipo_aspirante)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [nombre, correo, hash, rol || 'admin', tipoAspirante || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {

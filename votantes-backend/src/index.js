@@ -42,6 +42,7 @@ app.use('/api/partidos', partidosRoutes);
 app.use('/api/municipios', municipiosRoutes);
 app.use('/api/barrios', barriosRoutes);
 app.use('/api/alcaldia', aspirantesRoutes);
+app.use('/api/aspirantes', aspirantesRoutes);
 app.use('/api/lideres', lideresRoutes);
 app.use('/api/votantes', votantesRoutes);
 app.use('/api/concejo', aspirantesConcejoRoutes);

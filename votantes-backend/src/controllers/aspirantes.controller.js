@@ -1,3 +1,33 @@
+// === NUEVA TABLA GENERAL DE ASPIRANTES ===
+// Crear aspirante
+export const crearAspirante = async (req, res) => {
+  try {
+    const { nombre, correo, telefono, tipo_aspirante, partido, municipio } = req.body;
+    if (!nombre || !correo || !tipo_aspirante) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios.' });
+    }
+    const result = await db.query(
+      `INSERT INTO aspirantes (nombre, correo, telefono, tipo_aspirante, partido, municipio)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [nombre, correo, telefono, tipo_aspirante, partido, municipio]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error('Error al crear aspirante:', err);
+    res.status(500).json({ error: 'Error interno del servidor.' });
+  }
+};
+
+// Listar aspirantes
+export const listarAspirantes = async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM aspirantes ORDER BY created_at DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error al listar aspirantes:', err);
+    res.status(500).json({ error: 'Error interno del servidor.' });
+  }
+};
 import db from '../utils/db.js';
 
 // ✅ Obtener todos los aspirantes a la alcaldía
