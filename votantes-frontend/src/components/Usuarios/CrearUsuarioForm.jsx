@@ -5,6 +5,7 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
   const [rol, setRol] = useState("admin");
+  const [tipoAspirante, setTipoAspirante] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -16,7 +17,7 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nombre, correo, password, rol })
+        body: JSON.stringify({ nombre, correo, password, rol, tipoAspirante })
       });
       const data = await response.json();
       if (!response.ok) {
@@ -24,7 +25,7 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
         return;
       }
       onUsuarioCreado && onUsuarioCreado(data);
-      setNombre(""); setCorreo(""); setPassword(""); setRol("admin");
+      setNombre(""); setCorreo(""); setPassword(""); setRol("admin"); setTipoAspirante("");
     } catch (err) {
       setError("Error de red o inesperado");
     } finally {
@@ -33,50 +34,41 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white rounded-2xl shadow-2xl p-6 space-y-4"
-    >
-      <h2 className="text-center text-2xl font-bold text-gray-800 mb-2">
-        👤 Crear Usuario
-      </h2>
-
-      <div>
-        <label className="text-sm font-semibold text-gray-600">Nombre</label>
+    <form onSubmit={handleSubmit} className="needs-validation" noValidate>
+      <h2 className="text-center mb-4"><i className="bi bi-person-circle fs-2 me-2"></i>Crear Usuario</h2>
+      <div className="mb-3">
+        <label className="form-label fw-semibold">Nombre</label>
         <input
-          className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="form-control"
           value={nombre}
           onChange={e => setNombre(e.target.value)}
           required
         />
       </div>
-
-      <div>
-        <label className="text-sm font-semibold text-gray-600">Correo</label>
+      <div className="mb-3">
+        <label className="form-label fw-semibold">Correo</label>
         <input
           type="email"
-          className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="form-control"
           value={correo}
           onChange={e => setCorreo(e.target.value)}
           required
         />
       </div>
-
-      <div>
-        <label className="text-sm font-semibold text-gray-600">Contraseña</label>
+      <div className="mb-3">
+        <label className="form-label fw-semibold">Contraseña</label>
         <input
           type="password"
-          className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="form-control"
           value={password}
           onChange={e => setPassword(e.target.value)}
           required
         />
       </div>
-
-      <div>
-        <label className="text-sm font-semibold text-gray-600">Rol</label>
+      <div className="mb-3">
+        <label className="form-label fw-semibold">Rol</label>
         <select
-          className="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="form-select"
           value={rol}
           onChange={e => setRol(e.target.value)}
         >
@@ -84,17 +76,31 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
           <option value="user">Usuario</option>
         </select>
       </div>
-
+      <div className="mb-3">
+        <label className="form-label fw-semibold">Tipo de Aspirante</label>
+        <select
+          className="form-select"
+          value={tipoAspirante}
+          onChange={e => setTipoAspirante(e.target.value)}
+          required
+        >
+          <option value="">Seleccione...</option>
+          <option value="senado">Aspirante al Senado</option>
+          <option value="camara">Aspirante a la Cámara</option>
+          <option value="alcaldia">Aspirante a la Alcaldía</option>
+          <option value="concejo">Aspirante al Concejo</option>
+            <option value="gobernacion">Aspirante a la Gobernación</option>
+        </select>
+      </div>
       {error && (
-        <div className="bg-red-100 text-red-700 p-2 rounded text-center font-semibold">
+        <div className="alert alert-danger text-center py-2 mb-3">
           {error}
         </div>
       )}
-
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition disabled:opacity-50"
+        className="btn btn-primary w-100 fw-bold"
       >
         {loading ? "Creando..." : "Crear Usuario"}
       </button>

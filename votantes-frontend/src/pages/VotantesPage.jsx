@@ -20,7 +20,6 @@ export default function VotantesPage() {
         <td>{v.telefono}</td>
         <td>{v.barrio_nombre}</td>
         <td>{v.municipio_nombre}</td>
-        <td>{v.concejo_nombre}</td>
         <td>{v.lider_nombre}</td>
         <td className="text-center">
           <button
@@ -162,7 +161,6 @@ export default function VotantesPage() {
       Teléfono: v.telefono,
       Barrio: v.barrio_nombre,
       Municipio: v.municipio_nombre,
-      Concejo: v.concejo_nombre || "N/A",
       Alcaldía: v.alcaldia_nombre || "N/A",
       Lider: v.lider_nombre || "N/A"
     }));
@@ -191,7 +189,6 @@ export default function VotantesPage() {
         v.telefono,
         v.barrio_nombre,
         v.municipio_nombre,
-        v.concejo_nombre || v.alcaldia_nombre || "N/A",
         v.lider_nombre || "N/A"
       ]),
     });
@@ -203,6 +200,11 @@ export default function VotantesPage() {
     <>
       <h2 className="mb-4">📋 Lista de Votantes</h2>
       <div className="row mb-3"></div>
+      <div className="mb-3 d-flex justify-content-end">
+        <button className="btn btn-success" onClick={abrirModalCrear}>
+          <i className="bi bi-person-plus me-2"></i> Nuevo Prospecto Votante
+        </button>
+      </div>
       {loading ? (
         <p>Cargando votantes...</p>
       ) : (
@@ -216,7 +218,6 @@ export default function VotantesPage() {
                   <th>Teléfono</th>
                   <th>Barrio</th>
                   <th>Ciudad</th>
-                  <th>Aspirante Concejo</th>
                   <th>Lider</th>
                   <th className="text-center">Acciones</th>
                 </tr>

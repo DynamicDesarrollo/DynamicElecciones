@@ -224,11 +224,13 @@ export default function EditarVotanteForm({ votante, onVotanteActualizado }) {
               required
             >
               <option value="">-- Seleccione --</option>
-              {municipios.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.nombre}
-                </option>
-              ))}
+              {municipios
+                .filter((m) => m.nombre === "Buenavista (CORD)" || m.nombre === "Apartada (CORD)")
+                .map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.nombre}
+                  </option>
+                ))}
             </select>
           </div>
         </div>
@@ -245,11 +247,13 @@ export default function EditarVotanteForm({ votante, onVotanteActualizado }) {
               required
             >
               <option value="">-- Seleccione --</option>
-              {barrios.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.nombre}
-                </option>
-              ))}
+              {barrios
+                .filter((b) => b.nombre === "La Apartada")
+                .map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.nombre}
+                  </option>
+                ))}
             </select>
           </div>
           <div className="col-md-4">

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 export default function EditarLiderForm({ lider, onLiderActualizado }) {
+  const [municipios, setMunicipios] = useState([]);
+  const [barrios, setBarrios] = useState([]);
   const [formData, setFormData] = useState({
     nombre_completo: "",
     cedula: "",
@@ -10,7 +12,7 @@ export default function EditarLiderForm({ lider, onLiderActualizado }) {
     barrio: "",
     telefono: "",
     fecha_nace: "",
-    aspirante_concejo_id: "",
+    aspirante_id: "",
   });
 
   const [aspirantes, setAspirantes] = useState([]);
@@ -25,26 +27,32 @@ export default function EditarLiderForm({ lider, onLiderActualizado }) {
         barrio: lider.barrio || "",
         telefono: lider.telefono || "",
         fecha_nace: lider.fecha_nace ? lider.fecha_nace.substring(0, 10) : "",
-        aspirante_concejo_id: lider.aspirante_concejo_id || "",
+        aspirante_id: lider.aspirante_id || "",
       });
     }
   }, [lider]);
 
   useEffect(() => {
-    const cargarAspirantes = async () => {
+    const cargarDatos = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/concejo`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setAspirantes(Array.isArray(data) ? data : []);
+        const headers = { Authorization: `Bearer ${token}` };
+        const [resAsp, resMun, resBar] = await Promise.all([
+          fetch(`${import.meta.env.VITE_API_URL}/api/aspirantes`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/municipios`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/barrios`, { headers }),
+        ]);
+        const aspData = await resAsp.json();
+        const munData = await resMun.json();
+        const barData = await resBar.json();
+        setAspirantes(Array.isArray(aspData) ? aspData : []);
+        setMunicipios(Array.isArray(munData) ? munData : []);
+        setBarrios(Array.isArray(barData) ? barData : []);
       } catch (err) {
-        toast.error("❌ Error al cargar aspirantes");
+        toast.error("❌ Error al cargar datos de selección");
       }
     };
-
-    cargarAspirantes();
+    cargarDatos();
   }, []);
 
   const handleChange = (e) => {
@@ -132,26 +140,40 @@ export default function EditarLiderForm({ lider, onLiderActualizado }) {
 
         <div className="col-md-6 mb-3">
           <label className="form-label">Barrio</label>
-          <input
-            type="text"
-            className="form-control"
+          <select
+            className="form-select"
             name="barrio"
             value={formData.barrio}
             onChange={handleChange}
-          />
+            required
+          >
+            <option value="">Seleccione un barrio</option>
+            {barrios
+              .filter((b) => b.nombre === "La Apartada")
+              .map((b) => (
+                <option key={b.id} value={b.id}>{b.nombre}</option>
+              ))}
+          </select>
         </div>
       </div>
 
       <div className="row">
         <div className="col-md-6 mb-3">
           <label className="form-label">Municipio</label>
-          <input
-            type="text"
-            className="form-control"
+          <select
+            className="form-select"
             name="municipio"
             value={formData.municipio}
             onChange={handleChange}
-          />
+            required
+          >
+            <option value="">Seleccione un municipio</option>
+            {municipios
+              .filter((m) => m.nombre === "Buenavista (CORD)" || m.nombre === "Apartada (CORD)")
+              .map((m) => (
+                <option key={m.id} value={m.id}>{m.nombre}</option>
+              ))}
+          </select>
         </div>
 
         <div className="col-md-6 mb-3">
@@ -167,17 +189,17 @@ export default function EditarLiderForm({ lider, onLiderActualizado }) {
       </div>
 
       <div className="mb-3">
-        <label className="form-label">Aspirante al Concejo que Apoya</label>
+        <label className="form-label">Aspirante que apoya (opcional)</label>
         <select
           className="form-select"
-          name="aspirante_concejo_id"
-          value={formData.aspirante_concejo_id}
+          name="aspirante_id"
+          value={formData.aspirante_id}
           onChange={handleChange}
         >
-          <option value="">-- Seleccione --</option>
+          <option value="">Seleccione uno</option>
           {aspirantes.map((a) => (
             <option key={a.id} value={a.id}>
-              {a.nombre_completo}
+              {a.nombre}
             </option>
           ))}
         </select>

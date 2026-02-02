@@ -35,20 +35,23 @@ export default function MainLayout() {
       {/* Modal para crear usuario, fuera del layout principal */}
       {mostrarModal && (
         <ModalPortal>
-          <div style={{position:'fixed', inset:0, zIndex: 99999, background:'rgba(0,0,0,0.7)'}} className="flex flex-col justify-center items-center min-h-screen min-w-full">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative flex flex-col items-center animate-fadeIn mx-auto" style={{margin:'auto'}}>
-              <button
-                type="button"
-                className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-bold focus:outline-none"
-                onClick={() => setMostrarModal(false)}
-                aria-label="Cerrar"
-              >
-                &times;
-              </button>
-              <div className="w-full flex flex-col items-center">
-                <CrearUsuarioForm
-                  onUsuarioCreado={() => { setMostrarModal(false); }}
-                />
+          <div style={{position:'fixed', inset:0, zIndex: 99999}}>
+            <div style={{position:'absolute', inset:0, background:'#212529', opacity:0.96, width:'100%', height:'100%'}}></div>
+            <div className="d-flex align-items-center justify-content-center h-100 w-100" style={{minHeight:'100vh', position:'relative'}}>
+              <div className="modal-dialog modal-dialog-centered" style={{maxWidth:'420px', width:'100%', zIndex:100000}}>
+                <div className="modal-content p-0 position-relative" style={{background:'#fff', borderRadius:'1rem', border:'1px solid #dee2e6', boxShadow:'0 0.5rem 1rem rgba(0,0,0,.15)'}}>
+                  <button
+                    type="button"
+                    className="btn-close position-absolute end-0 top-0 m-3"
+                    aria-label="Cerrar"
+                    onClick={() => setMostrarModal(false)}
+                  ></button>
+                  <div className="modal-body p-4">
+                    <CrearUsuarioForm
+                      onUsuarioCreado={() => setMostrarModal(false)}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>

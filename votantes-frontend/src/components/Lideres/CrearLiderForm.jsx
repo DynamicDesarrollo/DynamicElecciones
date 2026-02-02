@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 export default function CrearLiderForm({ onLiderCreado }) {
     const [municipios, setMunicipios] = useState([]);
     const [barrios, setBarrios] = useState([]);
+    const [aspirantes, setAspirantes] = useState([]);
   const [formData, setFormData] = useState({
     nombre_completo: "",
     cedula: "",
@@ -13,10 +14,9 @@ export default function CrearLiderForm({ onLiderCreado }) {
     telefono: "",
     barrio: "",
     fecha_nace: "",
-    aspirante_concejo_id: "",
+    aspirante_id: "",
   });
 
-  const [aspirantes, setAspirantes] = useState([]);
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -24,7 +24,7 @@ export default function CrearLiderForm({ onLiderCreado }) {
         const token = localStorage.getItem("token");
         const headers = { Authorization: `Bearer ${token}` };
         const [resAsp, resMun, resBar] = await Promise.all([
-          fetch(`${import.meta.env.VITE_API_URL}/api/concejo`, { headers }),
+          fetch(`${import.meta.env.VITE_API_URL}/api/aspirantes`, { headers }),
           fetch(`${import.meta.env.VITE_API_URL}/api/municipios`, { headers }),
           fetch(`${import.meta.env.VITE_API_URL}/api/barrios`, { headers }),
         ]);
@@ -124,11 +124,14 @@ export default function CrearLiderForm({ onLiderCreado }) {
             className="form-select"
             value={formData.municipio}
             onChange={handleChange}
+            required
           >
             <option value="">Seleccione un municipio</option>
-            {municipios.map((m) => (
-              <option key={m.id} value={m.id}>{m.nombre}</option>
-            ))}
+            {municipios
+              .filter((m) => m.nombre === "Buenavista (CORD)" || m.nombre === "Apartada (CORD)")
+              .map((m) => (
+                <option key={m.id} value={m.id}>{m.nombre}</option>
+              ))}
           </select>
         </div>
 
@@ -139,11 +142,14 @@ export default function CrearLiderForm({ onLiderCreado }) {
             className="form-select"
             value={formData.barrio}
             onChange={handleChange}
+            required
           >
             <option value="">Seleccione un barrio</option>
-            {barrios.map((b) => (
-              <option key={b.id} value={b.id}>{b.nombre}</option>
-            ))}
+            {barrios
+              .filter((b) => b.nombre === "La Apartada")
+              .map((b) => (
+                <option key={b.id} value={b.id}>{b.nombre}</option>
+              ))}
           </select>
         </div>
 
@@ -159,17 +165,17 @@ export default function CrearLiderForm({ onLiderCreado }) {
         </div>
 
         <div className="col-md-6">
-          <label className="form-label">Aspirante que apoya</label>
+          <label className="form-label">Aspirante que apoya (opcional)</label>
           <select
             className="form-select"
-            name="aspirante_concejo_id"
-            value={formData.aspirante_concejo_id}
+            name="aspirante_id"
+            value={formData.aspirante_id}
             onChange={handleChange}
           >
             <option value="">Seleccione uno</option>
             {aspirantes.map((a) => (
               <option key={a.id} value={a.id}>
-                {a.nombre_completo}
+                {a.nombre}
               </option>
             ))}
           </select>

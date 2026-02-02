@@ -44,11 +44,17 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
         fetch(`${import.meta.env.VITE_API_URL}/api/lugares`, { headers }),
       ]);
 
-      setMunicipios(Array.isArray(await munRes.json()) ? await munRes.json() : []);
-      setBarrios(Array.isArray(await barRes.json()) ? await barRes.json() : []);
-      setLideres(Array.isArray(await lidRes.json()) ? await lidRes.json() : []);
-      setMesas(Array.isArray(await mesasRes.json()) ? await mesasRes.json() : []);
-      setLugares(Array.isArray(await lugaresRes.json()) ? await lugaresRes.json() : []);
+      const munData = await munRes.json();
+      const barData = await barRes.json();
+      const lidData = await lidRes.json();
+      const mesasData = await mesasRes.json();
+      const lugaresData = await lugaresRes.json();
+
+      setMunicipios(Array.isArray(munData) ? munData : []);
+      setBarrios(Array.isArray(barData) ? barData : []);
+      setLideres(Array.isArray(lidData) ? lidData : []);
+      setMesas(Array.isArray(mesasData) ? mesasData : []);
+      setLugares(Array.isArray(lugaresData) ? lugaresData : []);
     };
 
     cargarDatos();
@@ -199,11 +205,13 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
               required
             >
               <option value="">-- Seleccione --</option>
-              {municipios.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.nombre}
-                </option>
-              ))}
+              {municipios
+                .filter((m) => m.nombre === "Buenavista (CORD)" || m.nombre === "Apartada (CORD)")
+                .map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.nombre}
+                  </option>
+                ))}
             </select>
           </div>
         </div>
@@ -219,11 +227,13 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
               required
             >
               <option value="">-- Seleccione --</option>
-              {barrios.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.nombre}
-                </option>
-              ))}
+              {barrios
+                .filter((b) => b.nombre === "La Apartada")
+                .map((b) => (
+                  <option key={b.id} value={b.id}>
+                    {b.nombre}
+                  </option>
+                ))}
             </select>
           </div>
           <div className="col-md-4">
@@ -236,11 +246,13 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
               required
             >
               <option value="">-- Seleccione --</option>
-              {lugares.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.nombre}
-                </option>
-              ))}
+              {[...new Map(lugares.map(l => [l.nombre, l])).values()]
+                .filter(l => l.municipio === "LA APARTADA (FRON)")
+                .map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.nombre}
+                  </option>
+                ))}
             </select>
           </div>
           <div className="col-md-4">

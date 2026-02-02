@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useLocation } from "react-router-dom";
@@ -43,41 +42,17 @@ export default function Sidebar({ onAbrirCrearUsuario }) {
             </Link>
           </li>
           {/* Aquí insertas la nueva opción solo visible para admin */}
-          <li className="nav-item mb-2">
-            {usuario?.rol === "admin" && (
+          {/* Opción Aspirantes solo visible para admin */}
+          {usuario?.rol === "admin" && (
+            <li className="nav-item mb-2">
               <Link
-                to="/alcaldia"
-                className={`nav-link ${location.pathname === "/alcaldia" ? "bg-primary text-white fw-bold rounded shadow"
-                  : "text-white"}`}
+                to="/aspirantes"
+                className={`nav-link ${location.pathname === "/aspirantes" ? "bg-primary text-white fw-bold rounded shadow" : "text-white"}`}
               >
-                <i className="bi-building me-2"></i> A la Alcaldía
+                <i className="bi-person-badge me-2"></i> Aspirantes
               </Link>
-            )}
-
-          </li>
-
-          {/* Aquí insertas la nueva opción solo visible para admin */}
-          <li className="nav-item mb-2">
-            {usuario?.rol === "admin" && (
-              <Link
-                to="/concejo"
-                className={`nav-link ${location.pathname === "/concejo" ? "bg-primary text-white fw-bold rounded shadow"
-                  : "text-white"}`}
-              >
-                <i className="bi-people-fill me-2"></i> Al Concejo
-              </Link>
-            )}
-
-          </li>
-          <li className="nav-item mb-2">
-            <Link
-              to="/votantes"
-              className={`nav-link ${location.pathname === "/votantes" ? "bg-primary text-white fw-bold rounded shadow"
-                : "text-white"}`}
-            >
-              <i className="bi-person-check-fill me-2"></i> Votantes
-            </Link>
-          </li>
+            </li>
+          )}
           <li className="nav-item mb-2">
             <Link
               to="/lideres"
@@ -85,6 +60,14 @@ export default function Sidebar({ onAbrirCrearUsuario }) {
                 : "text-white"}`}
             >
               <i className="bi-person-lines-fill me-2"></i> Líderes
+            </Link>
+          </li>
+          <li className="nav-item mb-2">
+            <Link
+              to="/votantes"
+              className={`nav-link ${location.pathname === "/votantes" ? "bg-primary text-white fw-bold rounded shadow" : "text-white"}`}
+            >
+              <i className="bi bi-people-fill me-2"></i> Votantes
             </Link>
           </li>
           <li className="nav-item mb-2">
