@@ -1,0 +1,61 @@
+import { useState } from "react";
+
+export default function CrearUsuarioForm({ onUsuarioCreado }) {
+  const [nombre, setNombre] = useState("");
+  const [correo, setCorreo] = useState("");
+  const [password, setPassword] = useState("");
+  const [rol, setRol] = useState("admin");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/usuarios`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre, correo, password, rol })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Error al crear usuario");
+      onUsuarioCreado && onUsuarioCreado(data);
+      setNombre(""); setCorreo(""); setPassword(""); setRol("admin");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <div>
+        <label>Nombre:</label>
+        <input value={nombre} onChange={e => setNombre(e.target.value)} required />
+      </div>
+      <div>
+        <label>Correo:</label>
+        <input type="email" value={correo} onChange={e => setCorreo(e.target.value)} required />
+      </div>
+      <div>
+        <label>Contraseña:</label>
+        <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+      </div>
+      <div>
+        <label>Rol:</label>
+        <select value={rol} onChange={e => setRol(e.target.value)}>
+          <option value="admin">Admin</option>
+          <option value="user">User</option>
+        </select>
+      </div>
+      {error && (
+        <div className="alert alert-danger mt-2" role="alert">
+          {error}
+        </div>
+      )}
+      <button type="submit" disabled={loading}>{loading ? "Creando..." : "Crear Usuario"}</button>
+    </form>
+  );
+}
