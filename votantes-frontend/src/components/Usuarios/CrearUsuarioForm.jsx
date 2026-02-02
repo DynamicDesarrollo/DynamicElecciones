@@ -19,12 +19,14 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
         body: JSON.stringify({ nombre, correo, password, rol })
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Error al crear usuario");
+      if (!response.ok) {
+        setError(data.error || "Error al crear usuario");
+        return;
+      }
       onUsuarioCreado && onUsuarioCreado(data);
       setNombre(""); setCorreo(""); setPassword(""); setRol("admin");
     } catch (err) {
-      // Mostrar el mensaje exacto del backend si existe
-      setError(err.message);
+      setError("Error de red o inesperado");
     } finally {
       setLoading(false);
     }
