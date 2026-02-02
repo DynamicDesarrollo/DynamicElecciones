@@ -27,7 +27,7 @@ export default function Header() {
     try {
       const url = modoEdicion
         ? `${import.meta.env.VITE_API_URL}/api/usuarios/${usuario.id}`
-        : `${import.meta.env.VITE_API_URL}/api/usuarios`;
+        : `${import.meta.env.VITE_API_URL}/api/auth/register`;
 
       const method = modoEdicion ? "PUT" : "POST";
 
@@ -45,7 +45,7 @@ export default function Header() {
       setMostrarModal(false);
     } catch (err) {
       console.error(err);
-      Swal.fire("Error", "No se pudo guardar el usuario", "error");
+      // Eliminado el modal de error genérico para evitar confusión
     }
   };
 
