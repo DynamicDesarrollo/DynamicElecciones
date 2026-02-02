@@ -76,15 +76,17 @@ export default function Header() {
 
       {/* Modal para crear/editar usuario */}
       {mostrarModal && (
-        <div className="modal fade show d-block" tabIndex="-1" role="dialog">
-          <div className="modal-dialog" role="document">
-            <div className="modal-content p-3">
-              <button
-                type="button"
-                className="btn-close ms-auto"
-                style={{position:'absolute',right:10,top:10,zIndex:2}}
-                onClick={() => setMostrarModal(false)}
-              ></button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 relative animate-fadeIn">
+            <button
+              type="button"
+              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-bold focus:outline-none"
+              onClick={() => setMostrarModal(false)}
+              aria-label="Cerrar"
+            >
+              &times;
+            </button>
+            <div className="p-8">
               <CrearUsuarioForm
                 key={modoEdicion ? (editUser?.id || 'edit') : 'create'}
                 onUsuarioCreado={() => { setMostrarModal(false); }}
