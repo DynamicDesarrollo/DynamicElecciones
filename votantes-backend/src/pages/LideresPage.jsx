@@ -51,6 +51,7 @@ export default function LideresPage() {
     cargarLideres();
   }, [page, filtroNombre, filtroCedula]);
 
+  const [eliminandoId, setEliminandoId] = useState(null);
   const eliminarLider = async (id) => {
     const confirmacion = await Swal.fire({
       title: "¿Estás seguro?",
@@ -62,7 +63,7 @@ export default function LideresPage() {
     });
 
     if (!confirmacion.isConfirmed) return;
-
+    setEliminandoId(id);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${import.meta.env.VITE_API_URL}/lideres/${id}`, {
@@ -74,11 +75,14 @@ export default function LideresPage() {
         toast.success("🗑️ Líder eliminado correctamente");
         cargarLideres();
       } else {
-        toast.error("❌ No se pudo eliminar el líder");
+        const error = await res.json();
+        toast.error("❌ No se pudo eliminar el líder: " + (error?.error || "Error desconocido"));
       }
     } catch (err) {
       toast.error("❌ Error al eliminar líder");
       console.error(err);
+    } finally {
+      setEliminandoId(null);
     }
   };
 
@@ -208,8 +212,13 @@ export default function LideresPage() {
                       className="btn btn-sm btn-danger"
                       title="Eliminar"
                       onClick={() => eliminarLider(l.id)}
+                      disabled={eliminandoId === l.id}
                     >
-                      <i className="bi bi-trash"></i>
+                      {eliminandoId === l.id ? (
+                        <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                      ) : (
+                        <i className="bi bi-trash"></i>
+                      )}
                     </button>
                   </td>
                 </tr>
