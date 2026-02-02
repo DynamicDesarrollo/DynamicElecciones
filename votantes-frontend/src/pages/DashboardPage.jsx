@@ -15,6 +15,7 @@ import {
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas";
+import CrearUsuarioForm from "../components/Usuarios/CrearUsuarioForm";
 
 // Paleta de colores
 const colores = [
@@ -254,6 +255,12 @@ export default function DashboardPage() {
               </BarChart>
             </ResponsiveContainer>
           </div>
+        </div>
+
+        {/* Formulario de creación de usuario */}
+        <div className="col-12 mt-4">
+          <h4 className="text-center mb-4">➕ Crear Usuario</h4>
+          <CrearUsuarioForm onUsuarioCreado={usuario => alert('Usuario creado: ' + usuario.correo)} />
         </div>
       </div>
     </>

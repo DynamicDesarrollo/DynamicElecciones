@@ -34,7 +34,7 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div style={{background:'#007bff',color:'#fff',padding:'10px',borderRadius:'5px',marginBottom:'15px',textAlign:'center',fontWeight:'bold',fontSize:'1.2em'}}>
+      <div style={{background:'#007bff',color:'#fff',padding:'10px',borderRadius:'5px',marginBottom:'15px',textAlign:'center',fontWeight:'bold',fontSize:'1.2em',zIndex:1000,position:'relative',boxShadow:'0 2px 8px #0002',border:'2px solid #0056b3',letterSpacing:'1px',textTransform:'uppercase',lineHeight:'1.2',WebkitUserSelect:'none',userSelect:'none',pointerEvents:'auto',display:'block',width:'100%',boxSizing:'border-box',fontFamily:'inherit',backgroundColor:'#007bff !important',color:'#fff !important'}}>
         Crear Usuario
       </div>
       <div>
