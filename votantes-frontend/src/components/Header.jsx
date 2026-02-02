@@ -27,7 +27,7 @@ export default function Header() {
     try {
       const url = modoEdicion
         ? `${import.meta.env.VITE_API_URL}/api/usuarios/${usuario.id}`
-        : `${import.meta.env.VITE_API_URL}/api/auth/register`;
+        : `${import.meta.env.VITE_API_URL}/api/usuarios`;
 
       const method = modoEdicion ? "PUT" : "POST";
 
