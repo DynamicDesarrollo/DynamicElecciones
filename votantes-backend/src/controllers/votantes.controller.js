@@ -104,8 +104,8 @@ export const createVotante = async (req, res) => {
         `INSERT INTO prospectos_votantes (
           nombre_completo, cedula, telefono, direccion,
           municipio_id, barrio_id, lider_id,
-          zona, mesa_id, lugar_id, sexo
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+          zona, mesa_id, lugar_id, sexo, usuario_id
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
         RETURNING *`,
         [
           nombre_completo,
@@ -118,7 +118,8 @@ export const createVotante = async (req, res) => {
           zona,
           mesa_id,
           lugar_id,
-          sexo
+          sexo,
+          req.usuario.userId
         ]
       );
       return res.status(201).json(result.rows[0]);
