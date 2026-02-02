@@ -23,6 +23,7 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
       onUsuarioCreado && onUsuarioCreado(data);
       setNombre(""); setCorreo(""); setPassword(""); setRol("admin");
     } catch (err) {
+      // Mostrar el mensaje exacto del backend si existe
       setError(err.message);
     } finally {
       setLoading(false);
