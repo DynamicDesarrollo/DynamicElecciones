@@ -29,7 +29,11 @@ export default function Header() {
             className="rounded-full border-2 border-white shadow w-10 h-10 object-cover"
           />
           <span className="hidden sm:block font-semibold drop-shadow">{usuario?.nombre || 'Usuario'}</span>
-          <svg className="ml-1 w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+          <span className="ml-1 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 8L10 13L15 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
         </button>
         {openMenu && (
           <div className="absolute right-0 mt-2 w-56 bg-white text-gray-800 rounded-xl shadow-2xl z-50 py-2 border border-blue-100 animate-fadeIn">
