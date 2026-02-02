@@ -53,6 +53,7 @@ export default function LideresPage() {
 
   const [eliminandoId, setEliminandoId] = useState(null);
   const eliminarLider = async (id) => {
+    console.log('Intentando eliminar líder con id:', id);
     let confirmacion;
     try {
       confirmacion = await Swal.fire({
