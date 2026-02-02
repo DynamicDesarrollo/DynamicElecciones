@@ -257,8 +257,19 @@ export default function LideresPage() {
               <CrearLiderForm
                 onLiderCreado={() => {
                   cargarLideres();
-                  const modal = Modal.getInstance(modalCrearRef.current);
-                  modal.hide();
+                  // Cerrar modal de forma robusta
+                  if (modalCrearRef.current) {
+                    let modalInstance = Modal.getInstance(modalCrearRef.current);
+                    if (!modalInstance) {
+                      modalInstance = new Modal(modalCrearRef.current);
+                    }
+                    modalInstance.hide();
+                  }
+                  // Eliminar backdrop si queda
+                  const backdrop = document.querySelector('.modal-backdrop');
+                  if (backdrop) backdrop.remove();
+                  document.body.classList.remove('modal-open');
+                  document.body.style.paddingRight = '';
                 }}
               />
             </div>
