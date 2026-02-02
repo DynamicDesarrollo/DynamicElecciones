@@ -22,15 +22,20 @@ export const getVotantes = async (req, res) => {
     const condiciones = [];
     const valores = [];
 
+
     if (rol !== "admin") {
       if (aspirante_concejo_id) {
         condiciones.push(`pv.aspirante_concejo_id = $${valores.length + 1}`);
         valores.push(aspirante_concejo_id);
       }
-
       if (aspirante_alcaldia_id) {
         condiciones.push(`pv.aspirante_alcaldia_id = $${valores.length + 1}`);
         valores.push(aspirante_alcaldia_id);
+      }
+      // Si es user y no tiene aspirante, mostrar los votantes que él mismo creó
+      if (!aspirante_concejo_id && !aspirante_alcaldia_id && rol === 'user') {
+        condiciones.push(`pv.usuario_id = $${valores.length + 1}`);
+        valores.push(userId);
       }
     }
 
