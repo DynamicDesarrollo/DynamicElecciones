@@ -13,7 +13,7 @@ import db from '../utils/db.js';
 // ✅ Obtener todos los votantes
 // ✅ Obtener todos los votantes
 export const getVotantes = async (req, res) => {
-  const { userId, rol, aspirante_concejo_id, aspirante_alcaldia_id } = req.usuario;
+  const { id: userId, rol, aspirante_concejo_id, aspirante_alcaldia_id } = req.usuario;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const offset = (page - 1) * limit;
@@ -94,7 +94,7 @@ export const createVotante = async (req, res) => {
   } = req.body;
 
   try {
-    const { userId, aspirante_concejo_id, aspirante_alcaldia_id } = req.usuario;
+    const { id: userId, aspirante_concejo_id, aspirante_alcaldia_id } = req.usuario;
 
 
     // Permitir que el rol 'user' cree votantes aunque no tenga aspirante asociado
@@ -119,7 +119,7 @@ export const createVotante = async (req, res) => {
           mesa_id,
           lugar_id,
           sexo,
-          req.usuario.userId
+          userId
         ]
       );
       return res.status(201).json(result.rows[0]);
