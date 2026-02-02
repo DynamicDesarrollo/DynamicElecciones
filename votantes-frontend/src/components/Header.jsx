@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 import CrearUsuarioForm from "./Usuarios/CrearUsuarioForm";
+import ModalPortal from "./ModalPortal";
 
 export default function Header() {
   const { usuario, logout } = useAuth();
@@ -76,26 +77,28 @@ export default function Header() {
 
       {/* Modal para crear/editar usuario */}
       {mostrarModal && (
-        <div className="fixed inset-0 min-h-screen min-w-full z-[9999] flex items-center justify-center bg-black bg-opacity-70">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative flex flex-col items-center animate-fadeIn">
-            <button
-              type="button"
-              className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-bold focus:outline-none"
-              onClick={() => setMostrarModal(false)}
-              aria-label="Cerrar"
-            >
-              &times;
-            </button>
-            <div className="w-full p-6 sm:p-8 flex flex-col items-center">
-              <CrearUsuarioForm
-                key={modoEdicion ? (editUser?.id || 'edit') : 'create'}
-                onUsuarioCreado={() => { setMostrarModal(false); }}
-                initialValues={modoEdicion && editUser ? editUser : undefined}
-                modoEdicion={modoEdicion}
-              />
+        <ModalPortal>
+          <div className="fixed inset-0 min-h-screen min-w-full z-[9999] flex items-center justify-center bg-black bg-opacity-70">
+            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative flex flex-col items-center animate-fadeIn">
+              <button
+                type="button"
+                className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-bold focus:outline-none"
+                onClick={() => setMostrarModal(false)}
+                aria-label="Cerrar"
+              >
+                &times;
+              </button>
+              <div className="w-full p-6 sm:p-8 flex flex-col items-center">
+                <CrearUsuarioForm
+                  key={modoEdicion ? (editUser?.id || 'edit') : 'create'}
+                  onUsuarioCreado={() => { setMostrarModal(false); }}
+                  initialValues={modoEdicion && editUser ? editUser : undefined}
+                  modoEdicion={modoEdicion}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </header>
   );
