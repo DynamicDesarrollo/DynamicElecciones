@@ -23,7 +23,7 @@ export default function Sidebar() {
       <h4 className="mb-4">🗳️ Menú</h4>
 
       <ul className="nav flex-column mb-auto">
-        {/* Opción para crear usuario solo visible para admin */
+        {/* Opción para crear usuario solo visible para admin */}
         {usuario?.rol === "admin" && (
           <li className="nav-item mb-2">
             <button
