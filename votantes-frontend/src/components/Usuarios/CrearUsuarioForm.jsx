@@ -34,6 +34,9 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
 
   return (
     <form onSubmit={handleSubmit}>
+      <div style={{background:'#007bff',color:'#fff',padding:'10px',borderRadius:'5px',marginBottom:'15px',textAlign:'center',fontWeight:'bold',fontSize:'1.2em'}}>
+        Crear Usuario
+      </div>
       <div>
         <label>Nombre:</label>
         <input value={nombre} onChange={e => setNombre(e.target.value)} required />
