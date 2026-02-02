@@ -53,6 +53,13 @@ export const filtrarVotantes = async (req, res) => {
         valores.push(aspirante_alcaldia_id);
       }
 
+      // Si es user y no tiene aspirante, mostrar los votantes que él mismo creó
+      if (!aspirante_concejo_id && !aspirante_alcaldia_id && rol === 'user') {
+        condiciones.push(`v.usuario_id = $${valores.length + 1}`);
+        valores.push(req.usuario.id);
+      }
+
+      // Si no es user y no tiene aspirante, no tiene permisos
       if (condiciones.length === 0) {
         return res.status(403).json({ error: "No tiene permisos para ver votantes" });
       }
