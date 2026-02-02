@@ -15,7 +15,7 @@ import {
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import html2canvas from "html2canvas";
-import CrearUsuarioForm from "../components/Usuarios/CrearUsuarioForm";
+
 
 // Paleta de colores
 const colores = [
