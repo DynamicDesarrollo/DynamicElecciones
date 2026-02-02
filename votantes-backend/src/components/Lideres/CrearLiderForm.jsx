@@ -16,6 +16,7 @@ export default function CrearLiderForm({ onLiderCreado }) {
 
   const [aspirantes, setAspirantes] = useState([]);
 
+      const [loading, setLoading] = useState(false);
   useEffect(() => {
     const cargarAspirantes = async () => {
       try {
@@ -39,6 +40,7 @@ export default function CrearLiderForm({ onLiderCreado }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+        setLoading(true);
       const token = localStorage.getItem("token");
       const res = await fetch(`${import.meta.env.VITE_API_URL}/lideres`, {
         method: "POST",
@@ -53,12 +55,31 @@ export default function CrearLiderForm({ onLiderCreado }) {
         toast.success("✅ Líder creado exitosamente");
         onLiderCreado();
       } else {
+            // Cerrar modal si existe
+            const modalEl = document.querySelector('#modalCrearLider');
+            if (modalEl) {
+              const modal = window.bootstrap?.Modal?.getInstance(modalEl);
+              modal?.hide();
+            }
         toast.error("❌ Error al crear líder");
       }
+            // Cerrar modal aunque haya error
+            const modalEl = document.querySelector('#modalCrearLider');
+            if (modalEl) {
+              const modal = window.bootstrap?.Modal?.getInstance(modalEl);
+              modal?.hide();
+            }
     } catch (err) {
       toast.error("❌ Error de red al crear líder");
     }
+          // Cerrar modal aunque haya error
+          const modalEl = document.querySelector('#modalCrearLider');
+          if (modalEl) {
+            const modal = window.bootstrap?.Modal?.getInstance(modalEl);
+            modal?.hide();
+          }
   };
+          setLoading(false);
 
   return (
     <form onSubmit={handleSubmit}>
