@@ -91,8 +91,32 @@ export const createVotante = async (req, res) => {
   try {
     const { userId, aspirante_concejo_id, aspirante_alcaldia_id } = req.usuario;
 
-    if (!aspirante_concejo_id && !aspirante_alcaldia_id) {
-      return res.status(400).json({ error: "Falta aspirante asociado al usuario." });
+
+    // Permitir que el rol 'user' cree votantes aunque no tenga aspirante asociado
+    if (!aspirante_concejo_id && !aspirante_alcaldia_id && req.usuario.rol !== 'admin') {
+      // Para usuarios sin aspirante, partido_id será null y los campos de aspirante también
+      const result = await db.query(
+        `INSERT INTO prospectos_votantes (
+          nombre_completo, cedula, telefono, direccion,
+          municipio_id, barrio_id, lider_id,
+          zona, mesa_id, lugar_id, sexo
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+        RETURNING *`,
+        [
+          nombre_completo,
+          cedula,
+          telefono,
+          direccion,
+          municipio_id,
+          barrio_id,
+          lider_id,
+          zona,
+          mesa_id,
+          lugar_id,
+          sexo
+        ]
+      );
+      return res.status(201).json(result.rows[0]);
     }
 
     let partido_id = null;
