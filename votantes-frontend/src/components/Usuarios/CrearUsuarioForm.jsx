@@ -44,7 +44,7 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
       </div>
       <div>
         <label>Contraseña:</label>
-        <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+        <input type="password" value={password} onChange={e => setPassword(e.target.value)} required name="password" />
       </div>
       <div>
         <label>Rol:</label>
