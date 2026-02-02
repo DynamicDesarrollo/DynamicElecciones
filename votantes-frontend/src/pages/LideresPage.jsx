@@ -1,3 +1,5 @@
+
+import { useAuth } from "../context/AuthContext";
 import { useEffect, useState, useRef } from "react";
 import { Modal } from "bootstrap";
 import Swal from "sweetalert2";
@@ -10,7 +12,9 @@ import autoTable from "jspdf-autotable";
 import CrearLiderForm from "../components/Lideres/CrearLiderForm";
 import EditarLiderForm from "../components/Lideres/EditarLiderForm";
 
+
 export default function LideresPage() {
+  const { usuario } = useAuth();
   const [lideres, setLideres] = useState([]);
   const [filtroNombre, setFiltroNombre] = useState("");
   const [filtroCedula, setFiltroCedula] = useState("");
@@ -54,9 +58,11 @@ export default function LideresPage() {
     }
   };
 
+
   useEffect(() => {
+    if (!usuario) return;
     cargarLideres();
-  }, [page, filtroNombre, filtroCedula]);
+  }, [usuario, page, filtroNombre, filtroCedula]);
 
   const eliminarLider = async (id) => {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/lideres/${id}`, {
@@ -155,6 +161,10 @@ export default function LideresPage() {
     });
     doc.save("lideres.pdf");
   };
+
+  if (!usuario) {
+    return <div className="container mt-4 text-danger">❌ Usuario no autenticado</div>;
+  }
 
   return (
     <div className="container mt-4">
