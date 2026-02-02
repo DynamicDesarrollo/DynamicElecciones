@@ -1,14 +1,14 @@
-import db from '../utils/db.js';
+// Control de commit: fix uuid join - Sirjhan Betancourt 2026-02-01
+const db = require('../utils/db.js');
 
-// ✅ Obtener todos los líderes
-export const getLideres = async (req, res) => {
+const getLideres = async (req, res) => {
   try {
     const result = await db.query(`
       SELECT l.*, ac.nombre_completo AS aspirante_concejo,
         m.nombre AS municipio_nombre,
         b.nombre AS barrio_nombre
       FROM lideres l
-      LEFT JOIN aspirantes_concejo ac ON l.aspirante_concejo_id = ac.id
+      LEFT JOIN aspirantes_concejo ac ON l.aspirante_concejo_id::uuid = ac.id
       LEFT JOIN municipios m ON l.municipio = m.id
       LEFT JOIN barrios b ON l.barrio = b.id
       ORDER BY l.nombre_completo
@@ -20,14 +20,14 @@ export const getLideres = async (req, res) => {
   }
 };
 
-// ✅ Crear líder
-export const createLider = async (req, res) => {
+const createLider = async (req, res) => {
     const {
       nombre_completo,
       aspirante_concejo_id,
       cedula,
       direccion,
       municipio,
+      // Commit control: Sirjhan Betancourt 2026-02-01
       telefono,
       barrio,
       fecha_nace
@@ -48,8 +48,7 @@ export const createLider = async (req, res) => {
   };
   
 
-// ✅ Actualizar líder
-export const updateLider = async (req, res) => {
+const updateLider = async (req, res) => {
     const { id } = req.params;
     const {
       nombre_completo,
@@ -84,8 +83,7 @@ export const updateLider = async (req, res) => {
   };
   
 
-// ✅ Eliminar líder
-export const deleteLider = async (req, res) => {
+const deleteLider = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await db.query('DELETE FROM lideres WHERE id = $1', [id]);
@@ -96,4 +94,10 @@ export const deleteLider = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Error al eliminar líder', details: err.message });
   }
+};
+module.exports = {
+  getLideres,
+  createLider,
+  updateLider,
+  deleteLider
 };

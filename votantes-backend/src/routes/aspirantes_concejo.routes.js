@@ -1,16 +1,14 @@
-import express from 'express';
-import {
+
+const express = require('express');
+const {
   getAspirantesConcejo,
   createAspiranteConcejo,
   updateAspiranteConcejo,
   deleteAspiranteConcejo
-} from '../controllers/aspirantes_concejo.controller.js';
-
+} = require('../controllers/aspirantes_concejo.controller');
 const router = express.Router();
-
 router.get('/', getAspirantesConcejo);
 router.post('/', createAspiranteConcejo);
 router.put('/:id', updateAspiranteConcejo);
 router.delete('/:id', deleteAspiranteConcejo);
-
-export default router;
+module.exports = router;

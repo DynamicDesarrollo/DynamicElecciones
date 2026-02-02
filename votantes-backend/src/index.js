@@ -1,31 +1,32 @@
 // 📁 src/index.js
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
-import db from './utils/db.js';
+
+const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
+const db = require('./utils/db.js');
 
 // Importamos las rutas
-import partidosRoutes from './routes/partidos.routes.js';
-import municipiosRoutes from './routes/municipios.routes.js';
-import barriosRoutes from './routes/barrios.routes.js';
-import aspirantesRoutes from './routes/aspirantes.routes.js';
-import lideresRoutes from './routes/lideres.routes.js';
-import votantesRoutes from './routes/votantes.routes.js';
-import aspirantesConcejoRoutes from './routes/aspirantes_concejo.routes.js';
+const partidosRoutes = require('./routes/partidos.routes');
+const municipiosRoutes = require('./routes/municipios.routes');
+const barriosRoutes = require('./routes/barrios.routes');
+const aspirantesRoutes = require('./routes/aspirantes.routes');
+const lideresRoutes = require('./routes/lideres.routes');
+const votantesRoutes = require('./routes/votantes.routes');
+const aspirantesConcejoRoutes = require('./routes/aspirantes_concejo.routes');
 // Importamos las rutas de mesas
-import mesasRoutes from './routes/mesas.router.js';
+const mesasRoutes = require('./routes/mesas.router');
 // Importamos las rutas de lugares
-import lugaresRoutes from './routes/lugares.router.js';
+const lugaresRoutes = require('./routes/lugares.router');
 //Rutas Reportes
-import reportesRoutes from './routes/reportes.routes.js';
-import filtrarVotantesRoutes from './routes/reportes.routes.js';
-import resumenVotantesRoutes from './routes/reportes.routes.js';
+const reportesRoutes = require('./routes/reportes.routes');
+const filtrarVotantesRoutes = require('./routes/reportes.routes');
+const resumenVotantesRoutes = require('./routes/reportes.routes');
 //Rutas Asistencias
-import asistenciaRoutes from './routes/asistencia.routes.js';
-import informesRoutes from "./routes/informes.routes.js";
-//Ruras AUth
+const asistenciaRoutes = require('./routes/asistencia.routes');
+const informesRoutes = require('./routes/informes.routes');
+//Rutas Auth
 console.log('Antes de importar authRoutes');
-import authRoutes from './routes/auth.routes.js'; 
+const authRoutes = require('./routes/auth.routes');
 console.log('Después de importar authRoutes');
 
 

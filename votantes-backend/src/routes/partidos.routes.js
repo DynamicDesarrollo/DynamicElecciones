@@ -1,16 +1,14 @@
-import express from 'express';
-import {
+
+const express = require('express');
+const {
   getPartidos,
   createPartido,
   updatePartido,
-  deletePartido,
-} from '../controllers/partidos.controller.js';
-
+  deletePartido
+} = require('../controllers/partidos.controller');
 const router = express.Router();
-
 router.get('/', getPartidos);
 router.post('/', createPartido);
 router.put('/:id', updatePartido);
 router.delete('/:id', deletePartido);
-
-export default router;
+module.exports = router;

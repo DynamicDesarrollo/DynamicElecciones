@@ -1,16 +1,19 @@
-import express from 'express';
-import {
+
+const express = require('express');
+const {
   getMesas,
   createMesa,
   updateMesa,
   deleteMesa
-} from '../controllers/mesas.controller.js';
+} = require('../controllers/mesas.controller');
+
 
 const router = express.Router();
+
 
 router.get('/', getMesas);
 router.post('/', createMesa);
 router.put('/:id', updateMesa);
 router.delete('/:id', deleteMesa);
 
-export default router;
+module.exports = router;

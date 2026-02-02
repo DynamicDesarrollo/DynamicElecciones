@@ -257,14 +257,13 @@ export const obtenerResumenDashboard = async (req, res) => {
       db.query(barriosQuery, valores),
     ]);
 
-    res.json({
+    const resumen = {
       total_votantes: parseInt(votantesResult.rows[0].count, 10),
       total_lideres: parseInt(lideresResult.rows[0].count, 10),
       total_barrios: parseInt(barriosResult.rows[0].count, 10),
-    });
-
-    console.log("📊 Resumen dashboard:", respuesta);
-    res.json(respuesta);
+    };
+    console.log("📊 Resumen dashboard:", resumen);
+    res.json(resumen);
   } catch (error) {
     console.error("Error al obtener datos del dashboard:", error);
     res.status(500).json({ error: "Error interno del servidor", detalle: error.message });

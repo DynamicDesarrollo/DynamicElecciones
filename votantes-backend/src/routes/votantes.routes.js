@@ -1,33 +1,23 @@
-import express from 'express';
-import {
+
+const express = require('express');
+const {
   getVotantes,
   createVotante,
   updateVotante,
   deleteVotante,
   getTotalVotantes
-} from '../controllers/votantes.controller.js';
-
-import { filtrarVotantes } from '../controllers/reportes.controller.js';
-
-import { verificarToken } from '../middlewares/auth.js'; // 👈 Importa el middleware
+} = require('../controllers/votantes.controller');
+const { filtrarVotantes } = require('../controllers/reportes.controller');
+const { verificarToken } = require('../middlewares/auth');
 
 const router = express.Router();
-
-// 🔒 Aplicar middleware a todas las rutas:
 router.use(verificarToken);
-
-// ✅ Rutas protegidas
 router.get('/', getVotantes);
 router.post('/', createVotante);
 router.put('/:id', updateVotante);
 router.delete('/:id', deleteVotante);
-
-router.get('/votantes', verificarToken, getVotantes); // 👈 Aquí debe estar el middleware
-router.get('/filtrar', filtrarVotantes); // ✅ Agrega esta línea
-
-// Nueva ruta para el total de votantes
+router.get('/votantes', verificarToken, getVotantes);
+router.get('/filtrar', filtrarVotantes);
 router.get('/total', getTotalVotantes);
-
-
-export default router;
+module.exports = router;
 

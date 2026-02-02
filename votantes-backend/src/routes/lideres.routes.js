@@ -1,16 +1,19 @@
-import express from 'express';
-import {
+
+const express = require('express');
+const {
   getLideres,
   createLider,
   updateLider,
   deleteLider
-} from '../controllers/lideres.controller.js';
+} = require('../controllers/lideres.controller');
+
 
 const router = express.Router();
+
 
 router.get('/', getLideres);
 router.post('/', createLider);
 router.put('/:id', updateLider);
 router.delete('/:id', deleteLider);
 
-export default router;
+module.exports = router;

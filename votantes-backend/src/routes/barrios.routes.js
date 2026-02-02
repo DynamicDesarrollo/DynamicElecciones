@@ -1,16 +1,14 @@
-import express from 'express';
-import {
+
+const express = require('express');
+const {
   getBarrios,
   createBarrio,
   updateBarrio,
   deleteBarrio
-} from '../controllers/barrios.controller.js';
-
+} = require('../controllers/barrios.controller');
 const router = express.Router();
-
 router.get('/', getBarrios);
 router.post('/', createBarrio);
 router.put('/:id', updateBarrio);
 router.delete('/:id', deleteBarrio);
-
-export default router;
+module.exports = router;

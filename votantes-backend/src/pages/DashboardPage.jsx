@@ -48,7 +48,7 @@ export default function DashboardPage() {
 
     const fetchResumen = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/reportes/dashboard`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/reportes/dashboard`, {
           headers: { Authorization: `Bearer ${usuario.token}` },
         });
 
@@ -62,7 +62,7 @@ export default function DashboardPage() {
 
     const fetchGrafico = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/reportes/votantesporpartido`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/reportes/votantesporpartido`, {
           headers: { Authorization: `Bearer ${usuario.token}` },
         });
 
