@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-const password = '1234';
+const password = 'admin123';
 
 bcrypt.hash(password, 10, (err, hash) => {
   if (err) {

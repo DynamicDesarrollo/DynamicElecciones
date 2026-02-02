@@ -13,6 +13,7 @@ const aspirantesRoutes = require('./routes/aspirantes.routes');
 const lideresRoutes = require('./routes/lideres.routes');
 const votantesRoutes = require('./routes/votantes.routes');
 const aspirantesConcejoRoutes = require('./routes/aspirantes_concejo.routes');
+const usuariosRoutes = require('./routes/usuarios.routes');
 // Importamos las rutas de mesas
 const mesasRoutes = require('./routes/mesas.router');
 // Importamos las rutas de lugares
@@ -44,6 +45,7 @@ app.use('/api/alcaldia', aspirantesRoutes);
 app.use('/api/lideres', lideresRoutes);
 app.use('/api/votantes', votantesRoutes);
 app.use('/api/concejo', aspirantesConcejoRoutes);
+app.use('/api/usuarios', usuariosRoutes);
 // Rutas de mesas
 app.use('/api/mesas', mesasRoutes);
 // Rutas de lugares
