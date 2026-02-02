@@ -16,7 +16,7 @@ export default function Header() {
 
   const [openMenu, setOpenMenu] = useState(false);
   return (
-    <header style={{ background: '#007bff' }} className="text-white flex justify-between items-center px-3 py-2 relative h-16 min-h-[4rem]">
+    <header style={{ background: '#007bff', height: '64px', minHeight: '64px', overflow: 'visible' }} className="text-white flex justify-between items-center px-3 py-2 relative">
       <h5 className="font-bold text-lg">🗳️ Sistema de Votantes</h5>
       <div className="relative flex items-center">
         <button
