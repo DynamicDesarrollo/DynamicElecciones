@@ -8,7 +8,7 @@ const getLideres = async (req, res) => {
         m.nombre AS municipio_nombre,
         b.nombre AS barrio_nombre
       FROM lideres l
-      LEFT JOIN aspirantes_concejo ac ON l.aspirante_concejo_id::uuid = ac.id
+      LEFT JOIN aspirantes_concejo ac ON l.aspirante_concejo_id::text = ac.id::text
       LEFT JOIN municipios m ON l.municipio = m.id
       LEFT JOIN barrios b ON l.barrio = b.id
       ORDER BY l.nombre_completo
