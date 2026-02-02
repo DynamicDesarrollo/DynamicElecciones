@@ -54,8 +54,8 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
         </select>
       </div>
       {error && (
-        <div className="alert alert-danger mt-2" role="alert">
-          {error}
+        <div className="alert alert-danger mt-2" role="alert" style={{border: '2px solid red', fontWeight: 'bold', fontSize: '1.2em', background: '#fff0f0'}}>
+          [DEBUG] {error}
         </div>
       )}
       <button type="submit" disabled={loading}>{loading ? "Creando..." : "Crear Usuario"}</button>
