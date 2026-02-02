@@ -35,8 +35,8 @@ export default function MainLayout() {
       {/* Modal para crear usuario, fuera del layout principal */}
       {mostrarModal && (
         <ModalPortal>
-          <div style={{position:'fixed', inset:0, zIndex: 99999, background:'rgba(0,0,0,0.7)'}} className="flex items-center justify-center">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-0 relative flex flex-col items-center animate-fadeIn mx-auto" style={{margin:'auto'}}>
+          <div style={{position:'fixed', inset:0, zIndex: 99999, background:'rgba(0,0,0,0.7)'}} className="flex flex-col justify-center items-center min-h-screen min-w-full">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-auto p-0 relative flex flex-col items-center animate-fadeIn mx-auto" style={{margin:'auto'}}>
               <button
                 type="button"
                 className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-bold focus:outline-none"
