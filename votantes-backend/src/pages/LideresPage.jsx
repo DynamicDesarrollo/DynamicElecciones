@@ -53,16 +53,21 @@ export default function LideresPage() {
 
   const [eliminandoId, setEliminandoId] = useState(null);
   const eliminarLider = async (id) => {
-    const confirmacion = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Esto eliminará al líder permanentemente.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-    });
-
-    if (!confirmacion.isConfirmed) return;
+    let confirmacion;
+    try {
+      confirmacion = await Swal.fire({
+        title: "¿Estás seguro?",
+        text: "Esto eliminará al líder permanentemente.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Sí, eliminar",
+        cancelButtonText: "Cancelar",
+      });
+    } catch (e) {
+      toast.error("Error al mostrar confirmación");
+      return;
+    }
+    if (!confirmacion || !confirmacion.isConfirmed) return;
     setEliminandoId(id);
     try {
       const token = localStorage.getItem("token");
@@ -266,19 +271,20 @@ export default function LideresPage() {
               <CrearLiderForm
                 onLiderCreado={() => {
                   cargarLideres();
-                  // Cerrar modal de forma robusta
-                  if (modalCrearRef.current) {
-                    let modalInstance = Modal.getInstance(modalCrearRef.current);
-                    if (!modalInstance) {
-                      modalInstance = new Modal(modalCrearRef.current);
+                  setTimeout(() => {
+                    if (modalCrearRef.current) {
+                      let modalInstance = Modal.getInstance(modalCrearRef.current);
+                      if (!modalInstance) {
+                        modalInstance = new Modal(modalCrearRef.current);
+                      }
+                      modalInstance.hide();
                     }
-                    modalInstance.hide();
-                  }
-                  // Eliminar backdrop si queda
-                  const backdrop = document.querySelector('.modal-backdrop');
-                  if (backdrop) backdrop.remove();
-                  document.body.classList.remove('modal-open');
-                  document.body.style.paddingRight = '';
+                    // Eliminar backdrop si queda
+                    const backdrop = document.querySelector('.modal-backdrop');
+                    if (backdrop) backdrop.remove();
+                    document.body.classList.remove('modal-open');
+                    document.body.style.paddingRight = '';
+                  }, 200);
                 }}
               />
             </div>
