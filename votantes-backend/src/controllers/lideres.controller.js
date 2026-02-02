@@ -84,8 +84,9 @@ const updateLider = async (req, res) => {
   
 
 const deleteLider = async (req, res) => {
-  const { id } = req.params;
-  console.log('ID recibido para eliminar líder:', id);
+  let { id } = req.params;
+  id = (id || '').trim();
+  console.log('ID recibido para eliminar líder:', id, '| typeof:', typeof id, '| length:', id.length);
   try {
     const result = await db.query('DELETE FROM lideres WHERE id::text = $1', [id]);
     if (result.rowCount === 0) {
