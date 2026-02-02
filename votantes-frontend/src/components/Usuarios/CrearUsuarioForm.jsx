@@ -33,35 +33,37 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div style={{background:'#007bff',color:'#fff',padding:'10px',borderRadius:'5px',marginBottom:'15px',textAlign:'center',fontWeight:'bold',fontSize:'1.2em',zIndex:1000,position:'relative',boxShadow:'0 2px 8px #0002',border:'2px solid #0056b3',letterSpacing:'1px',textTransform:'uppercase',lineHeight:'1.2',WebkitUserSelect:'none',userSelect:'none',pointerEvents:'auto',display:'block',width:'100%',boxSizing:'border-box',fontFamily:'inherit',backgroundColor:'#007bff !important',color:'#fff !important'}}>
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-auto space-y-4">
+      <div className="bg-blue-600 text-white rounded-t-lg py-3 px-4 text-center font-bold text-lg tracking-wide uppercase mb-2">
         Crear Usuario
       </div>
       <div>
-        <label>Nombre:</label>
-        <input value={nombre} onChange={e => setNombre(e.target.value)} required />
+        <label className="block text-gray-700 font-semibold mb-1">Nombre:</label>
+        <input value={nombre} onChange={e => setNombre(e.target.value)} required className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
       <div>
-        <label>Correo:</label>
-        <input type="email" value={correo} onChange={e => setCorreo(e.target.value)} required />
+        <label className="block text-gray-700 font-semibold mb-1">Correo:</label>
+        <input type="email" value={correo} onChange={e => setCorreo(e.target.value)} required className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
       <div>
-        <label>Contraseña:</label>
-        <input type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+        <label className="block text-gray-700 font-semibold mb-1">Contraseña:</label>
+        <input type="password" value={password} onChange={e => setPassword(e.target.value)} required className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" />
       </div>
       <div>
-        <label>Rol:</label>
-        <select value={rol} onChange={e => setRol(e.target.value)}>
+        <label className="block text-gray-700 font-semibold mb-1">Rol:</label>
+        <select value={rol} onChange={e => setRol(e.target.value)} className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="admin">Admin</option>
           <option value="user">User</option>
         </select>
       </div>
       {error && (
-        <div className="alert alert-danger mt-2" role="alert" style={{border: '2px solid red', fontWeight: 'bold', fontSize: '1.2em', background: '#fff0f0'}}>
-          [DEBUG] {error}
+        <div className="border-2 border-red-400 bg-red-100 text-red-700 font-bold text-center rounded p-2">
+          {error}
         </div>
       )}
-      <button type="submit" disabled={loading}>{loading ? "Creando..." : "Crear Usuario"}</button>
+      <button type="submit" disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200 disabled:opacity-60">
+        {loading ? "Creando..." : "Crear Usuario"}
+      </button>
     </form>
   );
 }
