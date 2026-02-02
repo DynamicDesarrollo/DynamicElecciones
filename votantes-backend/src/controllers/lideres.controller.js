@@ -87,7 +87,7 @@ const deleteLider = async (req, res) => {
   const { id } = req.params;
   console.log('ID recibido para eliminar líder:', id);
   try {
-    const result = await db.query('DELETE FROM lideres WHERE id = $1', [id]);
+    const result = await db.query('DELETE FROM lideres WHERE id::text = $1', [id]);
     if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Líder no encontrado' });
     }
