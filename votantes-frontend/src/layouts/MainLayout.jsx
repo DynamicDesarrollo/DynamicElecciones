@@ -36,7 +36,7 @@ export default function MainLayout() {
       {mostrarModal && (
         <ModalPortal>
           <div style={{position:'fixed', inset:0, zIndex: 99999, background:'rgba(0,0,0,0.7)'}} className="flex items-center justify-center">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-0 relative flex flex-col items-center animate-fadeIn">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-100 p-0 relative flex flex-col items-center animate-fadeIn" style={{margin:'auto'}}>
               <button
                 type="button"
                 className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-2xl font-bold focus:outline-none"
@@ -45,7 +45,7 @@ export default function MainLayout() {
               >
                 &times;
               </button>
-              <div className="w-full p-6 sm:p-8 flex flex-col items-center">
+              <div className="w-100 p-6 sm:p-8 flex flex-col items-center">
                 <CrearUsuarioForm
                   onUsuarioCreado={() => { setMostrarModal(false); }}
                 />
