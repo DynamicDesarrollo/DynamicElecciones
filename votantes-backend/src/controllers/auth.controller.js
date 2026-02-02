@@ -104,6 +104,10 @@ export const login = async (req, res) => {
 export const register = async (req, res) => {
   const { nombre, correo, password, rol, aspirante_concejo_id, aspirante_alcaldia_id } = req.body;
 
+  if (!nombre || !correo || !password) {
+    return res.status(400).json({ error: 'Faltan campos obligatorios (nombre, correo o password)' });
+  }
+
   try {
     const existe = await db.query(`SELECT * FROM usuarios WHERE correo = $1`, [correo]);
     if (existe.rows.length > 0) {
