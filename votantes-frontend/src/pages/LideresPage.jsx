@@ -195,10 +195,20 @@ export default function LideresPage() {
           />
         </div>
         <div className="col-md-4 d-flex justify-content-end gap-2 mb-2">
-          <button className="btn btn-outline-success btn-sm" onClick={exportarExcel}>
+          <button
+            className="btn btn-outline-success btn-sm"
+            onClick={exportarExcel}
+            disabled={usuario?.rol === 'user'}
+            title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
+          >
             📄 Excel
           </button>
-          <button className="btn btn-outline-danger btn-sm" onClick={exportarPDF}>
+          <button
+            className="btn btn-outline-danger btn-sm"
+            onClick={exportarPDF}
+            disabled={usuario?.rol === 'user'}
+            title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
+          >
             🧾 PDF
           </button>
         </div>

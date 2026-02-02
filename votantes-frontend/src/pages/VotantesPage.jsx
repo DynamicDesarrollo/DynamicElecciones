@@ -200,9 +200,25 @@ export default function VotantesPage() {
     <>
       <h2 className="mb-4">📋 Lista de Votantes</h2>
       <div className="row mb-3"></div>
-      <div className="mb-3 d-flex justify-content-end">
+      <div className="mb-3 d-flex justify-content-end gap-2">
         <button className="btn btn-success" onClick={abrirModalCrear}>
           <i className="bi bi-person-plus me-2"></i> Nuevo Prospecto Votante
+        </button>
+        <button
+          className="btn btn-outline-success btn-sm"
+          onClick={exportarExcel}
+          disabled={usuario?.rol === 'user'}
+          title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
+        >
+          📄 Excel
+        </button>
+        <button
+          className="btn btn-outline-danger btn-sm"
+          onClick={exportarPDF}
+          disabled={usuario?.rol === 'user'}
+          title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
+        >
+          🧾 PDF
         </button>
       </div>
       {loading ? (

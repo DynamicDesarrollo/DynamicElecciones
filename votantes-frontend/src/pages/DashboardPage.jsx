@@ -44,9 +44,16 @@ export default function DashboardPage() {
 
   const chartRef = useRef(null);
 
+
   useEffect(() => {
     if (!usuario?.token) return;
 
+    // Si el rol es 'user', mostrar todo en cero
+    if (usuario?.rol === 'user') {
+      setResumen({ total_votantes: 0, total_lideres: 0, total_barrios: 0 });
+      setDatosGrafico([]);
+      return;
+    }
 
     const fetchResumen = async () => {
       try {
@@ -185,7 +192,12 @@ export default function DashboardPage() {
           <h2>📊 Resumen del Dashboard</h2>
         </div>
         <div>
-          <button className="btn btn-outline-primary" onClick={exportarResumenPDF}>
+          <button
+            className="btn btn-outline-primary"
+            onClick={exportarResumenPDF}
+            disabled={usuario?.rol === 'user'}
+            title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
+          >
             🖨️ Exportar resumen a PDF
           </button>
         </div>
