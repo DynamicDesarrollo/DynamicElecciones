@@ -74,6 +74,9 @@ export default function CrearLiderForm({ onLiderCreado }) {
     }
   };
 
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="row g-3">
         <div className="col-md-6">
           <label className="form-label">Cédula</label>
           <input
