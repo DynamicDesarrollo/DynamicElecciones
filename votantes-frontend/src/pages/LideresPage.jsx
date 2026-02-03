@@ -337,4 +337,4 @@ export default function LideresPage() {
       </div>
     </div>
   );
-}
+    </div>
