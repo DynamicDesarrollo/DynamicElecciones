@@ -65,7 +65,8 @@ export default function LideresPage() {
   }, [usuario, page, filtroNombre, filtroCedula]);
 
   const eliminarLider = async (id) => {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/lideres/${id}`, {
+    console.log('Intentando eliminar líder con id:', id);
+    const confirmacion = await Swal.fire({
       title: "¿Estás seguro?",
       text: "Esto eliminará al líder permanentemente.",
       icon: "warning",
@@ -78,7 +79,7 @@ export default function LideresPage() {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/lideres/${id}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/lideres/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -87,37 +88,12 @@ export default function LideresPage() {
         toast.success("🗑️ Líder eliminado correctamente");
         cargarLideres();
       } else {
-  // Add array validation before .map usage (example for rendering lideres)
-  const renderLideres = () => {
-    return Array.isArray(lideres) ? lideres.map((l) => (
-      <tr key={l.id}>
-        <td>{l.nombre_completo}</td>
-        <td>{l.cedula || "—"}</td>
-        <td>{l.municipio_nombre || "—"}</td>
-        <td>{l.telefono || "—"}</td>
-        <td>{l.barrio_nombre || "—"}</td>
-        <td className="text-center">
-          <button
-            className="btn btn-sm btn-warning me-2"
-            title="Editar"
-            onClick={() => {
-              setLiderAEditar(l);
-              const modal = new Modal(modalEditarRef.current);
-              modal.show();
-            }}
-          >
-            <i className="bi bi-pencil-square"></i>
-          </button>
-          <button
-            className="btn btn-sm btn-danger"
-            title="Eliminar"
-            onClick={() => eliminarLider(l.id)}
-          >
-            <i className="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    )) : null;
+        toast.error("❌ No se pudo eliminar el líder");
+      }
+    } catch (err) {
+      toast.error("❌ Error al eliminar líder");
+      console.error(err);
+    }
   };
         toast.error("❌ No se pudo eliminar el líder");
       }
