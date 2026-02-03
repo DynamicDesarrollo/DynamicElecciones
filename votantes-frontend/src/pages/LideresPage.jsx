@@ -106,7 +106,6 @@ export default function LideresPage() {
       Swal.fire('⚠️ Error', 'Ocurrió un error inesperado.', 'error');
     }
   };
-  };
 
   const exportarExcel = () => {
     const datos = lideres.map((l) => ({
@@ -308,6 +307,7 @@ export default function LideresPage() {
 
       {/* Modal editar */}
       <div
+        className="modal fade"
         id="modalEditarLider"
         tabIndex="-1"
         aria-hidden="true"
@@ -336,4 +336,4 @@ export default function LideresPage() {
       </div>
     </div>
   );
-    </div>
+}
