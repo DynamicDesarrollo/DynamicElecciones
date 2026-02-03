@@ -1,3 +1,4 @@
+// Forzar redeploy Vercel - 2026-02-02
 // Cambio menor para forzar redeploy en Vercel
 
 import { useAuth } from "../context/AuthContext";
