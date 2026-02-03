@@ -109,22 +109,23 @@ const updateLider = async (req, res) => {
   
 
 const deleteLider = async (req, res) => {
-        console.log('typeof id:', typeof id, '| length:', id.length, '| id:', id);
-      console.log('ID recibido (bytes):', Buffer.from(id).toString('hex'));
-    // Log de conexión a la base de datos
-    console.log('DB HOST:', process.env.PGHOST, 'DB NAME:', process.env.PGDATABASE, 'DB USER:', process.env.PGUSER);
   let { id } = req.params;
   id = (id || '').trim();
+  console.log('--- ELIMINAR LÍDER ---');
   console.log('ID recibido para eliminar líder:', id, '| typeof:', typeof id, '| length:', id.length);
   try {
-    const result = await db.query('DELETE FROM lideres WHERE id = $1::uuid', [id]);
+    // Prueba de consulta sin ::uuid para aceptar cualquier string
+    const result = await db.query('DELETE FROM lideres WHERE id = $1', [id]);
     console.log('Intento eliminar líder con id:', id, '| rowCount:', result.rowCount);
     if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'Líder no encontrado' });
+      console.log('No se encontró líder con ese id.');
+      return res.status(404).json({ error: 'Líder no encontrado', idRecibido: id });
     }
-    res.json({ message: 'Líder eliminado correctamente' });
+    console.log('Líder eliminado correctamente.');
+    res.json({ message: 'Líder eliminado correctamente', idEliminado: id });
   } catch (err) {
-    res.status(500).json({ error: 'Error al eliminar líder', details: err.message });
+    console.error('Error al eliminar líder:', err);
+    res.status(500).json({ error: 'Error al eliminar líder', details: err.message, idRecibido: id });
   }
 };
 module.exports = {
