@@ -49,7 +49,15 @@ export default function UsuariosPage() {
     <div className="container py-4">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 className="mb-0">Usuarios</h2>
-        <button className="btn btn-success" onClick={() => setMostrarModal(true)}>
+        <button className="btn btn-success" onClick={() => {
+          setMostrarModal(true);
+          setTimeout(() => {
+            if (modalRef.current) {
+              const modal = new Modal(modalRef.current);
+              modal.show();
+            }
+          }, 100);
+        }}>
           <i className="bi bi-person-plus me-2"></i> Crear Usuario
         </button>
       </div>
@@ -64,7 +72,15 @@ export default function UsuariosPage() {
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Crear Usuario</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" onClick={() => setMostrarModal(false)} />
+              <button type="button" className="btn-close" data-bs-dismiss="modal" onClick={() => {
+                setMostrarModal(false);
+                setTimeout(() => {
+                  if (modalRef.current) {
+                    const modal = Modal.getInstance(modalRef.current);
+                    if (modal) modal.hide();
+                  }
+                }, 100);
+              }} />
             </div>
             <div className="modal-body">
               <CrearUsuarioForm
@@ -75,16 +91,20 @@ export default function UsuariosPage() {
                   setError("");
                   setMensaje("");
                   setTimeout(() => {
-                    document.body.classList.remove('modal-open');
-                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                  }, 300);
+                    if (modalRef.current) {
+                      const modal = Modal.getInstance(modalRef.current);
+                      if (modal) modal.hide();
+                    }
+                  }, 100);
                 }}
                 onCancel={() => {
                   setMostrarModal(false);
                   setTimeout(() => {
-                    document.body.classList.remove('modal-open');
-                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                  }, 300);
+                    if (modalRef.current) {
+                      const modal = Modal.getInstance(modalRef.current);
+                      if (modal) modal.hide();
+                    }
+                  }, 100);
                 }}
               />
             </div>
