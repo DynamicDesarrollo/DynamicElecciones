@@ -1,3 +1,4 @@
+// Cambio menor para forzar redeploy en Vercel
 
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState, useRef } from "react";
