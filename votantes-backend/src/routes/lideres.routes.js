@@ -2,6 +2,7 @@
 const express = require('express');
 const {
   getLideres,
+  getLiderById,
   createLider,
   updateLider,
   deleteLider
