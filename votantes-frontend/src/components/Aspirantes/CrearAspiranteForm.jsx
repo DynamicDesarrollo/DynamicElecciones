@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
-export default function CrearAspiranteForm({ onAspiranteCreado }) {
+export default function CrearAspiranteForm({ onAspiranteCreado, onCancel }) {
   const [formulario, setFormulario] = useState({
     nombre_completo: "",
     cedula: "",
@@ -225,8 +225,11 @@ export default function CrearAspiranteForm({ onAspiranteCreado }) {
           </div>
         </div>
 
-        <button className="btn btn-primary" type="submit" disabled={loading}>
+        <button className="btn btn-primary me-2" type="submit" disabled={loading}>
           {loading ? "Guardando..." : "Guardar Aspirante"}
+        </button>
+        <button className="btn btn-secondary" type="button" onClick={onCancel}>
+          Cancelar
         </button>
       </form>
     </div>

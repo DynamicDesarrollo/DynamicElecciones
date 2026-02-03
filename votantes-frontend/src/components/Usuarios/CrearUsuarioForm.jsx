@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function CrearUsuarioForm({ onUsuarioCreado }) {
+export default function CrearUsuarioForm({ onUsuarioCreado, onCancel }) {
   const [nombre, setNombre] = useState("");
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
@@ -103,6 +103,13 @@ export default function CrearUsuarioForm({ onUsuarioCreado }) {
         className="btn btn-primary w-100 fw-bold"
       >
         {loading ? "Creando..." : "Crear Usuario"}
+      </button>
+      <button
+        type="button"
+        className="btn btn-secondary w-100 fw-bold mt-2"
+        onClick={onCancel}
+      >
+        Cancelar
       </button>
     </form>
   );

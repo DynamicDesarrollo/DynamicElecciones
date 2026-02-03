@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ModalPortal from "../components/ModalPortal";
+import CrearAspiranteForm from "../components/Aspirantes/CrearAspiranteForm";
 
 export default function AspirantesPage() {
     const [mostrarModal, setMostrarModal] = useState(false);
@@ -76,49 +77,13 @@ export default function AspirantesPage() {
           setError("");
           setMensaje("");
         }}>
-          <h2 className="mb-4">Registrar Aspirante</h2>
-          <form className="card p-4 mx-auto border-0 shadow-none" style={{maxWidth: 500}} onSubmit={e => {handleSubmit(e); if (!error) setMostrarModal(false);}}>
-            <div className="mb-3">
-              <label className="form-label">Nombre</label>
-              <input className="form-control" name="nombre" value={form.nombre} onChange={handleChange} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Correo</label>
-              <input className="form-control" name="correo" value={form.correo} onChange={handleChange} type="email" required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Teléfono</label>
-              <input className="form-control" name="telefono" value={form.telefono} onChange={handleChange} />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Tipo de Aspirante</label>
-              <select className="form-select" name="tipo_aspirante" value={form.tipo_aspirante} onChange={handleChange} required>
-                <option value="">Seleccione...</option>
-                <option value="senado">Senado</option>
-                <option value="camara">Cámara</option>
-                <option value="alcaldia">Alcaldía</option>
-                <option value="concejo">Concejo</option>
-                <option value="gobernacion">Gobernación</option>
-              </select>
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Partido</label>
-              <select className="form-select" name="partido" value={form.partido} onChange={handleChange} required>
-                <option value="">Seleccione...</option>
-                <option value="Partido de la U">Partido de la U</option>
-                <option value="Colombia Renaciente">Colombia Renaciente</option>
-              </select>
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Municipio</label>
-              <input className="form-control" name="municipio" value={form.municipio} onChange={handleChange} />
-            </div>
-            {error && <div className="alert alert-danger">{error}</div>}
-            {mensaje && <div className="alert alert-success">{mensaje}</div>}
-            <button className="btn btn-primary w-100" type="submit" disabled={loading}>
-              {loading ? "Guardando..." : "Registrar Aspirante"}
-            </button>
-          </form>
+          <CrearAspiranteForm
+            onAspiranteCreado={() => {
+              setMostrarModal(false);
+              setRecargar(r => !r);
+            }}
+            onCancel={() => setMostrarModal(false)}
+          />
         </ModalPortal>
       )}
       <hr className="my-5" />

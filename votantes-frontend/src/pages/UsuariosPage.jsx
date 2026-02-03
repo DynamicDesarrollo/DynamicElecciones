@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import ModalPortal from "../components/ModalPortal";
+import CrearUsuarioForm from "../components/Usuarios/CrearUsuarioForm";
 
 export default function UsuariosPage() {
   const [usuarios, setUsuarios] = useState([]);
@@ -57,33 +58,13 @@ export default function UsuariosPage() {
           setError("");
           setMensaje("");
         }}>
-          <h2 className="mb-4">Registrar Usuario</h2>
-          <form className="card p-4 mx-auto border-0 shadow-none" style={{maxWidth: 500}} onSubmit={handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label">Nombre</label>
-              <input className="form-control" name="nombre" value={form.nombre} onChange={handleChange} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Correo</label>
-              <input className="form-control" name="correo" value={form.correo} onChange={handleChange} type="email" required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Contraseña</label>
-              <input className="form-control" name="password" value={form.password} onChange={handleChange} type="password" required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Rol</label>
-              <select className="form-select" name="rol" value={form.rol} onChange={handleChange} required>
-                <option value="user">Usuario</option>
-                <option value="admin">Administrador</option>
-              </select>
-            </div>
-            {error && <div className="alert alert-danger">{error}</div>}
-            {mensaje && <div className="alert alert-success">{mensaje}</div>}
-            <button className="btn btn-primary w-100" type="submit" disabled={loading}>
-              {loading ? "Guardando..." : "Registrar Usuario"}
-            </button>
-          </form>
+          <CrearUsuarioForm
+            onUsuarioCreado={() => {
+              setMostrarModal(false);
+              setRecargar(r => !r);
+            }}
+            onCancel={() => setMostrarModal(false)}
+          />
         </ModalPortal>
       )}
       <hr className="my-5" />
