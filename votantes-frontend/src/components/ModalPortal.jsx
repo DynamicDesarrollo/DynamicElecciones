@@ -2,6 +2,8 @@ import { createPortal } from "react-dom";
 
 export default function ModalPortal({ children, onClose }) {
   if (typeof window === "undefined") return null;
+  // Si no hay children, no renderizar nada
+  if (!children) return null;
   const handleClose = (e) => {
     if (onClose) {
       onClose(e);
