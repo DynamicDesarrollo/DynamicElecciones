@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useRef } from "react";
 import { Modal } from "bootstrap";
 import CrearUsuarioForm from "../components/Usuarios/CrearUsuarioForm";
-import CrearUsuarioForm from "../components/Usuarios/CrearUsuarioForm";
 
 export default function UsuariosPage() {
   const [usuarios, setUsuarios] = useState([]);
