@@ -308,7 +308,6 @@ export default function LideresPage() {
 
       {/* Modal editar */}
       <div
-        className="modal fade"
         id="modalEditarLider"
         tabIndex="-1"
         aria-hidden="true"
