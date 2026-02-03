@@ -29,9 +29,7 @@ export default function LideresPage() {
   const lideresPorPagina = 10;
 
   const [liderAEditar, setLiderAEditar] = useState(null);
-
-  const modalCrearRef = useRef();
-  const modalEditarRef = useRef();
+  const modalRef = useRef();
 
   const cargarLideres = async () => {
     try {
@@ -152,8 +150,11 @@ export default function LideresPage() {
         <h3>👥 Líderes</h3>
         <button
           className="btn btn-primary"
-          data-bs-toggle="modal"
-          data-bs-target="#modalCrearLider"
+          onClick={() => {
+            setLiderAEditar(null);
+            const modal = new Modal(modalRef.current);
+            modal.show();
+          }}
         >
           <i className="bi bi-plus-circle me-2"></i>Nuevo Líder
         </button>
@@ -237,7 +238,7 @@ export default function LideresPage() {
                       title="Editar"
                       onClick={() => {
                         setLiderAEditar(l);
-                        const modal = new Modal(modalEditarRef.current);
+                        const modal = new Modal(modalRef.current);
                         modal.show();
                       }}
                     >
@@ -278,61 +279,41 @@ export default function LideresPage() {
         </button>
       </div>
 
-      {/* Modal crear */}
+      {/* Modal único para crear/editar líder */}
       <div
         className="modal fade"
-        id="modalCrearLider"
         tabIndex="-1"
-        aria-hidden="true"
-        ref={modalCrearRef}
+        ref={modalRef}
+        id="modalLider"
       >
-        <div className="modal-dialog modal-lg modal-dialog-scrollable">
+        <div className="modal-dialog modal-lg modal-dialog-centered">
           <div className="modal-content">
             <div className="modal-header">
-              <h5 className="modal-title">Nuevo Líder</h5>
+              <h5 className="modal-title">
+                {liderAEditar ? "Editar Líder" : "Nuevo Líder"}
+              </h5>
               <button type="button" className="btn-close" data-bs-dismiss="modal" />
             </div>
             <div className="modal-body">
-              <CrearLiderForm
-                onLiderCreado={() => {
-                  cargarLideres();
-                  setLiderAEditar(null); // Limpiar estado de edición
-                  const modal = Modal.getInstance(modalCrearRef.current);
-                  setTimeout(() => {
-                    modal.hide();
-                    toast.success("✅ Líder creado exitosamente");
-                    // Forzar foco al botón "Nuevo Líder" para evitar warning de aria-hidden
-                    document.querySelector('[data-bs-target="#modalCrearLider"]')?.focus();
-                  }, 150); // Pequeño delay para asegurar refresco visual
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Modal editar */}
-      <div
-        className="modal fade"
-        id="modalEditarLider"
-        tabIndex="-1"
-        aria-hidden="true"
-        ref={modalEditarRef}
-      >
-        <div className="modal-dialog modal-lg modal-dialog-scrollable">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Editar Líder</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" />
-            </div>
-            <div className="modal-body">
-              {liderAEditar && (
+              {liderAEditar ? (
                 <EditarLiderForm
                   lider={liderAEditar}
                   onLiderActualizado={() => {
                     cargarLideres();
-                    const modal = Modal.getInstance(modalEditarRef.current);
+                    setLiderAEditar(null);
+                    const modal = Modal.getInstance(modalRef.current);
                     modal.hide();
+                    toast.success("✅ Líder actualizado exitosamente");
+                  }}
+                />
+              ) : (
+                <CrearLiderForm
+                  onLiderCreado={() => {
+                    cargarLideres();
+                    setLiderAEditar(null);
+                    const modal = Modal.getInstance(modalRef.current);
+                    modal.hide();
+                    toast.success("✅ Líder creado exitosamente");
                   }}
                 />
               )}
