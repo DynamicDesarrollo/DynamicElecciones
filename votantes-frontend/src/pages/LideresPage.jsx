@@ -223,7 +223,7 @@ export default function LideresPage() {
               <th>Cédula</th>
               <th>Municipio</th>
               <th>Teléfono</th>
-              <th>Barrio</th>
+              <th>A quien Pertenece</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -241,7 +241,7 @@ export default function LideresPage() {
                   <td>{l.cedula || "—"}</td>
                   <td>{l.municipio_nombre || "—"}</td>
                   <td>{l.telefono || "—"}</td>
-                  <td>{l.barrio_nombre || "—"}</td>
+                  <td>{l.direccion || "—"}</td>
                   <td className="text-center">
                     <button
                       className="btn btn-sm btn-warning me-2"
