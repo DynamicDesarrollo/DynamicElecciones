@@ -11,7 +11,9 @@ const {
 const router = express.Router();
 
 
+
 router.get('/', getLideres);
+router.get('/:id', getLiderById);
 router.post('/', createLider);
 router.put('/:id', updateLider);
 router.delete('/:id', deleteLider);

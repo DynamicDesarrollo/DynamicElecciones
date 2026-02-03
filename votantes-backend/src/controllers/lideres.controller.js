@@ -1,3 +1,16 @@
+// Obtener un líder por id
+const getLiderById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db.query('SELECT * FROM lideres WHERE id = $1::uuid', [id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Líder no encontrado' });
+    }
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener líder', details: err.message });
+  }
+};
 // Control de commit: fix uuid join - Sirjhan Betancourt 2026-02-01
 const db = require('../utils/db.js');
 
@@ -102,5 +115,6 @@ module.exports = {
   getLideres,
   createLider,
   updateLider,
-  deleteLider
+  deleteLider,
+  getLiderById
 };
