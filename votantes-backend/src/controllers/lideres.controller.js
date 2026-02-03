@@ -59,6 +59,11 @@ const createLider = async (req, res) => {
     } = req.body;
   
     try {
+      // Validar si ya existe un líder con la misma cédula
+      const existe = await db.query('SELECT id FROM lideres WHERE cedula = $1', [cedula]);
+      if (existe.rows.length > 0) {
+        return res.status(400).json({ error: 'Ya existe un líder con esa cédula.' });
+      }
       const result = await db.query(
         `INSERT INTO lideres (
           nombre_completo, aspirante_concejo_id,
@@ -114,6 +119,16 @@ const deleteLider = async (req, res) => {
   console.log('--- ELIMINAR LÍDER ---');
   console.log('ID recibido para eliminar líder:', id, '| typeof:', typeof id, '| length:', id.length);
   try {
+    // Validar si el líder tiene votantes asociados
+    const votantesResult = await db.query('SELECT COUNT(*) AS total FROM prospectos_votantes WHERE lider_id = $1', [id]);
+    const totalVotantes = parseInt(votantesResult.rows[0].total, 10);
+    if (totalVotantes > 0) {
+      console.log(`No se puede eliminar líder con id ${id} porque tiene ${totalVotantes} votantes asociados.`);
+      return res.status(400).json({
+        error: 'No se puede eliminar el líder porque tiene votantes asociados.',
+        totalVotantes
+      });
+    }
     // Prueba de consulta sin ::uuid para aceptar cualquier string
     const result = await db.query('DELETE FROM lideres WHERE id = $1', [id]);
     console.log('Intento eliminar líder con id:', id, '| rowCount:', result.rowCount);
