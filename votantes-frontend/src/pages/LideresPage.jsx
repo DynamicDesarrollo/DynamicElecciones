@@ -100,12 +100,6 @@ export default function LideresPage() {
       Swal.fire('⚠️ Error', 'Ocurrió un error inesperado.', 'error');
     }
   };
-        toast.error("❌ No se pudo eliminar el líder");
-      }
-    } catch (err) {
-      toast.error("❌ Error al eliminar líder");
-      console.error(err);
-    }
   };
 
   const exportarExcel = () => {
