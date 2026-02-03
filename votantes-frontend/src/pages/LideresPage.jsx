@@ -97,7 +97,17 @@ export default function LideresPage() {
         cargarLideres();
         Swal.fire('✅ Eliminado', 'El líder fue eliminado correctamente.', 'success');
       } else {
-        Swal.fire('❌ Error', 'No se pudo eliminar el líder.', 'error');
+        // Intentar leer el error del backend
+        let errorMsg = 'No se pudo eliminar el líder.';
+        try {
+          const errorData = await res.json();
+          if (errorData?.error && errorData?.totalVotantes !== undefined) {
+            errorMsg = `No se puede eliminar el líder porque tiene ${errorData.totalVotantes} votante(s) asociado(s).`;
+          } else if (errorData?.error) {
+            errorMsg = errorData.error;
+          }
+        } catch {}
+        Swal.fire('❌ Error', errorMsg, 'error');
       }
     } catch (err) {
       console.error("Error al eliminar líder:", err);

@@ -60,24 +60,31 @@ export default function CrearLiderForm({ onLiderCreado }) {
 
       if (res.ok) {
         onLiderCreado();
-      } else {
-        toast.error("❌ Error al crear líder");
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/lideres`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData),
+        });
+        if (res.ok) {
+          onLiderCreado();
+        } else {
+          let errorMsg = "❌ Error al crear líder";
+          try {
+            const errorData = await res.json();
+            if (errorData?.error && errorData.error.includes("cédula")) {
+              errorMsg = errorData.error;
+            }
+          } catch {}
+          toast.error(errorMsg);
+        }
+      } catch (err) {
+        toast.error("❌ Error de red al crear líder");
       }
-    } catch (err) {
-      toast.error("❌ Error de red al crear líder");
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <div className="row g-3">
-        <div className="col-md-6">
-          <label className="form-label">Nombre completo</label>
-          <input
-            type="text"
-            name="nombre_completo"
-            className="form-control"
-            value={formData.nombre_completo}
             onChange={handleChange}
             required
           />
@@ -106,7 +113,7 @@ export default function CrearLiderForm({ onLiderCreado }) {
         </div>
 
         <div className="col-md-6">
-          <label className="form-label">Dirección</label>
+          <label className="form-label">A quien Pertece</label>
           <input
             type="text"
             name="direccion"
@@ -153,7 +160,7 @@ export default function CrearLiderForm({ onLiderCreado }) {
         </div>
 
         <div className="col-md-6">
-          <label className="form-label">Fecha de nacimiento</label>
+          <label className="form-label">Fecha de registro</label>
           <input
             type="date"
             name="fecha_nace"
