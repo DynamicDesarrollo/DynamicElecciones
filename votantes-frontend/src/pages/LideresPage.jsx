@@ -303,6 +303,11 @@ export default function LideresPage() {
                     setLiderAEditar(null);
                     const modal = Modal.getInstance(modalRef.current);
                     modal.hide();
+                    // Limpieza forzada de clase y backdrop
+                    setTimeout(() => {
+                      document.body.classList.remove('modal-open');
+                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    }, 300);
                     toast.success("✅ Líder actualizado exitosamente");
                   }}
                 />
@@ -313,6 +318,11 @@ export default function LideresPage() {
                     setLiderAEditar(null);
                     const modal = Modal.getInstance(modalRef.current);
                     modal.hide();
+                    // Limpieza forzada de clase y backdrop
+                    setTimeout(() => {
+                      document.body.classList.remove('modal-open');
+                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                    }, 300);
                     toast.success("✅ Líder creado exitosamente");
                   }}
                 />
