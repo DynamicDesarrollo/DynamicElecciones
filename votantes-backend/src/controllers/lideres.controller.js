@@ -1,3 +1,17 @@
+
+// Control de commit: fix uuid join - Sirjhan Betancourt 2026-02-01
+const db = require('../utils/db.js');
+
+// Endpoint temporal para listar todos los líderes sin joins ni filtros
+const getAllLideresRaw = async (req, res) => {
+  try {
+    const result = await db.query('SELECT * FROM lideres ORDER BY fecha_nace DESC');
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Error al obtener todos los líderes', details: err.message });
+  }
+};
+
 // Obtener un líder por id
 const getLiderById = async (req, res) => {
   const { id } = req.params;
@@ -11,8 +25,6 @@ const getLiderById = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener líder', details: err.message });
   }
 };
-// Control de commit: fix uuid join - Sirjhan Betancourt 2026-02-01
-const db = require('../utils/db.js');
 
 const getLideres = async (req, res) => {
   try {
@@ -120,5 +132,6 @@ module.exports = {
   createLider,
   updateLider,
   deleteLider,
-  getLiderById
+  getLiderById,
+  getAllLideresRaw
 };
