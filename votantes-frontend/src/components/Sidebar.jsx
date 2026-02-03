@@ -70,24 +70,29 @@ export default function Sidebar({ onAbrirCrearUsuario }) {
               <i className="bi bi-people-fill me-2"></i> Votantes
             </Link>
           </li>
-          <li className="nav-item mb-2">
-            <Link
-              to="/asistencia"
-              className={`nav-link ${location.pathname === "/asistencia" ? "bg-primary text-white fw-bold rounded shadow"
-                : "text-white"}`}
-            >
-              <i className="bi-person-lines-fill me-2"></i> Asistencia
-            </Link>
-          </li>
 
-          <li className="nav-item mb-2">
-            <Link
-              to="/informes"
-              className={`nav-link ${location.pathname === "/informes" ? "bg-primary text-white fw-bold rounded shadow" : "text-white"}`}
-            >
-              <i className="bi bi-graph-up me-2"></i> Informes
-            </Link>
-          </li>
+          {/* Mostrar Asistencia e Informes solo si el usuario NO es 'user' */}
+          {usuario?.rol !== 'user' && (
+            <>
+              <li className="nav-item mb-2">
+                <Link
+                  to="/asistencia"
+                  className={`nav-link ${location.pathname === "/asistencia" ? "bg-primary text-white fw-bold rounded shadow"
+                    : "text-white"}`}
+                >
+                  <i className="bi-person-lines-fill me-2"></i> Asistencia
+                </Link>
+              </li>
+              <li className="nav-item mb-2">
+                <Link
+                  to="/informes"
+                  className={`nav-link ${location.pathname === "/informes" ? "bg-primary text-white fw-bold rounded shadow" : "text-white"}`}
+                >
+                  <i className="bi bi-graph-up me-2"></i> Informes
+                </Link>
+              </li>
+            </>
+          )}
 
         </ul>
 
