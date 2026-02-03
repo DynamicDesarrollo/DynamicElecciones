@@ -57,38 +57,22 @@ export default function CrearLiderForm({ onLiderCreado }) {
         },
         body: JSON.stringify(formData),
       });
-
       if (res.ok) {
         onLiderCreado();
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/lideres`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(formData),
-        });
-        if (res.ok) {
-          onLiderCreado();
-        } else {
-          let errorMsg = "❌ Error al crear líder";
-          try {
-            const errorData = await res.json();
-            if (errorData?.error && errorData.error.includes("cédula")) {
-              errorMsg = errorData.error;
-            }
-          } catch {}
-          toast.error(errorMsg);
-        }
-      } catch (err) {
-        toast.error("❌ Error de red al crear líder");
+      } else {
+        let errorMsg = "❌ Error al crear líder";
+        try {
+          const errorData = await res.json();
+          if (errorData?.error && errorData.error.includes("cédula")) {
+            errorMsg = errorData.error;
+          }
+        } catch {}
+        toast.error(errorMsg);
       }
-            onChange={handleChange}
-            required
-          />
-        </div>
+    } catch (err) {
+      toast.error("❌ Error de red al crear líder");
+    }
+  };
 
         <div className="col-md-6">
           <label className="form-label">Cédula</label>
