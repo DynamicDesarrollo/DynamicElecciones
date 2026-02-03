@@ -71,8 +71,8 @@ export default function Sidebar({ onAbrirCrearUsuario }) {
             </Link>
           </li>
 
-          {/* Mostrar Asistencia e Informes solo si el usuario NO es 'user' */}
-          {usuario?.rol !== 'user' && (
+          {/* Mostrar Asistencia e Informes solo si el usuario NO es 'user' ni 'digitador' (cualquier mayúscula/minúscula) */}
+          {usuario && !['user', 'digitador'].includes((usuario.rol || '').toLowerCase()) && (
             <>
               <li className="nav-item mb-2">
                 <Link
