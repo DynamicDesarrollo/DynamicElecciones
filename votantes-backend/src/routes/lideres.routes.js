@@ -1,17 +1,16 @@
-
 const express = require('express');
+const router = express.Router();
 const {
   getLideres,
   getLiderById,
   createLider,
   updateLider,
-  deleteLider
+  deleteLider,
+  getAllLideresRaw
 } = require('../controllers/lideres.controller');
 
-
-const router = express.Router();
-
-
+// Endpoint temporal para comparar líderes con Neon
+router.get('/todos-raw', getAllLideresRaw);
 
 router.get('/', getLideres);
 router.get('/:id', getLiderById);
