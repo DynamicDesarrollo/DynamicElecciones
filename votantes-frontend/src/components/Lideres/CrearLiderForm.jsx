@@ -90,6 +90,18 @@ export default function CrearLiderForm({ onLiderCreado }) {
           />
         </div>
 
+          <div className="col-md-6">
+            <label className="form-label">Nombre completo</label>
+            <input
+              type="text"
+              name="nombre_completo"
+              className="form-control"
+              value={formData.nombre_completo}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
         <div className="col-md-6">
           <label className="form-label">Teléfono</label>
           <input
