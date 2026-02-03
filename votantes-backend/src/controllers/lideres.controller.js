@@ -97,6 +97,7 @@ const updateLider = async (req, res) => {
   
 
 const deleteLider = async (req, res) => {
+        console.log('typeof id:', typeof id, '| length:', id.length, '| id:', id);
       console.log('ID recibido (bytes):', Buffer.from(id).toString('hex'));
     // Log de conexión a la base de datos
     console.log('DB HOST:', process.env.PGHOST, 'DB NAME:', process.env.PGDATABASE, 'DB USER:', process.env.PGUSER);
