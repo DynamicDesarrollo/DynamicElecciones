@@ -1,3 +1,4 @@
+// Forzar build Vercel 2026-02-02
 // Forzar commit y push - 2026-02-02
 // Forzar redeploy Vercel - 2026-02-02
 // Cambio menor para forzar redeploy en Vercel
