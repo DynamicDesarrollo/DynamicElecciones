@@ -65,34 +65,39 @@ export default function LideresPage() {
   }, [usuario, page, filtroNombre, filtroCedula]);
 
   const eliminarLider = async (id) => {
-    console.log('Intentando eliminar líder con id:', id);
-    const confirmacion = await Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Esto eliminará al líder permanentemente.",
-      icon: "warning",
+    const confirmar = await Swal.fire({
+      title: '¿Desea eliminar este líder?',
+      text: 'Esta acción eliminará el líder permanentemente',
+      icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
     });
-
-    if (!confirmacion.isConfirmed) return;
+    if (!confirmar.isConfirmed) return;
 
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/lideres/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/lideres/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (res.ok) {
-        toast.success("🗑️ Líder eliminado correctamente");
         cargarLideres();
+        Swal.fire('✅ Eliminado', 'El líder fue eliminado correctamente.', 'success');
       } else {
-        toast.error("❌ No se pudo eliminar el líder");
+        Swal.fire('❌ Error', 'No se pudo eliminar el líder.', 'error');
       }
     } catch (err) {
-      toast.error("❌ Error al eliminar líder");
-      console.error(err);
+      console.error("Error al eliminar líder:", err);
+      Swal.fire('⚠️ Error', 'Ocurrió un error inesperado.', 'error');
     }
   };
         toast.error("❌ No se pudo eliminar el líder");
