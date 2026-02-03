@@ -78,34 +78,31 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
   }, [formulario.lugar_id, mesas]);
 
 
-  // Validar cédula en tiempo real
-  useEffect(() => {
-    const validar = async () => {
-      setCedulaExiste(false);
-      setInfoCedula(null);
-      if (formulario.cedula && formulario.cedula.length > 4) {
-        try {
-          const token = localStorage.getItem("token");
-          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/votantes/validar-cedula/${formulario.cedula}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-          const data = await res.json();
-          if (data.existe) {
-            setCedulaExiste(true);
-            setInfoCedula(data);
-          } else {
-            setCedulaExiste(false);
-            setInfoCedula(null);
-          }
-        } catch (err) {
+
+  // Validar cédula solo al salir del input
+  const handleCedulaBlur = async () => {
+    setCedulaExiste(false);
+    setInfoCedula(null);
+    if (formulario.cedula && formulario.cedula.length > 4) {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/votantes/validar-cedula/${formulario.cedula}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.existe) {
+          setCedulaExiste(true);
+          setInfoCedula(data);
+        } else {
           setCedulaExiste(false);
           setInfoCedula(null);
         }
+      } catch (err) {
+        setCedulaExiste(false);
+        setInfoCedula(null);
       }
-    };
-    validar();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formulario.cedula]);
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -183,6 +180,7 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
               name="cedula"
               value={formulario.cedula}
               onChange={handleChange}
+              onBlur={handleCedulaBlur}
               className="form-control"
               required
             />
