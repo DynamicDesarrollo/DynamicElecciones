@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRef } from "react";
 import { Modal } from "bootstrap";
-import CrearUsuarioForm from "../components/Usuarios/CrearUsuarioForm";
+import CrearAspiranteForm from "../components/Aspirantes/CrearAspiranteForm";
 
 export default function UsuariosPage() {
   const [usuarios, setUsuarios] = useState([]);
@@ -83,8 +83,8 @@ export default function UsuariosPage() {
               }} />
             </div>
             <div className="modal-body">
-              <CrearUsuarioForm
-                onUsuarioCreado={() => {
+              <CrearAspiranteForm
+                onAspiranteCreado={() => {
                   setMostrarModal(false);
                   setRecargar(r => !r);
                   setForm({ nombre: "", correo: "", password: "", rol: "user" });
