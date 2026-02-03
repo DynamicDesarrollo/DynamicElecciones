@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
-import ModalPortal from "../components/ModalPortal";
+import { useRef } from "react";
+import { Modal } from "bootstrap";
+import CrearUsuarioForm from "../components/Usuarios/CrearUsuarioForm";
 import CrearUsuarioForm from "../components/Usuarios/CrearUsuarioForm";
 
 export default function UsuariosPage() {
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarModal, setMostrarModal] = useState(false);
+  const modalRef = useRef();
   const [form, setForm] = useState({ nombre: "", correo: "", password: "", rol: "user" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -51,22 +54,44 @@ export default function UsuariosPage() {
           <i className="bi bi-person-plus me-2"></i> Crear Usuario
         </button>
       </div>
-      {mostrarModal && (
-        <ModalPortal key={"modal-usuario"} onClose={() => {
-          setMostrarModal(false);
-          setForm({ nombre: "", correo: "", password: "", rol: "user" });
-          setError("");
-          setMensaje("");
-        }}>
-          <CrearUsuarioForm
-            onUsuarioCreado={() => {
-              setMostrarModal(false);
-              setRecargar(r => !r);
-            }}
-            onCancel={() => setMostrarModal(false)}
-          />
-        </ModalPortal>
-      )}
+      <div
+        className="modal fade"
+        tabIndex="-1"
+        ref={modalRef}
+        id="modalUsuario"
+        style={{ display: mostrarModal ? 'block' : 'none' }}
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Crear Usuario</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" onClick={() => setMostrarModal(false)} />
+            </div>
+            <div className="modal-body">
+              <CrearUsuarioForm
+                onUsuarioCreado={() => {
+                  setMostrarModal(false);
+                  setRecargar(r => !r);
+                  setForm({ nombre: "", correo: "", password: "", rol: "user" });
+                  setError("");
+                  setMensaje("");
+                  setTimeout(() => {
+                    document.body.classList.remove('modal-open');
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                  }, 300);
+                }}
+                onCancel={() => {
+                  setMostrarModal(false);
+                  setTimeout(() => {
+                    document.body.classList.remove('modal-open');
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                  }, 300);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       <hr className="my-5" />
       <h3 className="mb-3">Lista de Usuarios</h3>
       <div className="table-responsive">
