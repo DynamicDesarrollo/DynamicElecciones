@@ -3,11 +3,6 @@ import { createPortal } from "react-dom";
 export default function ModalPortal({ children, onClose }) {
   if (typeof window === "undefined") return null;
   const handleClose = (e) => {
-    // Limpieza forzada de clases y backdrops
-    setTimeout(() => {
-      document.body.classList.remove('modal-open');
-      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-    }, 200);
     if (onClose) {
       onClose(e);
     }
