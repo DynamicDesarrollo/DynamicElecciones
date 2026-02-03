@@ -4,6 +4,7 @@
 // Forzar commit y push - 2026-02-02
 // Forzar redeploy Vercel - 2026-02-02
 // Cambio menor para forzar redeploy en Vercel
+// Cambio para forzar redeploy en Vercel 2026-02-03
 
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState, useRef } from "react";
