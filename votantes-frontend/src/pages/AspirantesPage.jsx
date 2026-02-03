@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import ModalPortal from "../components/ModalPortal";
+import { useRef } from "react";
+import { Modal } from "bootstrap";
 import CrearAspiranteForm from "../components/Aspirantes/CrearAspiranteForm";
 
 export default function AspirantesPage() {
     const [mostrarModal, setMostrarModal] = useState(false);
+    const modalRef = useRef();
   const [form, setForm] = useState({
     nombre: "",
     correo: "",
@@ -70,22 +72,44 @@ export default function AspirantesPage() {
           <i className="bi bi-person-plus me-2"></i> Crear Aspirante
         </button>
       </div>
-      {mostrarModal && (
-        <ModalPortal key={"modal-aspirante"} onClose={() => {
-          setMostrarModal(false);
-          setForm({ nombre: "", correo: "", telefono: "", tipo_aspirante: "", partido: "", municipio: "" });
-          setError("");
-          setMensaje("");
-        }}>
-          <CrearAspiranteForm
-            onAspiranteCreado={() => {
-              setMostrarModal(false);
-              setRecargar(r => !r);
-            }}
-            onCancel={() => setMostrarModal(false)}
-          />
-        </ModalPortal>
-      )}
+      <div
+        className="modal fade"
+        tabIndex="-1"
+        ref={modalRef}
+        id="modalAspirante"
+        style={{ display: mostrarModal ? 'block' : 'none' }}
+      >
+        <div className="modal-dialog modal-lg modal-dialog-centered">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Crear Aspirante</h5>
+              <button type="button" className="btn-close" data-bs-dismiss="modal" onClick={() => setMostrarModal(false)} />
+            </div>
+            <div className="modal-body">
+              <CrearAspiranteForm
+                onAspiranteCreado={() => {
+                  setMostrarModal(false);
+                  setRecargar(r => !r);
+                  setForm({ nombre: "", correo: "", telefono: "", tipo_aspirante: "", partido: "", municipio: "" });
+                  setError("");
+                  setMensaje("");
+                  setTimeout(() => {
+                    document.body.classList.remove('modal-open');
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                  }, 300);
+                }}
+                onCancel={() => {
+                  setMostrarModal(false);
+                  setTimeout(() => {
+                    document.body.classList.remove('modal-open');
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                  }, 300);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       <hr className="my-5" />
       <h3 className="mb-3">Lista de Aspirantes</h3>
       <div className="table-responsive">
