@@ -59,7 +59,6 @@ export default function CrearLiderForm({ onLiderCreado }) {
       });
 
       if (res.ok) {
-        toast.success("✅ Líder creado exitosamente");
         onLiderCreado();
       } else {
         toast.error("❌ Error al crear líder");

@@ -24,6 +24,8 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
 
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState(null);
+  const [cedulaExiste, setCedulaExiste] = useState(false);
+  const [infoCedula, setInfoCedula] = useState(null);
 
   // Mesas filtradas según el lugar seleccionado
   const filteredMesas = lugar_id => {
@@ -74,6 +76,36 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
       setFormulario((prev) => ({ ...prev, mesa_id: "" }));
     }
   }, [formulario.lugar_id, mesas]);
+
+
+  // Validar cédula en tiempo real
+  useEffect(() => {
+    const validar = async () => {
+      setCedulaExiste(false);
+      setInfoCedula(null);
+      if (formulario.cedula && formulario.cedula.length > 4) {
+        try {
+          const token = localStorage.getItem("token");
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/votantes/validar-cedula/${formulario.cedula}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          const data = await res.json();
+          if (data.existe) {
+            setCedulaExiste(true);
+            setInfoCedula(data);
+          } else {
+            setCedulaExiste(false);
+            setInfoCedula(null);
+          }
+        } catch (err) {
+          setCedulaExiste(false);
+          setInfoCedula(null);
+        }
+      }
+    };
+    validar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formulario.cedula]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -130,21 +162,20 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
     <div className="card shadow p-4">
       <h4 className="mb-4">🧾 Crear Nuevo Votante</h4>
 
+
       {mensaje && <div className="alert alert-info">{mensaje}</div>}
+      {cedulaExiste && infoCedula && (
+        <div className="alert alert-danger">
+          <b>La cédula ya existe.</b><br />
+          <span>Votante: <b>{infoCedula.votante_nombre}</b></span><br />
+          {infoCedula.lider_nombre && (
+            <span>Líder: <b>{infoCedula.lider_nombre}</b></span>
+          )}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit}>
         <div className="row mb-3">
-          <div className="col-md-4">
-            <label className="form-label">Nombre completo</label>
-            <input
-              type="text"
-              name="nombre_completo"
-              value={formulario.nombre_completo}
-              onChange={handleChange}
-              className="form-control"
-              required
-            />
-          </div>
           <div className="col-md-4">
             <label className="form-label">Cédula</label>
             <input
@@ -156,7 +187,17 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
               required
             />
           </div>
-          
+          <div className="col-md-4">
+            <label className="form-label">Nombre completo</label>
+            <input
+              type="text"
+              name="nombre_completo"
+              value={formulario.nombre_completo}
+              onChange={handleChange}
+              className="form-control"
+              required
+            />
+          </div>
           <div className="col-md-4">
             <label className="form-label">Teléfono</label>
             <input
@@ -329,7 +370,7 @@ export default function CrearVotanteForm({ onVotanteCreado }) {
           </div>
         </div>
 
-        <button className="btn btn-primary" type="submit" disabled={loading}>
+        <button className="btn btn-primary" type="submit" disabled={loading || cedulaExiste}>
           {loading ? "Guardando..." : "Guardar Votante"}
         </button>
       </form>
