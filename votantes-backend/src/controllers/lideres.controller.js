@@ -97,6 +97,8 @@ const updateLider = async (req, res) => {
   
 
 const deleteLider = async (req, res) => {
+    // Log de conexión a la base de datos
+    console.log('DB HOST:', process.env.PGHOST, 'DB NAME:', process.env.PGDATABASE, 'DB USER:', process.env.PGUSER);
   let { id } = req.params;
   id = (id || '').trim();
   console.log('ID recibido para eliminar líder:', id, '| typeof:', typeof id, '| length:', id.length);
