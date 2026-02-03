@@ -1,3 +1,4 @@
+// Forzar build Vercel - intento 2
 // Forzar commit y push - build definitivo
 // Forzar build Vercel 2026-02-02
 // Forzar commit y push - 2026-02-02
