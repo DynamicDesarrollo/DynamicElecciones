@@ -33,7 +33,13 @@ console.log('Después de importar authRoutes');
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://dynamic-elecciones.vercel.app', // Frontend en Vercel
+    'http://localhost:5173' // Desarrollo local (ajusta el puerto si usas otro)
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use(morgan('dev'));
 
