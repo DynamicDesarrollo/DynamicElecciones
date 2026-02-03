@@ -1,5 +1,29 @@
+const db = require('../utils/db.js');
+
+// Validar si una cédula ya existe en prospectos_votantes
+const validarCedula = async (req, res) => {
+  const { cedula } = req.params;
+  try {
+    const result = await db.query(
+      `SELECT pv.id, pv.nombre_completo AS votante_nombre, l.nombre_completo AS lider_nombre
+       FROM prospectos_votantes pv
+       LEFT JOIN lideres l ON pv.lider_id = l.id
+       WHERE pv.cedula = $1 LIMIT 1`,
+      [cedula]
+    );
+    if (result.rows.length > 0) {
+      return res.json({ existe: true, ...result.rows[0] });
+    } else {
+      return res.json({ existe: false });
+    }
+  } catch (err) {
+    console.error('❌ Error al validar cédula:', err);
+    res.status(500).json({ error: 'Error al validar cédula' });
+  }
+};
+
 // Obtener el total de votantes (para dashboard/asistencia)
-export const getTotalVotantes = async (req, res) => {
+const getTotalVotantes = async (req, res) => {
   try {
     const result = await db.query('SELECT COUNT(*) AS total FROM prospectos_votantes');
     res.json({ total: parseInt(result.rows[0].total) });
@@ -8,11 +32,9 @@ export const getTotalVotantes = async (req, res) => {
     res.status(500).json({ error: 'Error al obtener total de votantes' });
   }
 };
-import db from '../utils/db.js';
 
 // ✅ Obtener todos los votantes
-// ✅ Obtener todos los votantes
-export const getVotantes = async (req, res) => {
+const getVotantes = async (req, res) => {
   const { id: userId, rol, aspirante_concejo_id, aspirante_alcaldia_id } = req.usuario;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
@@ -21,7 +43,6 @@ export const getVotantes = async (req, res) => {
   try {
     const condiciones = [];
     const valores = [];
-
 
     if (rol !== "admin") {
       if (aspirante_concejo_id) {
@@ -78,7 +99,7 @@ export const getVotantes = async (req, res) => {
 };
 
 // ✅ Crear un votante
-export const createVotante = async (req, res) => {
+const createVotante = async (req, res) => {
   const {
     nombre_completo,
     cedula,
@@ -95,7 +116,6 @@ export const createVotante = async (req, res) => {
 
   try {
     const { id: userId, aspirante_concejo_id, aspirante_alcaldia_id } = req.usuario;
-
 
     // Permitir que el rol 'user' cree votantes aunque no tenga aspirante asociado
     if (!aspirante_concejo_id && !aspirante_alcaldia_id && req.usuario.rol !== 'admin') {
@@ -175,7 +195,7 @@ export const createVotante = async (req, res) => {
 };
 
 // ✅ Actualizar votante
-export const updateVotante = async (req, res) => {
+const updateVotante = async (req, res) => {
   const { id } = req.params;
   const {
     nombre_completo,
@@ -191,7 +211,7 @@ export const updateVotante = async (req, res) => {
     lugar_id,
     sexo
   } = req.body;
- console.log("Trae información de votante:", req.body);
+  console.log("Trae información de votante:", req.body);
   try {
     // Traer los valores actuales
     const current = await 
@@ -248,7 +268,7 @@ export const updateVotante = async (req, res) => {
 };
 
 // ✅ Eliminar votante
-export const deleteVotante = async (req, res) => {
+const deleteVotante = async (req, res) => {
   const { id } = req.params;
   try {
     const result = await db.query('DELETE FROM prospectos_votantes WHERE id = $1', [id]);
@@ -259,4 +279,13 @@ export const deleteVotante = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: 'Error al eliminar votante', details: err.message });
   }
+};
+
+module.exports = {
+  getVotantes,
+  createVotante,
+  updateVotante,
+  deleteVotante,
+  getTotalVotantes,
+  validarCedula
 };

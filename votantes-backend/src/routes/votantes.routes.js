@@ -5,7 +5,8 @@ const {
   createVotante,
   updateVotante,
   deleteVotante,
-  getTotalVotantes
+  getTotalVotantes,
+  validarCedula
 } = require('../controllers/votantes.controller');
 const { filtrarVotantes } = require('../controllers/reportes.controller');
 const { verificarToken } = require('../middlewares/auth');
@@ -19,5 +20,6 @@ router.delete('/:id', deleteVotante);
 router.get('/votantes', verificarToken, getVotantes);
 router.get('/filtrar', filtrarVotantes);
 router.get('/total', getTotalVotantes);
+router.get('/validar-cedula/:cedula', validarCedula);
 module.exports = router;
 
