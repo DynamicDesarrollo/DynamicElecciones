@@ -301,6 +301,8 @@ export default function LideresPage() {
                   setTimeout(() => {
                     modal.hide();
                     toast.success("✅ Líder creado exitosamente");
+                    // Forzar foco al botón "Nuevo Líder" para evitar warning de aria-hidden
+                    document.querySelector('[data-bs-target="#modalCrearLider"]')?.focus();
                   }, 150); // Pequeño delay para asegurar refresco visual
                 }}
               />
