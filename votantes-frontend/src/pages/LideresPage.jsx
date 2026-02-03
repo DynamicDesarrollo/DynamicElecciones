@@ -300,6 +300,7 @@ export default function LideresPage() {
                   const modal = Modal.getInstance(modalCrearRef.current);
                   setTimeout(() => {
                     modal.hide();
+                    toast.success("✅ Líder creado exitosamente");
                   }, 150); // Pequeño delay para asegurar refresco visual
                 }}
               />
