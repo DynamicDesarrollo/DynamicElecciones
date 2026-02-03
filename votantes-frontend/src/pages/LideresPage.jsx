@@ -296,8 +296,11 @@ export default function LideresPage() {
               <CrearLiderForm
                 onLiderCreado={() => {
                   cargarLideres();
+                  setLiderAEditar(null); // Limpiar estado de edición
                   const modal = Modal.getInstance(modalCrearRef.current);
-                  modal.hide();
+                  setTimeout(() => {
+                    modal.hide();
+                  }, 150); // Pequeño delay para asegurar refresco visual
                 }}
               />
             </div>
