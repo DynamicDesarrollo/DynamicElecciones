@@ -68,7 +68,7 @@ const getVotantes = async (req, res) => {
         b.nombre AS barrio_nombre,
         m.nombre AS municipio_nombre,
         l.nombre_completo AS lider_nombre,
-        l.direccion AS direccion_lider
+        l.direccion AS lider_direccion_backend
       FROM prospectos_votantes pv
       LEFT JOIN barrios b ON pv.barrio_id = b.id
       LEFT JOIN municipios m ON pv.municipio_id = m.id
@@ -78,6 +78,12 @@ const getVotantes = async (req, res) => {
       LIMIT $${valores.length + 1}
       OFFSET $${valores.length + 2}
     `;
+    // Log para depuración
+    if (dataResult.rows && dataResult.rows.length > 0) {
+      console.log('Ejemplo de fila votante:', dataResult.rows[0]);
+    } else {
+      console.log('No hay filas de votantes para mostrar.');
+    }
 
     const totalQuery = `
       SELECT COUNT(*) AS count
