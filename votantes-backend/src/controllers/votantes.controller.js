@@ -88,6 +88,12 @@ const getVotantes = async (req, res) => {
     const dataResult = await db.query(dataQuery, [...valores, limit, offset]);
     const totalResult = await db.query(totalQuery, valores);
 
+    if (dataResult.rows && dataResult.rows.length > 0) {
+      console.log('Ejemplo de fila votante:', dataResult.rows[0]);
+    } else {
+      console.log('No hay filas de votantes para mostrar.');
+    }
+
     res.json({
       data: dataResult.rows,
       total: parseInt(totalResult.rows[0].count),
