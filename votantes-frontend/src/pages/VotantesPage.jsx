@@ -20,7 +20,7 @@ export default function VotantesPage() {
         <td>{v.telefono}</td>
         <td>{v.barrio_nombre}</td>
         <td>{v.municipio_nombre}</td>
-        <td>{v.lider_nombre}</td>
+        {usuario?.rol === 'admin' && <td>{v.lider_nombre}</td>}
         <td className="text-center">
           <button
             className="btn btn-sm btn-warning me-2"
@@ -275,7 +275,7 @@ export default function VotantesPage() {
                   <th>Teléfono</th>
                   <th>Barrio</th>
                   <th>Ciudad</th>
-                  <th>Lider</th>
+                  {usuario?.rol === 'admin' && <th>Lider</th>}
                   <th className="text-center">Acciones</th>
                 </tr>
               </thead>
