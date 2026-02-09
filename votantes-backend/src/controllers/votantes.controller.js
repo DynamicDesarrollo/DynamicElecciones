@@ -94,6 +94,13 @@ const getVotantes = async (req, res) => {
     const dataResult = await db.query(dataQuery, [...valores, limit, offset]);
     const totalResult = await db.query(totalQuery, valores);
 
+    // DEPURACIÓN: Mostrar la primera fila cruda que retorna la base de datos
+    if (dataResult.rows && dataResult.rows.length > 0) {
+      console.log('Fila cruda desde DB:', dataResult.rows[0]);
+    } else {
+      console.log('No hay filas de votantes para mostrar (DB).');
+    }
+
     if (dataResult.rows && dataResult.rows.length > 0) {
       console.log('Ejemplo de fila votante:', dataResult.rows[0]);
     } else {
