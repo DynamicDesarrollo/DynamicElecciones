@@ -66,10 +66,13 @@ const getVotantes = async (req, res) => {
       SELECT 
         pv.*,
         b.nombre AS barrio_nombre,
-        m.nombre AS municipio_nombre
+        m.nombre AS municipio_nombre,
+        l.nombre_completo AS lider_nombre,
+        l.direccion AS lider_pertenencia
       FROM prospectos_votantes pv
       LEFT JOIN barrios b ON pv.barrio_id = b.id
       LEFT JOIN municipios m ON pv.municipio_id = m.id
+      LEFT JOIN lideres l ON pv.lider_id = l.id
       ${where}
       ORDER BY pv.fecha_registro DESC
       LIMIT $${valores.length + 1}

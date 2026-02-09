@@ -21,6 +21,7 @@ export default function VotantesPage() {
         <td>{v.barrio_nombre}</td>
         <td>{v.municipio_nombre}</td>
         {usuario?.rol === 'admin' && <td>{v.lider_nombre}</td>}
+        <td>{v.lider_pertenencia || '—'}</td>
         <td className="text-center">
           <button
             className="btn btn-sm btn-warning me-2"
@@ -276,6 +277,7 @@ export default function VotantesPage() {
                   <th>Barrio</th>
                   <th>Ciudad</th>
                   {usuario?.rol === 'admin' && <th>Lider</th>}
+                  <th>A quien pertenece</th>
                   <th className="text-center">Acciones</th>
                 </tr>
               </thead>
