@@ -68,7 +68,7 @@ const getVotantes = async (req, res) => {
         b.nombre AS barrio_nombre,
         m.nombre AS municipio_nombre,
         l.nombre_completo AS lider_nombre,
-        l.direccion AS lider_direccion_backend
+        l.direccion AS direccion_lider
       FROM prospectos_votantes pv
       LEFT JOIN barrios b ON pv.barrio_id = b.id
       LEFT JOIN municipios m ON pv.municipio_id = m.id
