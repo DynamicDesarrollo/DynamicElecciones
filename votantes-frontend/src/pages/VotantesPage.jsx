@@ -154,46 +154,87 @@ export default function VotantesPage() {
   }
   };
 
-  const exportarExcel = () => {
-    const data = votantes.map((v) => ({
-      Nombre: v.nombre_completo,
-      Cédula: v.cedula,
-      Teléfono: v.telefono,
-      Barrio: v.barrio_nombre,
-      Municipio: v.municipio_nombre,
-      Alcaldía: v.alcaldia_nombre || "N/A",
-      Lider: v.lider_nombre || "N/A"
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, worksheet, "Votantes");
-
-    const buffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-    saveAs(blob, "votantes.xlsx");
+  const exportarExcel = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      // Traer todos los votantes sin paginación (limit muy alto)
+      const query = new URLSearchParams({
+        page: 1,
+        limit: 1000000, // asume que nunca habrá más de 1 millón
+        busqueda,
+        activo,
+      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/votantes/filtrar?${query}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("No autorizado");
+      const result = await res.json();
+      const data = (result.data || []).map((v) => ({
+        Nombre: v.nombre_completo,
+        Cédula: v.cedula,
+        Teléfono: v.telefono,
+        Barrio: v.barrio_nombre,
+        Municipio: v.municipio_nombre,
+        Alcaldía: v.alcaldia_nombre || "N/A",
+        Lider: v.lider_nombre || "N/A"
+      }));
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, worksheet, "Votantes");
+      const buffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([buffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      saveAs(blob, "votantes.xlsx");
+    } catch (err) {
+      Swal.fire('⚠️ Error', 'No se pudo exportar el Excel.', 'error');
+    }
   };
 
-  const exportarPDF = () => {
-    const doc = new jsPDF();
-    doc.text("Lista de Votantes", 14, 16);
-
-    autoTable(doc, {
-      startY: 20,
-      head: [["Nombre", "Cédula", "Teléfono", "Barrio", "Municipio"]],
-      body: votantes.map((v) => [
-        v.nombre_completo,
-        v.cedula,
-        v.telefono,
-        v.barrio_nombre,
-        v.municipio_nombre,
-        v.lider_nombre || "N/A"
-      ]),
-    });
-
-    doc.save("votantes.pdf");
+  const exportarPDF = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      // Traer todos los votantes sin paginación (limit muy alto)
+      const query = new URLSearchParams({
+        page: 1,
+        limit: 1000000,
+        busqueda,
+        activo,
+      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/votantes/filtrar?${query}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!res.ok) throw new Error("No autorizado");
+      const result = await res.json();
+      const allVotantes = result.data || [];
+      const doc = new jsPDF();
+      doc.text("Lista de Votantes", 14, 16);
+      autoTable(doc, {
+        startY: 20,
+        head: [["Nombre", "Cédula", "Teléfono", "Barrio", "Municipio", "Lider"]],
+        body: allVotantes.map((v) => [
+          v.nombre_completo,
+          v.cedula,
+          v.telefono,
+          v.barrio_nombre,
+          v.municipio_nombre,
+          v.lider_nombre || "N/A"
+        ]),
+      });
+      doc.save("votantes.pdf");
+    } catch (err) {
+      Swal.fire('⚠️ Error', 'No se pudo exportar el PDF.', 'error');
+    }
   };
 
   return (
