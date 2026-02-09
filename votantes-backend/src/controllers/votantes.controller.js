@@ -78,12 +78,6 @@ const getVotantes = async (req, res) => {
       LIMIT $${valores.length + 1}
       OFFSET $${valores.length + 2}
     `;
-    // Log para depuración
-    if (dataResult.rows && dataResult.rows.length > 0) {
-      console.log('Ejemplo de fila votante:', dataResult.rows[0]);
-    } else {
-      console.log('No hay filas de votantes para mostrar.');
-    }
 
     const totalQuery = `
       SELECT COUNT(*) AS count
@@ -106,6 +100,13 @@ const getVotantes = async (req, res) => {
     } else {
       console.log('No hay filas de votantes para mostrar.');
     }
+    
+      res.json({
+        data: dataResult.rows,
+        total: parseInt(totalResult.rows[0].count),
+        page,
+        totalPages: Math.ceil(totalResult.rows[0].count / limit)
+      });
 
     res.json({
       data: dataResult.rows,
