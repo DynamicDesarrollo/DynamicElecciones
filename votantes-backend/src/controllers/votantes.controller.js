@@ -35,6 +35,7 @@ const getTotalVotantes = async (req, res) => {
 
 // ✅ Obtener todos los votantes
 const getVotantes = async (req, res) => {
+    console.log('Entrando a getVotantes');
   const { id: userId, rol, aspirante_concejo_id, aspirante_alcaldia_id } = req.usuario;
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
