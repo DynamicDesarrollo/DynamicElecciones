@@ -1,26 +1,5 @@
 const db = require('../utils/db.js');
 
-// Validar si una cédula ya existe en prospectos_votantes
-const validarCedula = async (req, res) => {
-  const { cedula } = req.params;
-  try {
-    const result = await db.query(
-      `SELECT pv.id, pv.nombre_completo AS votante_nombre, l.nombre_completo AS lider_nombre
-       FROM prospectos_votantes pv
-       LEFT JOIN lideres l ON pv.lider_id = l.id
-       WHERE pv.cedula = $1 LIMIT 1`,
-      [cedula]
-    );
-    if (result.rows.length > 0) {
-      return res.json({ existe: true, ...result.rows[0] });
-    } else {
-      return res.json({ existe: false });
-    }
-  } catch (err) {
-    console.error('❌ Error al validar cédula:', err);
-    res.status(500).json({ error: 'Error al validar cédula' });
-  }
-};
 
 // Crear votante: si la cédula existe, responde con info; si no, inserta
 const createVotante = async (req, res) => {
@@ -327,7 +306,11 @@ const exportarExcelVotantes = async (req, res) => {
     const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'buffer' });
     res.setHeader('Content-Disposition', 'attachment; filename="votantes.xlsx"');
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    return res.send(excelBuffer);
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Surrogate-Control', 'no-store');
+    return res.status(200).send(excelBuffer);
   } catch (err) {
     console.error('❌ Error al exportar votantes:', err);
     res.status(500).json({ error: 'Error al exportar votantes', details: err.message });
