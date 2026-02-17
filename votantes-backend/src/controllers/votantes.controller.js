@@ -277,6 +277,30 @@ const deleteVotante = async (req, res) => {
   }
 };
 
+// Validar si la cédula ya existe
+const validarCedula = async (req, res) => {
+  const { cedula } = req.params;
+  
+  try {
+    const existe = await db.query(
+      `SELECT pv.id, pv.nombre_completo AS votante_nombre, l.nombre_completo AS lider_nombre
+       FROM prospectos_votantes pv
+       LEFT JOIN lideres l ON pv.lider_id = l.id
+       WHERE pv.cedula = $1 LIMIT 1`,
+      [cedula]
+    );
+    
+    if (existe.rows.length > 0) {
+      return res.json({ existe: true, ...existe.rows[0] });
+    } else {
+      return res.json({ existe: false });
+    }
+  } catch (err) {
+    console.error('❌ Error al validar cédula:', err);
+    res.status(500).json({ error: 'Error al validar cédula', details: err.message });
+  }
+};
+
 // Exportar votantes a Excel (masivo)
 const exportarExcelVotantes = async (req, res) => {
   try {
@@ -325,5 +349,6 @@ module.exports = {
   updateVotante,
   deleteVotante,
   getTotalVotantes,
+  validarCedula,
   exportarExcelVotantes
 };
