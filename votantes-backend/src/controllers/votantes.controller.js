@@ -298,7 +298,7 @@ const exportarExcelVotantes = async (req, res) => {
       Barrio: v.barrio_nombre,
       Municipio: v.municipio_nombre,
       Lider: v.lider_nombre || '',
-      'Direccion del Lider': v.direccion_lider || ''
+      'A Quien Pertenece': v.direccion_lider || ''
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
