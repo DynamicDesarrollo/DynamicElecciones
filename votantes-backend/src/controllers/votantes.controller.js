@@ -189,7 +189,7 @@ const getVotantes = async (req, res) => {
     const dataResult = await db.query(dataQuery, [...valores, limit, offset]);
     const totalResult = await db.query(totalQuery, valores);
 
-    return res.json({
+    res.json({
       data: dataResult.rows.map(row => ({
         ...row,
         direccion_lider: row.direccion_lider || ''
@@ -198,11 +198,13 @@ const getVotantes = async (req, res) => {
       page,
       totalPages: Math.ceil(totalResult.rows[0].count / limit)
     });
+    return;
   } catch (err) {
     console.error("❌ Error al obtener votantes:", err);
     if (!res.headersSent) {
-      return res.status(500).json({ error: "Error interno", detalle: err.message });
+      res.status(500).json({ error: "Error interno", detalle: err.message });
     }
+    return;
   }
 };
 
