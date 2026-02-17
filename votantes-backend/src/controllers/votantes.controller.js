@@ -323,6 +323,5 @@ module.exports = {
   updateVotante,
   deleteVotante,
   getTotalVotantes,
-  validarCedula,
   exportarExcelVotantes
 };
