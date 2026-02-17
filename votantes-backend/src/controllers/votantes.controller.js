@@ -310,6 +310,8 @@ const exportarExcelVotantes = async (req, res) => {
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
     res.setHeader('Surrogate-Control', 'no-store');
+    res.removeHeader && res.removeHeader('Last-Modified');
+    res.removeHeader && res.removeHeader('ETag');
     return res.status(200).send(excelBuffer);
   } catch (err) {
     console.error('❌ Error al exportar votantes:', err);
