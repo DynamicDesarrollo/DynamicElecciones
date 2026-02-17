@@ -295,16 +295,6 @@ const deleteVotante = async (req, res) => {
   }
 };
 
-module.exports = {
-  getVotantes,
-  createVotante,
-  updateVotante,
-  deleteVotante,
-  getTotalVotantes,
-  validarCedula,
-  exportarExcelVotantes
-};
-
 // Exportar votantes a Excel (masivo)
 const exportarExcelVotantes = async (req, res) => {
   try {
@@ -339,4 +329,14 @@ const exportarExcelVotantes = async (req, res) => {
     console.error('❌ Error al exportar votantes:', err);
     res.status(500).json({ error: 'Error al exportar votantes', details: err.message });
   }
+};
+
+module.exports = {
+  getVotantes,
+  createVotante,
+  updateVotante,
+  deleteVotante,
+  getTotalVotantes,
+  validarCedula,
+  exportarExcelVotantes
 };
