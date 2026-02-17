@@ -6,7 +6,6 @@ const {
   updateVotante,
   deleteVotante,
   getTotalVotantes,
-  validarCedula,
   exportarExcelVotantes
 } = require('../controllers/votantes.controller');
 // const { filtrarVotantes } = require('../controllers/reportes.controller');
@@ -22,6 +21,5 @@ router.get('/votantes', verificarToken, getVotantes);
 router.get('/filtrar', getVotantes);
 router.get('/exportar-excel', exportarExcelVotantes);
 router.get('/total', getTotalVotantes);
-router.get('/validar-cedula/:cedula', validarCedula);
 module.exports = router;
 
