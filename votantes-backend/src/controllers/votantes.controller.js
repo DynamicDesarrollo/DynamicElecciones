@@ -14,7 +14,8 @@ const createVotante = async (req, res) => {
     zona,
     mesa_id,
     lugar_id,
-    sexo
+    sexo,
+    activo = true // por defecto true si no viene
   } = req.body;
   const { id: userId, aspirante_concejo_id, aspirante_alcaldia_id, rol } = req.usuario;
   try {
@@ -36,8 +37,8 @@ const createVotante = async (req, res) => {
         `INSERT INTO prospectos_votantes (
           nombre_completo, cedula, telefono, direccion,
           municipio_id, barrio_id, lider_id,
-          zona, mesa_id, lugar_id, sexo, usuario_id
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+          zona, mesa_id, lugar_id, sexo, usuario_id, activo
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
         RETURNING *`,
         [
           nombre_completo,
@@ -51,7 +52,8 @@ const createVotante = async (req, res) => {
           mesa_id,
           lugar_id,
           sexo,
-          userId
+          userId,
+          activo
         ]
       );
       return res.status(201).json(result.rows[0]);
@@ -73,9 +75,9 @@ const createVotante = async (req, res) => {
         nombre_completo, cedula, telefono, direccion,
         municipio_id, barrio_id, lider_id,
         aspirante_concejo_id, aspirante_alcaldia_id, partido_id, zona,
-        mesa_id, lugar_id, sexo
+        mesa_id, lugar_id, sexo, usuario_id, activo
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
       RETURNING *`,
       [
         nombre_completo,
@@ -91,7 +93,9 @@ const createVotante = async (req, res) => {
         zona,
         mesa_id,
         lugar_id,
-        sexo
+        sexo,
+        userId,
+        activo
       ]
     );
     return res.status(201).json(result.rows[0]);
