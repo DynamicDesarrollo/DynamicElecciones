@@ -31,33 +31,46 @@ const createVotante = async (req, res) => {
       return res.status(409).json({ existe: true, ...existe.rows[0] });
     }
 
-    // Permitir que el rol 'user' cree votantes aunque no tenga aspirante asociado
-    if (!aspirante_concejo_id && !aspirante_alcaldia_id && rol !== 'admin') {
-      const result = await db.query(
-        `INSERT INTO prospectos_votantes (
-          nombre_completo, cedula, telefono, direccion,
-          municipio_id, barrio_id, lider_id,
-          zona, mesa_id, lugar_id, sexo, usuario_id, activo
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
-        RETURNING *`,
-        [
-          nombre_completo,
-          cedula,
-          telefono,
-          direccion,
-          municipio_id,
-          barrio_id,
-          lider_id,
-          zona,
-          mesa_id,
-          lugar_id,
-          sexo,
-          userId,
-          activo
-        ]
-      );
-      return res.status(201).json(result.rows[0]);
+    // Siempre usar el mismo INSERT, pasando null para campos de aspirante/partido si no corresponden
+    let finalAspiranteConcejoId = aspirante_concejo_id || null;
+    let finalAspiranteAlcaldiaId = aspirante_alcaldia_id || null;
+    let finalPartidoId = null;
+    if (aspirante_concejo_id) {
+      const resPartido = await db.query("SELECT partido_id FROM aspirantes_concejo WHERE id = $1", [aspirante_concejo_id]);
+      finalPartidoId = resPartido.rows[0]?.partido_id || null;
+    } else if (aspirante_alcaldia_id) {
+      const resPartido = await db.query("SELECT partido_id FROM aspirantes_alcaldia WHERE id = $1", [aspirante_alcaldia_id]);
+      finalPartidoId = resPartido.rows[0]?.partido_id || null;
     }
+    const result = await db.query(
+      `INSERT INTO prospectos_votantes (
+        nombre_completo, cedula, telefono, direccion,
+        municipio_id, barrio_id, lider_id,
+        aspirante_concejo_id, aspirante_alcaldia_id, partido_id, zona,
+        mesa_id, lugar_id, sexo, usuario_id, activo
+      )
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+      RETURNING *`,
+      [
+        nombre_completo,
+        cedula,
+        telefono,
+        direccion,
+        municipio_id,
+        barrio_id,
+        lider_id,
+        finalAspiranteConcejoId,
+        finalAspiranteAlcaldiaId,
+        finalPartidoId,
+        zona,
+        mesa_id,
+        lugar_id,
+        sexo,
+        userId,
+        activo
+      ]
+    );
+    return res.status(201).json(result.rows[0]);
 
     let partido_id = null;
     if (aspirante_concejo_id) {
