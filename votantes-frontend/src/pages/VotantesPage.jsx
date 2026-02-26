@@ -31,14 +31,16 @@ export default function VotantesPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      if (!Array.isArray(data)) {
+      // Soporta array directo o data.data
+      let votantesArray = Array.isArray(data) ? data : Array.isArray(data.data) ? data.data : [];
+      if (!Array.isArray(votantesArray)) {
         setVotantes([]);
         setTotalPaginas(1);
         toast.error("❌ Error al cargar votantes: respuesta inválida");
         return;
       }
-      const filtrados = data.filter((v) =>
-        v.nombre_completo.toLowerCase().includes(filtroNombre.toLowerCase()) &&
+      const filtrados = votantesArray.filter((v) =>
+        v.nombre_completo?.toLowerCase().includes(filtroNombre.toLowerCase()) &&
         (v.cedula || "").toLowerCase().includes(filtroCedula.toLowerCase()) &&
         (activo === "" || String(v.activo) === activo)
       );
