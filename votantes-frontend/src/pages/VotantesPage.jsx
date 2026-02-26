@@ -11,48 +11,50 @@ import CrearVotanteForm from "../components/Votantes/CrearVotanteForm";
 import EditarVotanteForm from "../components/Votantes/EditarVotanteForm";
 
 export default function VotantesPage() {
-  // Render votantes with array validation
-  const renderVotantes = () => {
-    return Array.isArray(votantes) ? votantes.map((v) => (
-      <tr key={v.id}>
-        <td>{v.cedula}</td>
-        <td>{v.nombre_completo}</td>
-        <td>{v.telefono}</td>
-        <td>{v.barrio_nombre}</td>
-        <td>{v.municipio_nombre}</td>
-        {usuario?.rol === 'admin' && <td>{v.lider_nombre}</td>}
-        {usuario?.rol === 'admin' && <td>{v.direccion_lider || '—'}</td>}
-        <td className="text-center">
-          <button
-            className="btn btn-sm btn-warning me-2"
-            title="Editar"
-            onClick={() => abrirModalEditar(v)}
-          >
-            <i className="bi bi-pencil-square"></i>
-          </button>
-          <button
-            className="btn btn-sm btn-danger"
-            title="Eliminar"
-            onClick={() => eliminarVotante(v.id)}
-          >
-            <i className="bi bi-trash"></i>
-          </button>
-        </td>
-      </tr>
-    )) : null;
-  };
   const { usuario } = useAuth();
-
   const [votantes, setVotantes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
-  const [busqueda, setBusqueda] = useState("");
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const votantesPorPagina = 10;
+  const [filtroNombre, setFiltroNombre] = useState("");
+  const [filtroCedula, setFiltroCedula] = useState("");
   const [activo, setActivo] = useState("");
-
   const modalRef = useRef();
   const [votanteAEditar, setVotanteAEditar] = useState(null);
+
+  const cargarVotantes = async () => {
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/votantes`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!Array.isArray(data)) {
+        setVotantes([]);
+        setTotalPaginas(1);
+        toast.error("❌ Error al cargar votantes: respuesta inválida");
+        return;
+      }
+      const filtrados = data.filter((v) =>
+        v.nombre_completo.toLowerCase().includes(filtroNombre.toLowerCase()) &&
+        (v.cedula || "").toLowerCase().includes(filtroCedula.toLowerCase()) &&
+        (activo === "" || String(v.activo) === activo)
+      );
+      setTotalPaginas(Math.ceil(filtrados.length / votantesPorPagina));
+      setVotantes(filtrados.slice((page - 1) * votantesPorPagina, page * votantesPorPagina));
+    } catch (err) {
+      toast.error("❌ Error al cargar votantes");
+      setVotantes([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    cargarVotantes();
+  }, [page, filtroNombre, filtroCedula, activo]);
 
   const abrirModalCrear = () => {
     setVotanteAEditar(null);
@@ -64,57 +66,6 @@ export default function VotantesPage() {
     setVotanteAEditar(votante);
     const modal = new Modal(modalRef.current);
     modal.show();
-  };
-
-  const cargarVotantes = async (pagina = 1) => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-
-      const query = new URLSearchParams({
-        page: pagina,
-        limit: 10,
-        busqueda,
-        activo,
-      });
-
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/votantes/filtrar?${query}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (!res.ok) throw new Error("No autorizado");
-
-      const result = await res.json();
-      setVotantes(result.data || []);
-      setTotalPages(result.totalPages || 1);
-      setPage(result.page || 1);
-    } catch (error) {
-      console.error("Error al cargar votantes:", error);
-      setVotantes([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    cargarVotantes(page);
-  }, [page]);
-
-  const aplicarFiltro = () => {
-    setPage(1);
-    cargarVotantes(1);
-  };
-
-  const limpiarFiltros = () => {
-    setBusqueda("");
-    setActivo("");
-    setPage(1);
-    cargarVotantes(1);
   };
 
   const eliminarVotante = async (id) => {
@@ -131,30 +82,29 @@ export default function VotantesPage() {
     if (!confirmar.isConfirmed) return;
 
     try {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(
-      `${import.meta.env.VITE_API_URL}/api/votantes/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/votantes/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (res.ok) {
+        cargarVotantes();
+        Swal.fire('✅ Eliminado', 'El votante fue eliminado correctamente.', 'success');
+      } else {
+        Swal.fire('❌ Error', 'No se pudo eliminar el votante.', 'error');
       }
-    );
-
-    if (res.ok) {
-      setVotantes((prev) => prev.filter((v) => v.id !== id));
-      Swal.fire('✅ Eliminado', 'El votante fue eliminado correctamente.', 'success');
-    } else {
-      Swal.fire('❌ Error', 'No se pudo eliminar el votante.', 'error');
+    } catch (err) {
+      console.error("Error al eliminar votante:", err);
+      Swal.fire('⚠️ Error', 'Ocurrió un error inesperado.', 'error');
     }
-  } catch (err) {
-    console.error("Error al eliminar votante:", err);
-    Swal.fire('⚠️ Error', 'Ocurrió un error inesperado.', 'error');
-  }
   };
 
+  // Exportación Excel y PDF: traen todo el dataset
   const exportarExcel = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -181,8 +131,6 @@ export default function VotantesPage() {
       const query = new URLSearchParams({
         page: 1,
         limit: 1000000,
-        busqueda,
-        activo,
       });
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/api/votantes/filtrar?${query}`,
@@ -216,31 +164,75 @@ export default function VotantesPage() {
     }
   };
 
+  if (!usuario) {
+    return <div className="container mt-4 text-danger">❌ Usuario no autenticado</div>;
+  }
+
   return (
-    <>
+    <div className="container mt-4">
       <h2 className="mb-4">📋 Lista de Votantes</h2>
-      <div className="row mb-3"></div>
-      <div className="mb-3 d-flex justify-content-end gap-2">
-        <button className="btn btn-success" onClick={abrirModalCrear}>
-          <i className="bi bi-person-plus me-2"></i> Nuevo Prospecto Votante
-        </button>
-        {/* Botón Excel SIEMPRE llama a exportarExcel, que usa /exportar-excel */}
-        <button
-          className="btn btn-outline-success btn-sm"
-          onClick={exportarExcel}
-          disabled={usuario?.rol === 'user'}
-          title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
-        >
-          📄 Excel
-        </button>
-        <button
-          className="btn btn-outline-danger btn-sm"
-          onClick={exportarPDF}
-          disabled={usuario?.rol === 'user'}
-          title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
-        >
-          🧾 PDF
-        </button>
+      <div className="row mb-3 align-items-end">
+        {usuario?.rol === 'admin' && (
+          <>
+            <div className="col-md-4 mb-2">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="🔍 Buscar por nombre"
+                value={filtroNombre}
+                onChange={(e) => {
+                  setFiltroNombre(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+            <div className="col-md-4 mb-2">
+              <input
+                type="text"
+                className="form-control"
+                placeholder="🔍 Buscar por cédula"
+                value={filtroCedula}
+                onChange={(e) => {
+                  setFiltroCedula(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
+          </>
+        )}
+        <div className="col-md-2 mb-2">
+          <label>Activo</label>
+          <select
+            className="form-select"
+            value={activo}
+            onChange={(e) => setActivo(e.target.value)}
+          >
+            <option value="">-- Todos --</option>
+            <option value="true">Sí</option>
+            <option value="false">No</option>
+          </select>
+        </div>
+        <div className="col-md-2 d-flex justify-content-end gap-2 mb-2">
+          <button className="btn btn-success" onClick={abrirModalCrear}>
+            <i className="bi bi-person-plus me-2"></i> Nuevo Prospecto Votante
+          </button>
+          <button
+            className="btn btn-outline-success btn-sm"
+            onClick={exportarExcel}
+            disabled={usuario?.rol === 'user'}
+            title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
+          >
+            📄 Excel
+          </button>
+          <button
+            className="btn btn-outline-danger btn-sm"
+            onClick={exportarPDF}
+            disabled={usuario?.rol === 'user'}
+            title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
+          >
+            🧾 PDF
+          </button>
+        </div>
       </div>
       {loading ? (
         <p>Cargando votantes...</p>
@@ -261,18 +253,45 @@ export default function VotantesPage() {
                 </tr>
               </thead>
               <tbody>
-                {renderVotantes()}
-                {votantes.length === 0 && (
+                {votantes.length === 0 ? (
                   <tr>
                     <td colSpan="8" className="text-center">
                       No hay votantes registrados
                     </td>
                   </tr>
+                ) : (
+                  votantes.map((v) => (
+                    <tr key={v.id}>
+                      <td>{v.cedula}</td>
+                      <td>{v.nombre_completo}</td>
+                      <td>{v.telefono}</td>
+                      <td>{v.barrio_nombre}</td>
+                      <td>{v.municipio_nombre}</td>
+                      {usuario?.rol === 'admin' && <td>{v.lider_nombre}</td>}
+                      {usuario?.rol === 'admin' && <td>{v.direccion_lider || '—'}</td>}
+                      <td className="text-center">
+                        <button
+                          className="btn btn-sm btn-warning me-2"
+                          title="Editar"
+                          onClick={() => abrirModalEditar(v)}
+                        >
+                          <i className="bi bi-pencil-square"></i>
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          title="Eliminar"
+                          onClick={() => eliminarVotante(v.id)}
+                        >
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      </td>
+                    </tr>
+                  ))
                 )}
               </tbody>
             </table>
           </div>
-          <div className="d-flex justify-content-between align-items-center mt-3">
+          <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
             <button
               className="btn btn-primary"
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
@@ -280,13 +299,13 @@ export default function VotantesPage() {
             >
               ← Anterior
             </button>
-            <span className="fw-bold">
-              Página {page} de {totalPages}
+            <span className="fw-bold text-primary">
+              Página {page} de {totalPaginas}
             </span>
             <button
               className="btn btn-primary"
-              onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-              disabled={page === totalPages}
+              onClick={() => setPage((prev) => Math.min(prev + 1, totalPaginas))}
+              disabled={page === totalPaginas}
             >
               Siguiente →
             </button>
@@ -318,7 +337,7 @@ export default function VotantesPage() {
                 <EditarVotanteForm
                   votante={votanteAEditar}
                   onVotanteActualizado={() => {
-                    cargarVotantes(page);
+                    cargarVotantes();
                     const modal = Modal.getInstance(modalRef.current);
                     modal.hide();
                     toast.success("✅ Votante actualizado con éxito");
@@ -327,7 +346,7 @@ export default function VotantesPage() {
               ) : (
                 <CrearVotanteForm
                   onVotanteCreado={() => {
-                    cargarVotantes(page);
+                    cargarVotantes();
                     const modal = Modal.getInstance(modalRef.current);
                     modal.hide();
                     toast.success("✅ Votante creado con éxito");
@@ -338,6 +357,6 @@ export default function VotantesPage() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
