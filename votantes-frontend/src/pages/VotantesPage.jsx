@@ -27,11 +27,11 @@ export default function VotantesPage() {
     setLoading(true);
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/votantes`, {
+      // Traer todos los votantes (sin paginación)
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/votantes?limit=1000000`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      // Soporta array directo o data.data
       let votantesArray = Array.isArray(data) ? data : Array.isArray(data.data) ? data.data : [];
       if (!Array.isArray(votantesArray)) {
         setVotantes([]);
