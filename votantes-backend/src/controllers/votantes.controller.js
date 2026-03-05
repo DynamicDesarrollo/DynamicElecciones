@@ -282,7 +282,7 @@ const exportarExcelVotantes = async (req, res) => {
   try {
     const result = await db.query(`
       SELECT pv.*, b.nombre AS barrio_nombre, m.nombre AS municipio_nombre, l.nombre_completo AS lider_nombre, l.direccion AS direccion_lider,
-              lv.nombre AS lugar_nombre, mv.nombre AS mesa_nombre
+              lv.nombre AS lugar_nombre, mv.numero AS mesa_nombre
       FROM prospectos_votantes pv
       LEFT JOIN barrios b ON pv.barrio_id = b.id
       LEFT JOIN municipios m ON pv.municipio_id = m.id
