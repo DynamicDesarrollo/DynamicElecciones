@@ -286,6 +286,8 @@ const exportarExcelVotantes = async (req, res) => {
       LEFT JOIN barrios b ON pv.barrio_id = b.id
       LEFT JOIN municipios m ON pv.municipio_id = m.id
       LEFT JOIN lideres l ON pv.lider_id = l.id
+      LEFT JOIN lugares_votacion lv ON pv.lugar_id = lv.id
+      LEFT JOIN mesas_votacion mv ON pv.mesa_id = mv.id
       ORDER BY pv.fecha_registro DESC
     `);
     const votantes = result.rows;
@@ -298,7 +300,10 @@ const exportarExcelVotantes = async (req, res) => {
       Barrio: v.barrio_nombre,
       Municipio: v.municipio_nombre,
       Lider: v.lider_nombre || '',
-      'A Quien Pertenece': v.direccion_lider || ''
+      'A Quien Pertenece': v.direccion_lider || '',
+      Lugar: v.lugar_id ? `${v.lugar_id} - ${v.lugar_nombre || ''}` : '',
+      Mesa: v.mesa_id ? `${v.mesa_id} - ${v.mesa_nombre || ''}` : '',
+      Zona: v.zona,
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
