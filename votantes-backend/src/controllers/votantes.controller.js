@@ -281,7 +281,8 @@ const validarCedula = async (req, res) => {
 const exportarExcelVotantes = async (req, res) => {
   try {
     const result = await db.query(`
-      SELECT pv.*, b.nombre AS barrio_nombre, m.nombre AS municipio_nombre, l.nombre_completo AS lider_nombre, l.direccion AS direccion_lider
+      SELECT pv.*, b.nombre AS barrio_nombre, m.nombre AS municipio_nombre, l.nombre_completo AS lider_nombre, l.direccion AS direccion_lider,
+              lv.nombre AS lugar_nombre, mv.nombre AS mesa_nombre
       FROM prospectos_votantes pv
       LEFT JOIN barrios b ON pv.barrio_id = b.id
       LEFT JOIN municipios m ON pv.municipio_id = m.id
@@ -301,8 +302,8 @@ const exportarExcelVotantes = async (req, res) => {
       Municipio: v.municipio_nombre,
       Lider: v.lider_nombre || '',
       'A Quien Pertenece': v.direccion_lider || '',
-      Lugar: v.lugar_id ? `${v.lugar_id} - ${v.lugar_nombre || ''}` : '',
-      Mesa: v.mesa_id ? `${v.mesa_id} - ${v.mesa_nombre || ''}` : '',
+      Lugar: v.lugar_nombre || '',
+      Mesa: v.mesa_nombre || '',
       Zona: v.zona,
     }));
     const ws = XLSX.utils.json_to_sheet(data);
