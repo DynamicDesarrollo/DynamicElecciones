@@ -1,10 +1,121 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "@fontsource-variable/archivo/wdth.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
 
-html, body, #root {
-  height: 100%;
-  margin: 0;
-  padding: 0;
+/* ------------------------------------------------------------------
+   Dynamic Electoral — mundo "Pendón de campaña"
+   Tinta sobre papel; el color de la campaña vive solo en el pendón,
+   la acción principal y el foco. Se inyecta como --campana desde React.
+   ------------------------------------------------------------------ */
+
+@theme {
+  --font-sans: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+
+  --color-tinta: #121417;
+  --color-tinta-2: #3d4148;   /* texto secundario: 9.6:1 sobre blanco */
+  --color-tinta-3: #5f646c;   /* texto terciario: 5.9:1 sobre blanco */
+  --color-papel: #ffffff;
+  --color-fondo: #f2f2ef;
+  --color-filete: #dedcd6;
+  --color-filete-fuerte: #b9b6ae;
+  --color-voto: #ffd23f;
+  --color-ok: #17683a;
+  --color-ok-suave: #e3f1e8;
+  --color-alerta: #8a4a00;
+  --color-alerta-suave: #fbefd9;
+  --color-error: #b42318;
+  --color-error-suave: #fbe7e4;
+
+  --ease-salida: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-pendon: cubic-bezier(0.32, 0.72, 0, 1);
+
+  --animate-izar: izar 450ms var(--ease-pendon) both;
+  --animate-aparecer: aparecer 180ms var(--ease-salida) both;
+
+  @keyframes izar {
+    from { clip-path: inset(0 0 100% 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+  @keyframes aparecer {
+    from { opacity: 0; transform: scale(0.97) translateY(4px); }
+    to { opacity: 1; transform: none; }
+  }
 }
 
+/* Color de campaña: lo define cada campaña (ver lib/marca.js) en el contenedor de la app.
+   "inline" hace que cada utilidad lea la variable en su propio elemento, no en :root. */
+@theme inline {
+  --color-campana: var(--campana, #121417);
+  --color-campana-tinta: var(--campana-tinta, #ffffff);
+  --color-campana-suave: color-mix(in oklab, var(--campana, #121417) 9%, white);
+}
+
+/* Utilidades del mundo */
+@utility condensada {
+  font-stretch: 68%;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  word-spacing: 0.12em;
+}
+@utility cifra {
+  font-stretch: 72%;
+  font-weight: 800;
+  word-spacing: 0.12em;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.02em;
+  line-height: 0.9;
+}
+@utility rotulo {
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    @apply bg-fondo text-tinta font-sans antialiased;
+    font-variant-numeric: tabular-nums;
+    min-height: 100dvh;
+  }
+  ::selection {
+    background: var(--color-voto);
+    color: var(--color-tinta);
+  }
+  :focus-visible {
+    outline: 2px solid var(--campana, #121417);
+    outline-offset: 2px;
+  }
+  input, select, textarea {
+    caret-color: var(--campana, #121417);
+    /* 16px evita el zoom automático de iOS al enfocar */
+    font-size: max(16px, 1em);
+  }
+  a {
+    text-underline-offset: 3px;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-filete-fuerte) transparent;
+  }
+  button:not(:disabled), [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Avisos (Sonner) con la tipografía y la tinta del sistema */
+[data-sonner-toaster] {
+  --font-family: var(--font-sans);
+}

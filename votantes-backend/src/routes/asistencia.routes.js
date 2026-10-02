@@ -2,10 +2,9 @@
 
 const express = require('express');
 const { getAsistencias, createAsistencia, totalVotantes, resumenAsistencias } = require('../controllers/asistencias.controler');
-const { verificarToken } = require('../middlewares/auth');
 const router = express.Router();
-router.get('/', verificarToken, getAsistencias);
-router.post('/', verificarToken, createAsistencia);
-router.get('/total', verificarToken, totalVotantes);
-router.get('/resumen', verificarToken, resumenAsistencias);
+router.get('/', getAsistencias);
+router.post('/', createAsistencia);
+router.get('/total', totalVotantes);
+router.get('/resumen', resumenAsistencias);
 module.exports = router;

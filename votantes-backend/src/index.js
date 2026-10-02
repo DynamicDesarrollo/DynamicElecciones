@@ -4,31 +4,30 @@ const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
 const db = require('./utils/db.js');
+const { verificarToken, requireCampana } = require('./middlewares/auth');
 
-// Importamos las rutas
+// Rutas públicas
+const authRoutes = require('./routes/auth.routes');
+
+// Catálogos compartidos entre campañas
 const partidosRoutes = require('./routes/partidos.routes');
 const municipiosRoutes = require('./routes/municipios.routes');
 const barriosRoutes = require('./routes/barrios.routes');
+const mesasRoutes = require('./routes/mesas.router');
+const lugaresRoutes = require('./routes/lugares.router');
+const geografiaRoutes = require('./routes/geografia.routes');
+
+// Administración del SaaS
+const campanasRoutes = require('./routes/campanas.routes');
+const usuariosRoutes = require('./routes/usuarios.routes');
+
+// Datos de cada campaña
 const aspirantesRoutes = require('./routes/aspirantes.routes');
 const lideresRoutes = require('./routes/lideres.routes');
 const votantesRoutes = require('./routes/votantes.routes');
-const aspirantesConcejoRoutes = require('./routes/aspirantes_concejo.routes');
-const usuariosRoutes = require('./routes/usuarios.routes');
-// Importamos las rutas de mesas
-const mesasRoutes = require('./routes/mesas.router');
-// Importamos las rutas de lugares
-const lugaresRoutes = require('./routes/lugares.router');
-//Rutas Reportes
 const reportesRoutes = require('./routes/reportes.routes');
-const filtrarVotantesRoutes = require('./routes/reportes.routes');
-const resumenVotantesRoutes = require('./routes/reportes.routes');
-//Rutas Asistencias
 const asistenciaRoutes = require('./routes/asistencia.routes');
 const informesRoutes = require('./routes/informes.routes');
-//Rutas Auth
-console.log('Antes de importar authRoutes');
-const authRoutes = require('./routes/auth.routes');
-console.log('Después de importar authRoutes');
 
 
 const app = express();
@@ -43,37 +42,34 @@ app.use(cors({
 app.use(express.json());
 app.use(morgan('dev'));
 
-// Rutas de la API
+app.get('/', (req, res) => res.send('API de Votantes Activa'));
+
+// Único endpoint público: el login
+app.use('/api/auth', authRoutes);
+
+// Todo lo demás exige sesión
+app.use('/api', verificarToken);
+
 app.use('/api/partidos', partidosRoutes);
 app.use('/api/municipios', municipiosRoutes);
 app.use('/api/barrios', barriosRoutes);
-app.use('/api/alcaldia', aspirantesRoutes);
-app.use('/api/aspirantes', aspirantesRoutes);
-app.use('/api/lideres', lideresRoutes);
-app.use('/api/votantes', votantesRoutes);
-app.use('/api/concejo', aspirantesConcejoRoutes);
-app.use('/api/usuarios', usuariosRoutes);
-// Rutas de mesas
 app.use('/api/mesas', mesasRoutes);
-// Rutas de lugares
 app.use('/api/lugares', lugaresRoutes);
-// Ruta Reportes
-app.use('/api/reportes', reportesRoutes);
-app.use('/api/filtrarvotantes', filtrarVotantesRoutes);
-app.use('/api/resumenvotantess', resumenVotantesRoutes);
-// Rutas de asistencias
-app.use('/api/asistencia', asistenciaRoutes);
+app.use('/api/geografia', geografiaRoutes);
 
-// Rutas de informes
-app.use('/api/informes', informesRoutes);
+app.use('/api/campanas', campanasRoutes);
+app.use('/api/usuarios', requireCampana, usuariosRoutes);
 
-// Rutas de autenticación
-app.use('/api/auth', authRoutes);
+// Los datos de campaña exigen una campaña activa
+app.use('/api/aspirantes', requireCampana, aspirantesRoutes);
+app.use('/api/lideres', requireCampana, lideresRoutes);
+app.use('/api/votantes', requireCampana, votantesRoutes);
+app.use('/api/reportes', requireCampana, reportesRoutes);
+app.use('/api/asistencia', requireCampana, asistenciaRoutes);
+app.use('/api/informes', requireCampana, informesRoutes);
 
+app.use('/api', (req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 
-app.get('/', (req, res) => res.send('API de Votantes Activa'));
-
-console.log('Valor de process.env.PORT:', process.env.PORT);
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);

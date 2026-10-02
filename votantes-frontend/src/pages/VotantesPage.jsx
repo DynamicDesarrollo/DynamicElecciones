@@ -1,364 +1,216 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-import { Modal } from "bootstrap";
-import { toast } from "react-toastify";
-import Swal from 'sweetalert2';
-import CrearVotanteForm from "../components/Votantes/CrearVotanteForm";
-import EditarVotanteForm from "../components/Votantes/EditarVotanteForm";
+import { api } from "../lib/api";
+import { esAdmin, nombreCargo } from "../lib/campana";
+import { descargarArchivo, exportarPDF } from "../lib/exportar";
+import { numero } from "../lib/formato";
+import VotanteForm from "../components/Votantes/VotanteForm";
+import { Boton, BotonIcono } from "../ui/Boton";
+import { Entrada, Seleccion } from "../ui/Campo";
+import { useConfirmar } from "../ui/Confirmar";
+import { Modal } from "../ui/Modal";
+import { Cargando, Encabezado, Insignia, Paginacion, Tabla, Vacio } from "../ui/Pagina";
+
+const POR_PAGINA = 15;
 
 export default function VotantesPage() {
   const { usuario } = useAuth();
-  const [votantes, setVotantes] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPaginas, setTotalPaginas] = useState(1);
-  const votantesPorPagina = 10;
-  const [filtroNombre, setFiltroNombre] = useState("");
-  const [filtroCedula, setFiltroCedula] = useState("");
-  const [activo, setActivo] = useState("");
-  const modalRef = useRef();
-  const [votanteAEditar, setVotanteAEditar] = useState(null);
+  const admin = esAdmin(usuario);
+  const legado = usuario?.rol === "user";
+  const confirmar = useConfirmar();
 
-  const cargarVotantes = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      // Traer todos los votantes (sin paginación)
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/votantes?limit=1000000`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      let votantesArray = Array.isArray(data) ? data : Array.isArray(data.data) ? data.data : [];
-      if (!Array.isArray(votantesArray)) {
-        setVotantes([]);
-        setTotalPaginas(1);
-        toast.error("❌ Error al cargar votantes: respuesta inválida");
-        return;
-      }
-      const filtrados = votantesArray.filter((v) =>
-        v.nombre_completo?.toLowerCase().includes(filtroNombre.toLowerCase()) &&
-        (v.cedula || "").toLowerCase().includes(filtroCedula.toLowerCase()) &&
-        (activo === "" || String(v.activo) === activo)
-      );
-      setTotalPaginas(Math.ceil(filtrados.length / votantesPorPagina));
-      setVotantes(filtrados.slice((page - 1) * votantesPorPagina, page * votantesPorPagina));
-    } catch (err) {
-      toast.error("❌ Error al cargar votantes");
-      setVotantes([]);
-    } finally {
-      setLoading(false);
-    }
+  const [votantes, setVotantes] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [totalPaginas, setTotalPaginas] = useState(1);
+  const [cargando, setCargando] = useState(true);
+  const [pagina, setPagina] = useState(1);
+  const [busqueda, setBusqueda] = useState("");
+  const [busquedaAplicada, setBusquedaAplicada] = useState("");
+  const [activo, setActivo] = useState("");
+  const [editando, setEditando] = useState(null); // votante, "nuevo" o null
+
+  // Espera a que la persona deje de escribir antes de buscar
+  useEffect(() => {
+    const t = setTimeout(() => {
+      setBusquedaAplicada(busqueda.trim());
+      setPagina(1);
+    }, 300);
+    return () => clearTimeout(t);
+  }, [busqueda]);
+
+  const cargar = async () => {
+    setCargando(true);
+    const query = new URLSearchParams({ page: pagina, limit: POR_PAGINA, busqueda: busquedaAplicada, activo });
+    const { ok, data } = await api(`/votantes?${query}`);
+    setCargando(false);
+    if (!ok) return toast.error(data?.error || "No se pudieron cargar los votantes");
+    setVotantes(data.data);
+    setTotal(data.total);
+    setTotalPaginas(Math.max(1, data.totalPages));
   };
 
   useEffect(() => {
-    cargarVotantes();
-  }, [page, filtroNombre, filtroCedula, activo]);
+    cargar();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagina, busquedaAplicada, activo, usuario?.campana?.id]);
 
-  const abrirModalCrear = () => {
-    setVotanteAEditar(null);
-    const modal = new Modal(modalRef.current);
-    modal.show();
-  };
-
-  const abrirModalEditar = (votante) => {
-    setVotanteAEditar(votante);
-    const modal = new Modal(modalRef.current);
-    modal.show();
-  };
-
-  const eliminarVotante = async (id) => {
-    const confirmar = await Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción eliminará el votante permanentemente',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
+  const eliminar = async (v) => {
+    const ok = await confirmar({
+      titulo: "¿Eliminar votante?",
+      texto: `${v.nombre_completo} (cédula ${v.cedula}) se borrará de la campaña. Esta acción no se puede deshacer.`,
+      accion: "Eliminar votante",
     });
-    if (!confirmar.isConfirmed) return;
-
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/votantes/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (res.ok) {
-        cargarVotantes();
-        Swal.fire('✅ Eliminado', 'El votante fue eliminado correctamente.', 'success');
-      } else {
-        Swal.fire('❌ Error', 'No se pudo eliminar el votante.', 'error');
-      }
-    } catch (err) {
-      console.error("Error al eliminar votante:", err);
-      Swal.fire('⚠️ Error', 'Ocurrió un error inesperado.', 'error');
-    }
+    if (!ok) return;
+    const res = await api(`/votantes/${v.id}`, { method: "DELETE" });
+    if (!res.ok) return toast.error(res.data?.error || "No se pudo eliminar el votante");
+    toast.success("Votante eliminado");
+    cargar();
   };
 
-  // Exportación Excel y PDF: traen todo el dataset
   const exportarExcel = async () => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/votantes/exportar-excel`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (!res.ok) throw new Error("No autorizado");
-      const blob = await res.blob();
-      saveAs(blob, "votantes.xlsx");
-    } catch (err) {
-      Swal.fire('⚠️ Error', 'No se pudo exportar el Excel.', 'error');
+      await descargarArchivo("/votantes/exportar-excel", "votantes.xlsx");
+    } catch {
+      toast.error("No se pudo exportar el Excel");
     }
   };
 
-  const exportarPDF = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      // Traer todos los votantes sin paginación (limit muy alto)
-      const query = new URLSearchParams({
-        page: 1,
-        limit: 1000000,
-      });
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/votantes/filtrar?${query}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      if (!res.ok) throw new Error("No autorizado");
-      const result = await res.json();
-      const allVotantes = result.data || [];
-      const doc = new jsPDF();
-      doc.text("Lista de Votantes", 14, 16);
-      autoTable(doc, {
-        startY: 20,
-        head: [["Nombre", "Cédula", "Teléfono", "Barrio", "Municipio", "Lider", "Dirección del Líder"]],
-        body: allVotantes.map((v) => [
-          v.nombre_completo,
-          v.cedula,
-          v.telefono,
-          v.barrio_nombre,
-          v.municipio_nombre,
-          v.lider_nombre || "N/A",
-          v.direccion_lider || "N/A"
-        ]),
-      });
-      doc.save("votantes.pdf");
-    } catch (err) {
-      Swal.fire('⚠️ Error', 'No se pudo exportar el PDF.', 'error');
-    }
+  const exportarPdf = async () => {
+    const query = new URLSearchParams({ page: 1, limit: 100000, busqueda: busquedaAplicada, activo });
+    const { ok, data } = await api(`/votantes?${query}`);
+    if (!ok) return toast.error("No se pudo generar el PDF");
+    await exportarPDF({
+      titulo: "Votantes",
+      columnas: ["Nombre", "Cédula", "Teléfono", "Barrio", "Municipio", "Líder", "Aspirante"],
+      filas: data.data.map((v) => [v.nombre_completo, v.cedula, v.telefono || "", v.barrio_nombre || "", v.municipio_nombre || "", v.lider_nombre || "", v.aspirante_nombre || ""]),
+      archivo: "votantes.pdf",
+      orientacion: "landscape",
+    });
   };
 
-  if (!usuario) {
-    return <div className="container mt-4 text-danger">❌ Usuario no autenticado</div>;
-  }
+  const alGuardar = () => {
+    toast.success(editando === "nuevo" ? "Votante registrado" : "Votante actualizado");
+    setEditando(null);
+    cargar();
+  };
+
+  const filtrando = busquedaAplicada || activo;
 
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4">📋 Lista de Votantes</h2>
-      <div className="row mb-3 align-items-end">
-        {usuario?.rol === 'admin' && (
+    <>
+      <Encabezado
+        titulo="Votantes"
+        descripcion={`${numero(total)} ${filtrando ? "encontrados" : "votantes registrados"}${!admin && usuario?.nombre_aspirante ? ` con ${usuario.nombre_aspirante}` : ""}.`}
+      >
+        {!legado && (
           <>
-            <div className="col-md-4 mb-2">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="🔍 Buscar por nombre"
-                value={filtroNombre}
-                onChange={(e) => {
-                  setFiltroNombre(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
-            <div className="col-md-4 mb-2">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="🔍 Buscar por cédula"
-                value={filtroCedula}
-                onChange={(e) => {
-                  setFiltroCedula(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
+            <Boton variante="secundario" icono="bi-file-earmark-spreadsheet" onClick={exportarExcel}>Excel</Boton>
+            <Boton variante="secundario" icono="bi-file-earmark-pdf" onClick={exportarPdf}>PDF</Boton>
           </>
         )}
-        <div className="col-md-2 mb-2">
-          <label>Activo</label>
-          <select
-            className="form-select"
-            value={activo}
-            onChange={(e) => setActivo(e.target.value)}
-          >
-            <option value="">-- Todos --</option>
-            <option value="true">Sí</option>
-            <option value="false">No</option>
-          </select>
+        <Boton icono="bi-person-plus" onClick={() => setEditando("nuevo")}>Nuevo votante</Boton>
+      </Encabezado>
+
+      <div className="mb-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_220px]">
+        <div className="relative">
+          <i className="bi bi-search pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-tinta-3" aria-hidden="true" />
+          <Entrada
+            type="search"
+            placeholder="Buscar por nombre o cédula"
+            aria-label="Buscar votantes por nombre o cédula"
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="pl-10"
+          />
         </div>
-        <div className="col-md-2 d-flex justify-content-end gap-2 mb-2">
-          <button className="btn btn-success" onClick={abrirModalCrear}>
-            <i className="bi bi-person-plus me-2"></i> Nuevo Prospecto Votante
-          </button>
-          <button
-            className="btn btn-outline-success btn-sm"
-            onClick={exportarExcel}
-            disabled={usuario?.rol === 'user'}
-            title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
-          >
-            📄 Excel
-          </button>
-          <button
-            className="btn btn-outline-danger btn-sm"
-            onClick={exportarPDF}
-            disabled={usuario?.rol === 'user'}
-            title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
-          >
-            🧾 PDF
-          </button>
-        </div>
+        <Seleccion aria-label="Filtrar por estado" value={activo} onChange={(e) => { setActivo(e.target.value); setPagina(1); }}>
+          <option value="">Todos los estados</option>
+          <option value="true">Activos</option>
+          <option value="false">Inactivos</option>
+        </Seleccion>
       </div>
-      {loading ? (
-        <p>Cargando votantes...</p>
-      ) : (
-        <>
-          <div className="table-responsive">
-            <table className="table table-bordered table-hover table-striped">
-              <thead className="table-dark">
-                <tr>
-                  <th>Cédula</th>
-                  <th>Nombre del Votante</th>
-                  <th>Teléfono</th>
-                  <th>Barrio</th>
-                  <th>Ciudad</th>
-                  {usuario?.rol === 'admin' && <th>Lider</th>}
-                  {usuario?.rol === 'admin' && <th>A quien pertenece</th>}
-                  <th className="text-center">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {votantes.length === 0 ? (
-                  <tr>
-                    <td colSpan="8" className="text-center">
-                      No hay votantes registrados
-                    </td>
-                  </tr>
-                ) : (
-                  votantes.map((v) => (
-                    <tr key={v.id}>
-                      <td>{v.cedula}</td>
-                      <td>{v.nombre_completo}</td>
-                      <td>{v.telefono}</td>
-                      <td>{v.barrio_nombre}</td>
-                      <td>{v.municipio_nombre}</td>
-                      {usuario?.rol === 'admin' && <td>{v.lider_nombre}</td>}
-                      {usuario?.rol === 'admin' && <td>{v.direccion_lider || '—'}</td>}
-                      <td className="text-center">
-                        <button
-                          className="btn btn-sm btn-warning me-2"
-                          title="Editar"
-                          onClick={() => abrirModalEditar(v)}
-                        >
-                          <i className="bi bi-pencil-square"></i>
-                        </button>
-                        <button
-                          className="btn btn-sm btn-danger"
-                          title="Eliminar"
-                          onClick={() => eliminarVotante(v.id)}
-                        >
-                          <i className="bi bi-trash"></i>
-                        </button>
-                      </td>
-                    </tr>
-                  ))
+
+      {votantes.length > 0 && (
+        <Tabla>
+          <thead>
+            <tr>
+              <th>Votante</th>
+              <th>Teléfono</th>
+              <th>Barrio</th>
+              <th>Líder</th>
+              {admin && <th>Aspirante</th>}
+              <th className="w-[1%]"><span className="sr-only">Acciones</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            {votantes.map((v) => (
+              <tr key={v.id}>
+                <td className="max-sm:!block max-sm:!text-left max-sm:pb-2">
+                  <p className="font-[680]">
+                    {v.nombre_completo}
+                    {v.activo === false && <span className="ml-2 align-middle"><Insignia>Inactivo</Insignia></span>}
+                  </p>
+                  <p className="text-[13px] tabular-nums text-tinta-3">C.C. {numero(v.cedula)}</p>
+                </td>
+                <td data-etiqueta="Teléfono" className="tabular-nums">{v.telefono || "—"}</td>
+                <td data-etiqueta="Barrio">
+                  <span>
+                    {v.barrio_nombre || "—"}
+                    {v.municipio_nombre && <span className="block text-[13px] text-tinta-3">{v.municipio_nombre}</span>}
+                  </span>
+                </td>
+                <td data-etiqueta="Líder">
+                  <span>
+                    {v.lider_nombre || <span className="text-tinta-3">Sin líder</span>}
+                    {v.direccion_lider && <span className="block text-[13px] text-tinta-3">{v.direccion_lider}</span>}
+                  </span>
+                </td>
+                {admin && (
+                  <td data-etiqueta="Aspirante">
+                    <span>
+                      {v.aspirante_nombre}
+                      <span className="block text-[13px] text-tinta-3">{nombreCargo(v.aspirante_cargo)}</span>
+                    </span>
+                  </td>
                 )}
-              </tbody>
-            </table>
-          </div>
-          <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
-            <button
-              className="btn btn-primary"
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-              disabled={page === 1}
-            >
-              ← Anterior
-            </button>
-            <span className="fw-bold text-primary">
-              Página {page} de {totalPaginas}
-            </span>
-            <button
-              className="btn btn-primary"
-              onClick={() => setPage((prev) => Math.min(prev + 1, totalPaginas))}
-              disabled={page === totalPaginas}
-            >
-              Siguiente →
-            </button>
-          </div>
-        </>
+                <td className="max-sm:!justify-end max-sm:pt-2">
+                  <div className="flex items-center justify-end">
+                    <BotonIcono etiqueta={`Editar a ${v.nombre_completo}`} icono="bi-pencil" onClick={() => setEditando(v)} />
+                    <BotonIcono etiqueta={`Eliminar a ${v.nombre_completo}`} icono="bi-trash3" variante="peligro-suave" className="ml-4" onClick={() => eliminar(v)} />
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Tabla>
       )}
-      {/* Modal para crear/editar votante */}
-      <div
-        className="modal fade"
-        tabIndex="-1"
-        ref={modalRef}
-        id="modalVotante"
-      >
-        <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">
-                {votanteAEditar ? "Editar Votante" : "Registrar Nuevo Votante"}
-              </h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div className="modal-body">
-              {votanteAEditar ? (
-                <EditarVotanteForm
-                  votante={votanteAEditar}
-                  onVotanteActualizado={() => {
-                    cargarVotantes();
-                    const modal = Modal.getInstance(modalRef.current);
-                    modal.hide();
-                    toast.success("✅ Votante actualizado con éxito");
-                  }}
-                />
-              ) : (
-                <CrearVotanteForm
-                  onVotanteCreado={() => {
-                    cargarVotantes();
-                    const modal = Modal.getInstance(modalRef.current);
-                    modal.hide();
-                    toast.success("✅ Votante creado con éxito");
-                  }}
-                />
-              )}
-            </div>
-          </div>
+
+      {cargando && votantes.length === 0 && <Cargando texto="Cargando votantes…" />}
+      {!cargando && votantes.length === 0 && (
+        <div className="rounded-lg bg-papel ring-1 ring-filete">
+          <Vacio
+            icono="bi-people"
+            titulo={filtrando ? "Ningún votante coincide" : "Todavía no hay votantes"}
+            texto={filtrando ? "Pruebe con otra parte del nombre o con la cédula completa." : "Registre el primero; el sistema lo asigna a su aspirante según el líder."}
+          >
+            {!filtrando && <Boton icono="bi-person-plus" onClick={() => setEditando("nuevo")}>Nuevo votante</Boton>}
+          </Vacio>
         </div>
-      </div>
-    </div>
+      )}
+
+      <Paginacion pagina={pagina} totalPaginas={totalPaginas} total={total} porPagina={POR_PAGINA} alCambiar={setPagina} />
+
+      <Modal
+        abierto={!!editando}
+        alCerrar={() => setEditando(null)}
+        titulo={editando === "nuevo" ? "Nuevo votante" : "Editar votante"}
+        ancho="sm:max-w-3xl"
+      >
+        {editando && (
+          <VotanteForm key={editando.id || "nuevo"} votante={editando === "nuevo" ? null : editando} onGuardado={alGuardar} />
+        )}
+      </Modal>
+    </>
   );
 }

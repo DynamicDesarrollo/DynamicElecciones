@@ -1,131 +1,152 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
-import Swal from "sweetalert2";
-import * as XLSX from "xlsx";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import { apiLista } from "../lib/api";
+import { exportarExcel, exportarPDF } from "../lib/exportar";
+import { fechaHora, numero } from "../lib/formato";
+import { Boton } from "../ui/Boton";
+import { Cargando, Cifras, Encabezado, Paginacion, Vacio } from "../ui/Pagina";
+
+const VISTAS = {
+  votantes: {
+    nombre: "Votantes repetidos",
+    ruta: "/informes/votantes-duplicados",
+    descripcion: "La misma cédula registrada bajo más de un aspirante, o dos veces. Solo usted lo ve; los aspirantes no.",
+    vacio: "Ninguna cédula está repetida en la campaña.",
+  },
+  asistencias: {
+    nombre: "Asistencias repetidas",
+    ruta: "/informes/asistencias-duplicadas",
+    descripcion: "Votantes con más de una asistencia registrada el día E.",
+    vacio: "Ningún votante tiene asistencia repetida.",
+  },
+};
+
+const POR_PAGINA = 12;
 
 export default function InformesPage() {
   const { usuario } = useAuth();
   const [vista, setVista] = useState("votantes");
-  const [datos, setDatos] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [datos, setDatos] = useState(null);
+  const [pagina, setPagina] = useState(1);
 
-  const [paginaActual, setPaginaActual] = useState(1);
-  const resultadosPorPagina = 10;
+  useEffect(() => {
+    setDatos(null);
+    setPagina(1);
+    apiLista(VISTAS[vista].ruta).then(setDatos);
+  }, [vista, usuario?.campana?.id]);
 
-  const fetchDatos = async () => {
-    setLoading(true);
+  // Agrupa las filas por cédula
+  const grupos = useMemo(() => {
+    const mapa = new Map();
+    (datos || []).forEach((d) => {
+      if (!mapa.has(d.cedula)) mapa.set(d.cedula, { cedula: d.cedula, nombre: d.nombre_completo, filas: [] });
+      mapa.get(d.cedula).filas.push(d);
+    });
+    return [...mapa.values()];
+  }, [datos]);
+
+  const visibles = grupos.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA);
+
+  const filasExportar = () =>
+    (datos || []).map((d) =>
+      vista === "votantes"
+        ? { Cédula: d.cedula, Nombre: d.nombre_completo, Aspirante: d.nombre_aspirante || "", Líder: d.nombre_lider || "" }
+        : { Cédula: d.cedula, Nombre: d.nombre_completo, "Puesto de control": d.puesto_control || "", Fecha: fechaHora(d.fecha_registro), Aspirante: d.nombre_aspirante || "" }
+    );
+
+  const exportarPdf = async () => {
+    const filas = filasExportar();
     try {
-      const endpoint =
-        vista === "votantes"
-          ? "/api/informes/votantes-duplicados"
-          : "/api/informes/asistencias-duplicadas";
-
-      const res = await fetch(`${import.meta.env.VITE_API_URL}${endpoint}`, {
-        headers: { Authorization: `Bearer ${usuario.token}` },
+      await exportarPDF({
+        titulo: VISTAS[vista].nombre,
+        columnas: Object.keys(filas[0]),
+        filas: filas.map((f) => Object.values(f)),
+        archivo: `${vista}-repetidos.pdf`,
       });
-
-      if (!res.ok) throw new Error("Error al obtener datos del informe");
-      const data = await res.json();
-      setDatos(data);
-      setPaginaActual(1);
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error", "No se pudieron cargar los datos del informe", "error");
-    } finally {
-      setLoading(false);
+    } catch {
+      toast.error("No se pudo generar el PDF");
     }
   };
 
-  useEffect(() => {
-    if (usuario?.token) fetchDatos();
-  }, [vista]);
-
-  // Add array validation before .map usage (example for rendering datos)
-  const renderDatos = () => {
-    return Array.isArray(datos) ? datos.map((d, idx) => (
-      <tr key={idx}>
-        {/* Render your data fields here */}
-      </tr>
-    )) : null;
-  };
-
-  const exportarExcel = () => {
-    const hoja = XLSX.utils.json_to_sheet(Array.isArray(datos) ? datos : []);
-    const libro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(libro, hoja, "Informe");
-    XLSX.writeFile(libro, `informe_${vista}.xlsx`);
-  };
-
-  const exportarPDF = () => {
-    const doc = new jsPDF();
-    const columnas = Object.keys(datos[0] || {}).map((key) => key.toUpperCase());
-    const filas = datos.map((item) =>
-      Object.values(item).map((val) => Array.isArray(val) ? val.join(", ") : val)
-    );
-
-    doc.text(`Informe de ${vista === "votantes" ? "Votantes Duplicados" : "Asistencias Duplicadas"}`, 14, 15);
-    autoTable(doc, { startY: 20, head: [columnas], body: filas });
-    doc.save(`informe_${vista}.pdf`);
-  };
-
-  const totalPaginas = Math.ceil(datos.length / resultadosPorPagina);
-  const datosPaginados = datos.slice(
-    (paginaActual - 1) * resultadosPorPagina,
-    paginaActual * resultadosPorPagina
-  );
-
   return (
-    <div className="container mt-4">
-      <h2>📊 Informes</h2>
-
-      <div className="btn-group mt-3 mb-3">
-        <button className={`btn ${vista === "votantes" ? "btn-primary" : "btn-outline-primary"}`} onClick={() => setVista("votantes")}>Votantes Duplicados</button>
-        <button className={`btn ${vista === "asistencias" ? "btn-primary" : "btn-outline-primary"}`} onClick={() => setVista("asistencias")}>Asistencias Duplicadas</button>
-      </div>
-
-      <div className="mb-3">
-        <button className="btn btn-outline-success me-2" onClick={exportarExcel}><i className="bi bi-file-earmark-excel"></i> Exportar Excel</button>
-        <button className="btn btn-outline-danger" onClick={exportarPDF}><i className="bi bi-file-earmark-pdf"></i> Exportar PDF</button>
-      </div>
-
-      <div className="table-responsive">
-        {loading ? (
-          <p>Cargando...</p>
-        ) : datos.length === 0 ? (
-          <p>No hay resultados para mostrar.</p>
-        ) : (
+    <>
+      <Encabezado titulo="Duplicados" descripcion={VISTAS[vista].descripcion}>
+        {datos?.length > 0 && (
           <>
-            <table className="table table-striped table-bordered">
-              <thead>
-                <tr>
-                  {Object.keys(datos[0]).map((key) => (
-                    <th key={key}>{key.replace(/_/g, " ").toUpperCase()}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {datosPaginados.map((item, idx) => (
-                  <tr key={idx}>
-                    {Object.values(item).map((val, i) => (
-                      <td key={i}>{Array.isArray(val) ? val.join(", ") : val || "—"}</td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <div className="d-flex justify-content-between align-items-center">
-              <span>Mostrando página {paginaActual} de {totalPaginas}</span>
-              <div>
-                <button className="btn btn-sm btn-outline-secondary me-2" disabled={paginaActual === 1} onClick={() => setPaginaActual(paginaActual - 1)}>Anterior</button>
-                <button className="btn btn-sm btn-outline-secondary" disabled={paginaActual === totalPaginas} onClick={() => setPaginaActual(paginaActual + 1)}>Siguiente</button>
-              </div>
-            </div>
+            <Boton variante="secundario" icono="bi-file-earmark-spreadsheet" onClick={() => exportarExcel({ hoja: "Duplicados", filas: filasExportar(), archivo: `${vista}-repetidos.xlsx` })}>
+              Excel
+            </Boton>
+            <Boton variante="secundario" icono="bi-file-earmark-pdf" onClick={exportarPdf}>PDF</Boton>
           </>
         )}
+      </Encabezado>
+
+      <div role="tablist" aria-label="Tipo de informe" className="mb-5 inline-flex rounded-lg bg-tinta/[0.06] p-1">
+        {Object.entries(VISTAS).map(([clave, v]) => (
+          <button
+            key={clave}
+            role="tab"
+            type="button"
+            aria-selected={vista === clave}
+            onClick={() => setVista(clave)}
+            className={`h-10 rounded-md px-4 text-[15px] font-[620] transition-colors duration-150 ${
+              vista === clave ? "bg-papel text-tinta shadow-[0_1px_2px_rgb(18_20_23/0.12)]" : "text-tinta-2 hover:text-tinta"
+            }`}
+          >
+            {v.nombre}
+          </button>
+        ))}
       </div>
-    </div>
+
+      {!datos ? (
+        <Cargando texto="Revisando cédulas…" />
+      ) : grupos.length === 0 ? (
+        <div className="rounded-lg bg-papel ring-1 ring-filete">
+          <Vacio icono="bi-check2-circle" titulo="Sin duplicados" texto={VISTAS[vista].vacio} />
+        </div>
+      ) : (
+        <>
+          <Cifras
+            className="mb-6"
+            items={[
+              { etiqueta: "Cédulas repetidas", valor: grupos.length },
+              { etiqueta: vista === "votantes" ? "Registros involucrados" : "Asistencias involucradas", valor: datos.length },
+            ]}
+          />
+          <ul className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            {visibles.map((g) => (
+              <li key={g.cedula} className="rounded-lg bg-papel ring-1 ring-filete">
+                <div className="flex items-baseline justify-between gap-4 border-b border-filete px-5 py-4">
+                  <div className="min-w-0">
+                    <p className="truncate text-[17px] font-[700]">{g.nombre}</p>
+                    <p className="text-[13px] tabular-nums text-tinta-3">C.C. {numero(g.cedula)}</p>
+                  </div>
+                  <span className="cifra shrink-0 text-[1.9rem]">×{g.filas.length}</span>
+                </div>
+                <ul className="divide-y divide-filete">
+                  {g.filas.map((f, i) => (
+                    <li key={i} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-5 py-3 text-[15px]">
+                      {vista === "votantes" ? (
+                        <>
+                          <span className="font-[620]">{f.nombre_aspirante || "Sin aspirante"}</span>
+                          <span className="text-tinta-2">{f.nombre_lider ? `Líder ${f.nombre_lider}` : "Sin líder"}</span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="font-[620]">{f.puesto_control}</span>
+                          <span className="tabular-nums text-tinta-2">{fechaHora(f.fecha_registro)}</span>
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+          <Paginacion pagina={pagina} totalPaginas={Math.ceil(grupos.length / POR_PAGINA)} total={grupos.length} porPagina={POR_PAGINA} alCambiar={setPagina} />
+        </>
+      )}
+    </>
   );
 }

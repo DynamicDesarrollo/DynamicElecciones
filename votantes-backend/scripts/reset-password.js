@@ -1,53 +1,25 @@
-import bcrypt from 'bcrypt';
-import pg from 'pg';
-import dotenv from 'dotenv';
+// Cambia la contraseña de un usuario.
+// Uso: npm run reset-password -- <correo> <nuevaContraseña>
 
-dotenv.config();
+const bcrypt = require('bcrypt');
+const db = require('../src/utils/db');
 
-const { Pool } = pg;
-
-// Configurar conexión a PostgreSQL
-const pool = process.env.DATABASE_URL
-  ? new Pool({
-      connectionString: process.env.DATABASE_URL,
-      ssl: { rejectUnauthorized: false }
-    })
-  : new Pool({
-      user: process.env.PGUSER,
-      host: process.env.PGHOST,
-      database: process.env.PGDATABASE,
-      password: process.env.PGPASSWORD,
-      port: process.env.PGPORT,
-      ssl: { rejectUnauthorized: false }
-    });
-
-
-
-// USO: node reset-password.js correo@nombredominio.com nuevaPassword
-const [,, correo, nuevaPassword] = process.argv;
-
-if (!correo || !nuevaPassword) {
-  console.error('Uso: node reset-password.js <correo> <nuevaPassword>');
-  process.exit(1);
-}
-
-async function resetPassword() {
-  try {
-    const hash = await bcrypt.hash(nuevaPassword, 10);
-    const result = await pool.query(
-      'UPDATE usuarios SET password = $1 WHERE correo = $2 RETURNING id, correo',
-      [hash, correo]
-    );
-    if (result.rowCount === 0) {
-      console.log('Usuario no encontrado:', correo);
-    } else {
-      console.log('Contraseña actualizada para:', correo);
-    }
-    process.exit(0);
-  } catch (err) {
-    console.error('Error al actualizar contraseña:', err);
+(async () => {
+  const [correo, nuevaPassword] = process.argv.slice(2);
+  if (!correo || !nuevaPassword) {
+    console.error('Uso: npm run reset-password -- <correo> <nuevaContraseña>');
     process.exit(1);
   }
-}
-
-resetPassword();
+  try {
+    const hash = await bcrypt.hash(nuevaPassword, 10);
+    const result = await db.query(
+      'UPDATE usuarios SET password = $1 WHERE correo = $2 RETURNING correo',
+      [hash, correo]
+    );
+    console.log(result.rowCount ? `✅ Contraseña actualizada para ${correo}` : `❌ Usuario no encontrado: ${correo}`);
+    process.exit(result.rowCount ? 0 : 1);
+  } catch (err) {
+    console.error('❌ Error al actualizar contraseña:', err.message);
+    process.exit(1);
+  }
+})();

@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-02T20:44:00.332Z",
+  "title": "Design System: Dynamic Electoral",
+  "extensions": {
+    "colorMeta": {
+      "campana-rojo": {
+        "role": "primary",
+        "displayName": "Rojo partido",
+        "canonical": "oklch(53.0% 0.207 22)",
+        "tonalRamp": [
+          "#250000",
+          "#4b000a",
+          "#731a20",
+          "#9d3438",
+          "#c75858",
+          "#e88481",
+          "#ffafab",
+          "#ffd8d4"
+        ]
+      },
+      "campana-azul": {
+        "role": "primary",
+        "displayName": "Azul partido",
+        "canonical": "oklch(37.8% 0.182 262)",
+        "tonalRamp": [
+          "#00042f",
+          "#051e55",
+          "#1a3b7f",
+          "#3059ab",
+          "#517dd4",
+          "#7aa4f2",
+          "#a6cbff",
+          "#cfefff"
+        ]
+      },
+      "campana-verde": {
+        "role": "primary",
+        "displayName": "Verde partido",
+        "canonical": "oklch(47.8% 0.121 154)",
+        "tonalRamp": [
+          "#001400",
+          "#003107",
+          "#00511f",
+          "#01703c",
+          "#3a955e",
+          "#61bb82",
+          "#93dfab",
+          "#c1ffd4"
+        ]
+      },
+      "campana-morado": {
+        "role": "primary",
+        "displayName": "Morado",
+        "canonical": "oklch(40.1% 0.142 305)",
+        "tonalRamp": [
+          "#150027",
+          "#310f4b",
+          "#502972",
+          "#71449b",
+          "#9567c3",
+          "#b790e2",
+          "#dbb9ff",
+          "#fde0ff"
+        ]
+      },
+      "campana-naranja": {
+        "role": "primary",
+        "displayName": "Naranja quemado",
+        "canonical": "oklch(52.2% 0.168 37)",
+        "tonalRamp": [
+          "#250000",
+          "#4a0400",
+          "#721f01",
+          "#9c391a",
+          "#c65c3d",
+          "#e6876b",
+          "#ffb39a",
+          "#ffdbc5"
+        ]
+      },
+      "campana-petroleo": {
+        "role": "primary",
+        "displayName": "Petróleo",
+        "canonical": "oklch(45.5% 0.086 224)",
+        "tonalRamp": [
+          "#000f25",
+          "#002b42",
+          "#004861",
+          "#106782",
+          "#3e8ba6",
+          "#65b0cd",
+          "#8bd7f4",
+          "#aefcff"
+        ]
+      },
+      "campana-vino": {
+        "role": "primary",
+        "displayName": "Vino",
+        "canonical": "oklch(41.6% 0.151 10)",
+        "tonalRamp": [
+          "#250004",
+          "#4a0018",
+          "#711930",
+          "#9b334b",
+          "#c5576c",
+          "#e68292",
+          "#ffaeba",
+          "#ffd7e0"
+        ]
+      },
+      "campana-indigo": {
+        "role": "primary",
+        "displayName": "Índigo",
+        "canonical": "oklch(38.7% 0.150 266)",
+        "tonalRamp": [
+          "#01032f",
+          "#0c1d56",
+          "#22397f",
+          "#3957ab",
+          "#597bd5",
+          "#81a2f2",
+          "#abc9ff",
+          "#d3eeff"
+        ]
+      },
+      "voto": {
+        "role": "secondary",
+        "displayName": "Amarillo voto",
+        "canonical": "oklch(87.9% 0.162 90)",
+        "tonalRamp": [
+          "#190600",
+          "#371f00",
+          "#583a00",
+          "#7b5800",
+          "#a07b00",
+          "#c2a13c",
+          "#e4c878",
+          "#ffedab"
+        ]
+      },
+      "tinta": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "oklch(19.0% 0.007 258)",
+        "tonalRamp": [
+          "#090b0e",
+          "#222427",
+          "#3d4043",
+          "#5b5e62",
+          "#7e8084",
+          "#a2a5a9",
+          "#c8cbcf",
+          "#eceff3"
+        ]
+      },
+      "tinta-2": {
+        "role": "neutral",
+        "displayName": "Tinta media",
+        "canonical": "oklch(37.4% 0.013 261)",
+        "tonalRamp": [
+          "#080b11",
+          "#21242b",
+          "#3c4047",
+          "#5a5e65",
+          "#7c8088",
+          "#a0a5ad",
+          "#c6cbd3",
+          "#eaeff8"
+        ]
+      },
+      "tinta-3": {
+        "role": "neutral",
+        "displayName": "Tinta suave",
+        "canonical": "oklch(50.2% 0.014 259)",
+        "tonalRamp": [
+          "#080b11",
+          "#20242b",
+          "#3b4047",
+          "#595e66",
+          "#7b8189",
+          "#9fa5ae",
+          "#c5cbd4",
+          "#e9eff8"
+        ]
+      },
+      "papel": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "oklch(100.0% 0.000 89)",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#242424",
+          "#404040",
+          "#5d5d5d",
+          "#808080",
+          "#a4a4a4",
+          "#cacaca",
+          "#eeeeee"
+        ]
+      },
+      "fondo": {
+        "role": "neutral",
+        "displayName": "Fondo",
+        "canonical": "oklch(96.0% 0.004 106)",
+        "tonalRamp": [
+          "#0b0b09",
+          "#242422",
+          "#40403d",
+          "#5e5e5b",
+          "#80807e",
+          "#a5a5a2",
+          "#cbcbc8",
+          "#efefec"
+        ]
+      },
+      "filete": {
+        "role": "neutral",
+        "displayName": "Filete",
+        "canonical": "oklch(89.4% 0.008 91)",
+        "tonalRamp": [
+          "#0c0b07",
+          "#25241f",
+          "#41403b",
+          "#5f5d58",
+          "#82807b",
+          "#a6a49f",
+          "#cccac4",
+          "#f0eee8"
+        ]
+      },
+      "filete-fuerte": {
+        "role": "neutral",
+        "displayName": "Filete fuerte",
+        "canonical": "oklch(77.6% 0.012 89)",
+        "tonalRamp": [
+          "#0d0b06",
+          "#26241e",
+          "#424039",
+          "#605d56",
+          "#838078",
+          "#a7a49d",
+          "#cdcac2",
+          "#f1eee6"
+        ]
+      },
+      "ok": {
+        "role": "status",
+        "displayName": "Verde ok",
+        "canonical": "oklch(45.8% 0.106 153)",
+        "tonalRamp": [
+          "#001400",
+          "#003106",
+          "#004f23",
+          "#206e40",
+          "#479262",
+          "#6db885",
+          "#94dfab",
+          "#c2ffd3"
+        ]
+      },
+      "ok-suave": {
+        "role": "status",
+        "displayName": "Verde ok suave",
+        "canonical": "oklch(94.5% 0.019 157)",
+        "tonalRamp": [
+          "#050e08",
+          "#1c2720",
+          "#38433c",
+          "#556159",
+          "#77847c",
+          "#9ba8a0",
+          "#c1cec6",
+          "#e5f3ea"
+        ]
+      },
+      "alerta": {
+        "role": "status",
+        "displayName": "Ámbar alerta",
+        "canonical": "oklch(47.7% 0.113 59)",
+        "tonalRamp": [
+          "#220000",
+          "#460f00",
+          "#692c00",
+          "#8b4b01",
+          "#b16e33",
+          "#d99259",
+          "#feba84",
+          "#ffe1b4"
+        ]
+      },
+      "alerta-suave": {
+        "role": "status",
+        "displayName": "Ámbar alerta suave",
+        "canonical": "oklch(95.6% 0.032 82)",
+        "tonalRamp": [
+          "#120a00",
+          "#2c2312",
+          "#483e2c",
+          "#665c49",
+          "#8a7f6b",
+          "#aea38f",
+          "#d5c9b4",
+          "#f9edd7"
+        ]
+      },
+      "error": {
+        "role": "status",
+        "displayName": "Rojo error",
+        "canonical": "oklch(50.0% 0.182 29)",
+        "tonalRamp": [
+          "#260000",
+          "#4b0100",
+          "#731c14",
+          "#9d362b",
+          "#c75a4b",
+          "#e88576",
+          "#ffb1a3",
+          "#ffd9cc"
+        ]
+      },
+      "error-suave": {
+        "role": "status",
+        "displayName": "Rojo error suave",
+        "canonical": "oklch(94.3% 0.022 27)",
+        "tonalRamp": [
+          "#130806",
+          "#2e201e",
+          "#4b3b39",
+          "#6a5957",
+          "#8d7b79",
+          "#b2a09d",
+          "#d9c5c3",
+          "#fde9e6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (pendón)",
+        "purpose": "Nombre del aspirante principal en el pendón; baja a 2.35rem y 1.85rem según el largo. En el ingreso, Dynamic Electoral hasta 6rem."
+      },
+      "headline": {
+        "displayName": "Titular de pantalla",
+        "purpose": "Título del encabezado de cada pantalla: 2.5rem en celular, 3.25rem desde 640px."
+      },
+      "title": {
+        "displayName": "Título de sección",
+        "purpose": "Láminas (1.6rem) y modales (1.75rem); la cabeza del desglose en mayúsculas."
+      },
+      "cifra": {
+        "displayName": "Cifra titular",
+        "purpose": "Números protagonistas en tinta: 4.5rem en escritorio, 2.75rem o 2.25rem en celular, 2rem en desgloses."
+      },
+      "body": {
+        "displayName": "Cuerpo",
+        "purpose": "Tablas, descripciones (máximo 62ch) y párrafos."
+      },
+      "body-sm": {
+        "displayName": "Cuerpo pequeño",
+        "purpose": "Detalles, ayudas y errores de campo."
+      },
+      "ui": {
+        "displayName": "Interfaz",
+        "purpose": "Botones, navegación del pendón y etiquetas de campo (14px)."
+      },
+      "label": {
+        "displayName": "Rótulo",
+        "purpose": "Encabezados de tabla, etiquetas de cifras y de fichas móviles; nunca encima de títulos."
+      }
+    },
+    "shadows": [
+      {
+        "name": "boton-principal",
+        "value": "0 1px 2px rgb(18 20 23 / 0.18)",
+        "purpose": "Separa apenas la acción principal del papel."
+      },
+      {
+        "name": "pestana-activa",
+        "value": "0 1px 2px rgb(18 20 23 / 0.12)",
+        "purpose": "Opción elegida del selector segmentado."
+      },
+      {
+        "name": "banda-celular",
+        "value": "0 1px 0 rgb(0 0 0 / 0.15)",
+        "purpose": "Borde inferior de la banda superior pegajosa."
+      },
+      {
+        "name": "modal",
+        "value": "0 24px 64px -12px rgb(18 20 23 / 0.35)",
+        "purpose": "El único elemento que flota, sobre velo de tinta al 55%."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-salida",
+        "value": "cubic-bezier(0.23, 1, 0.32, 1)",
+        "purpose": "Estados de botones, campos, filas y barras."
+      },
+      {
+        "name": "ease-pendon",
+        "value": "cubic-bezier(0.32, 0.72, 0, 1)",
+        "purpose": "El izado del pendón."
+      },
+      {
+        "name": "izar",
+        "value": "450ms ease-pendon; clip-path inset(0 0 100% 0) a inset(0)",
+        "purpose": "El pendón se despliega de arriba abajo al entrar o cambiar de campaña y al abrir el menú del celular."
+      },
+      {
+        "name": "aparecer",
+        "value": "180ms ease-salida; opacity 0, scale(0.97) translateY(4px) a reposo",
+        "purpose": "Modales y placa VOTÓ."
+      },
+      {
+        "name": "pulsar",
+        "value": "150ms ease-salida; scale(0.97) al pulsar",
+        "purpose": "Respuesta táctil de botones."
+      },
+      {
+        "name": "barra-desglose",
+        "value": "width 700ms ease-salida",
+        "purpose": "Crecimiento de las barras de desglose."
+      },
+      {
+        "name": "movimiento-reducido",
+        "value": "duraciones a 0.01ms",
+        "purpose": "Con prefers-reduced-motion se anulan animaciones y transiciones."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "La acción principal de cada pantalla, arriba a la derecha, en el color de la campaña.",
+      "html": "<button class=\"ds-btn-primario\" style=\"--campana:#00607A\">Nuevo votante</button>",
+      "css": ".ds-btn-primario{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border:0;border-radius:6px;font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);font-size:15px;font-weight:620;white-space:nowrap;cursor:pointer;transition:transform 150ms cubic-bezier(0.23,1,0.32,1),background-color 150ms cubic-bezier(0.23,1,0.32,1),filter 150ms cubic-bezier(0.23,1,0.32,1);background:var(--campana,#121417);color:#fff;box-shadow:0 1px 2px rgb(18 20 23/0.18);}.ds-btn-primario:hover{filter:brightness(1.08);}.ds-btn-primario:active{transform:scale(0.97);}.ds-btn-primario:focus-visible{outline:2px solid var(--campana,#121417);outline-offset:2px;}"
+    },
+    {
+      "name": "Botón secundario",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Exportar, cancelar y paginar: papel con contorno de filete fuerte.",
+      "html": "<button class=\"ds-btn-secundario\">Exportar PDF</button>",
+      "css": ".ds-btn-secundario{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border:0;border-radius:6px;font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);font-size:15px;font-weight:620;white-space:nowrap;cursor:pointer;transition:transform 150ms cubic-bezier(0.23,1,0.32,1),background-color 150ms cubic-bezier(0.23,1,0.32,1),filter 150ms cubic-bezier(0.23,1,0.32,1);background:#fff;color:#121417;box-shadow:inset 0 0 0 1px #b9b6ae;}.ds-btn-secundario:hover{background:#f2f2ef;}.ds-btn-secundario:active{transform:scale(0.97);}.ds-btn-secundario:focus-visible{outline:2px solid var(--campana,#121417);outline-offset:2px;}"
+    },
+    {
+      "name": "Eliminar en fila",
+      "kind": "button",
+      "refersTo": "button-danger-quiet",
+      "description": "Ícono rojo discreto, último en la fila y separado 16px de editar.",
+      "html": "<button class=\"ds-btn-eliminar\" aria-label=\"Eliminar\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z\"/><path d=\"M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1 0-2H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1M4 4v9a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4z\"/></svg></button>",
+      "css": ".ds-btn-eliminar{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:0;border-radius:6px;background:transparent;color:#b42318;cursor:pointer;transition:background-color 150ms cubic-bezier(0.23,1,0.32,1),transform 150ms cubic-bezier(0.23,1,0.32,1);}.ds-btn-eliminar:hover{background:#fbe7e4;box-shadow:inset 0 0 0 1px rgb(180 35 24/0.45);}.ds-btn-eliminar:active{transform:scale(0.97);}.ds-btn-eliminar:focus-visible{outline:2px solid var(--campana,#121417);outline-offset:2px;}"
+    },
+    {
+      "name": "Campo",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Etiqueta arriba, control de 44px, foco en color de campaña.",
+      "html": "<div class=\"ds-campo\" style=\"--campana:#00607A\"><label class=\"ds-campo-etiqueta\" for=\"ds-c\">Cédula</label><input id=\"ds-c\" class=\"ds-campo-control\" placeholder=\"Ej. 1067845123\"><p class=\"ds-campo-ayuda\">Sin puntos ni espacios.</p></div>",
+      "css": ".ds-campo{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);color:#121417;max-width:320px;}.ds-campo-etiqueta{display:block;margin-bottom:6px;font-size:14px;font-weight:620;}.ds-campo-control{display:block;width:100%;height:44px;padding:0 12px;border:0;border-radius:6px;background:#fff;color:#121417;font:inherit;font-size:16px;box-shadow:inset 0 0 0 1px #b9b6ae;caret-color:var(--campana,#121417);transition:box-shadow 150ms;}.ds-campo-control::placeholder{color:#5f646c;}.ds-campo-control:focus{outline:none;box-shadow:inset 0 0 0 2px var(--campana,#121417);}.ds-campo-ayuda{margin:6px 0 0;font-size:13px;color:#5f646c;}"
+    },
+    {
+      "name": "Pendón",
+      "kind": "nav",
+      "refersTo": "pendon",
+      "description": "Navegación en el color de la campaña con el aspirante principal en condensada; la opción activa se invierte.",
+      "html": "<aside class=\"ds-pendon\" style=\"--campana:#00607A\"><p class=\"ds-pendon-nombre\">Alcalde Prueba</p><p class=\"ds-pendon-campana\">Alcaldía de prueba</p><p class=\"ds-pendon-territorio\">Alcaldía · Montería, Córdoba</p><nav><a class=\"ds-pendon-op ds-activa\" href=\"#\">Resumen</a><a class=\"ds-pendon-op\" href=\"#\">Líderes</a><a class=\"ds-pendon-op\" href=\"#\">Votantes</a></nav></aside>",
+      "css": ".ds-pendon{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);width:264px;padding:28px 20px 20px;background:var(--campana,#121417);color:#fff;animation:ds-izar 450ms cubic-bezier(0.32,0.72,0,1) both;}@keyframes ds-izar{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}.ds-pendon-nombre{margin:0;font-size:2.9rem;font-weight:800;font-stretch:68%;letter-spacing:-0.01em;word-spacing:0.12em;line-height:0.88;text-transform:uppercase;}.ds-pendon-campana{margin:12px 0 0;font-size:15px;font-weight:650;}.ds-pendon-territorio{margin:4px 0 32px;font-size:13px;font-weight:520;color:rgb(255 255 255/0.8);}.ds-pendon nav{display:flex;flex-direction:column;gap:2px;}.ds-pendon-op{display:flex;align-items:center;height:44px;padding:0 12px;border-radius:6px;font-size:15px;font-weight:620;color:rgb(255 255 255/0.88);text-decoration:none;transition:background-color 150ms,color 150ms;}.ds-pendon-op:hover{background:rgb(255 255 255/0.12);color:#fff;}.ds-pendon-op.ds-activa{background:#fff;color:var(--campana,#121417);}.ds-pendon-op:focus-visible{outline:2px solid #fff;outline-offset:2px;}@media (prefers-reduced-motion:reduce){.ds-pendon{animation:none}}"
+    },
+    {
+      "name": "Cifras titulares",
+      "kind": "custom",
+      "refersTo": "cifras-celda",
+      "description": "Fila de cifras en tinta separadas por filetes; encabeza cada pantalla con números.",
+      "html": "<dl class=\"ds-cifras\"><div><dt>Votantes</dt><dd class=\"ds-cifra\">1.284</dd></div><div><dt>Líderes activos</dt><dd class=\"ds-cifra\">37</dd><dd class=\"ds-detalle\">con al menos un votante</dd></div><div><dt>Asistieron</dt><dd class=\"ds-cifra\">642</dd><dd class=\"ds-detalle\">50 % de los votantes</dd></div></dl>",
+      "css": ".ds-cifras{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:1px;margin:0;overflow:hidden;border-radius:8px;background:#dedcd6;box-shadow:0 0 0 1px #dedcd6;color:#121417;}.ds-cifras>div{display:flex;flex-direction:column;background:#fff;padding:20px;}.ds-cifras dt{font-size:0.75rem;font-weight:650;letter-spacing:0.06em;text-transform:uppercase;color:#5f646c;}.ds-cifra{margin:12px 0 0;font-size:4.5rem;font-weight:800;font-stretch:72%;letter-spacing:-0.02em;word-spacing:0.12em;line-height:0.9;font-variant-numeric:tabular-nums lining-nums;}.ds-detalle{margin:8px 0 0;font-size:13px;color:#3d4148;}"
+    },
+    {
+      "name": "Tabla con filetes",
+      "kind": "card",
+      "refersTo": "tabla-encabezado",
+      "description": "Papel con filete, encabezados en rótulo, filas separadas por filete, sin cebra.",
+      "html": "<div class=\"ds-tabla\"><table><thead><tr><th>Votante</th><th>Líder</th><th>Aspirante</th></tr></thead><tbody><tr><td><b>Votante 1</b><br><small>C.C. 9.970.843.034</small></td><td>Líder de A</td><td>Concejal A</td></tr><tr><td><b>Votante 2</b><br><small>C.C. 99.708.430.341</small></td><td>Sin líder</td><td>Concejal B</td></tr></tbody></table></div>",
+      "css": ".ds-tabla{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);overflow:hidden;border-radius:8px;background:#fff;box-shadow:0 0 0 1px #dedcd6;color:#121417;}.ds-tabla table{width:100%;border-collapse:collapse;font-size:15px;}.ds-tabla th{padding:12px 16px;text-align:left;border-bottom:1px solid #b9b6ae;font-size:0.75rem;font-weight:650;letter-spacing:0.06em;text-transform:uppercase;color:#5f646c;white-space:nowrap;}.ds-tabla td{padding:12px 16px;border-bottom:1px solid #dedcd6;}.ds-tabla tbody tr:last-child td{border-bottom:0;}.ds-tabla tbody tr{transition:background-color 150ms;}.ds-tabla tbody tr:hover{background:rgb(242 242 239/0.7);}.ds-tabla b{font-weight:650;}.ds-tabla small{font-size:13px;color:#5f646c;}"
+    },
+    {
+      "name": "Insignias de estado",
+      "kind": "chip",
+      "refersTo": "insignia-ok",
+      "description": "Píldoras informativas en tono suave del estado o tinta sólida.",
+      "html": "<span class=\"ds-insignia ds-neutro\">Administrador</span> <span class=\"ds-insignia ds-ok\">Activa</span> <span class=\"ds-insignia ds-alerta\">Usuario anterior</span> <span class=\"ds-insignia ds-tinta\">Superadmin</span>",
+      "css": ".ds-insignia{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:9999px;font-size:13px;font-weight:620;white-space:nowrap;}.ds-neutro{background:rgb(18 20 23/0.06);color:#3d4148;}.ds-ok{background:#e3f1e8;color:#17683a;}.ds-alerta{background:#fbefd9;color:#8a4a00;}.ds-tinta{background:#121417;color:#fff;}"
+    },
+    {
+      "name": "Placa VOTÓ",
+      "kind": "custom",
+      "refersTo": "placa-voto",
+      "description": "Confirmación de asistencia del día E: la única superficie amarilla de la app.",
+      "html": "<div class=\"ds-placa\"><svg viewBox=\"0 0 28 40\" width=\"40\" height=\"56\" aria-hidden=\"true\"><path d=\"M0 0h28v40l-14-8-14 8z\" fill=\"#121417\"/><path d=\"M7 15l5 5 9-10\" fill=\"none\" stroke=\"#FFD23F\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><p class=\"ds-placa-voto\">Votó</p><p class=\"ds-placa-nombre\">Votante 2</p><p class=\"ds-placa-num\">Asistencia número <span>2</span>. Lista la siguiente cédula.</p></div>",
+      "css": ".ds-placa{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 24px;border-radius:8px;background:#ffd23f;color:#121417;animation:ds-aparecer 180ms cubic-bezier(0.23,1,0.32,1) both;}@keyframes ds-aparecer{from{opacity:0;transform:scale(0.97) translateY(4px)}to{opacity:1;transform:none}}.ds-placa p{margin:0;}.ds-placa-voto{margin-top:16px!important;font-size:3rem;font-weight:800;font-stretch:68%;line-height:1;text-transform:uppercase;}.ds-placa-nombre{margin-top:8px!important;font-size:17px;font-weight:680;}.ds-placa-num{margin-top:4px!important;font-size:14px;}.ds-placa-num span{font-size:1.25rem;font-weight:800;font-stretch:72%;font-variant-numeric:tabular-nums;}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El pendón de campaña",
+    "overview": "La app se viste como los pendones, vallas y afiches de campaña en Colombia: una franja vertical en el color de la campaña lleva el nombre del aspirante principal en letra condensada pesada y hace de navegación; todo el trabajo va en tinta sobre papel. La campaña es la protagonista y la plataforma se queda en una firma discreta al pie del pendón.\n\nEs un sistema de operación, denso y sobrio: tablas con filetes finos, encabezados de tabla en mayúsculas por peso, láminas blancas sobre un fondo cálido casi blanco, y cifras tabulares grandes como titular de cada pantalla. La jerarquía se construye con tipografía (ancho condensado, peso 800) y con filetes, no con color ni sombras. El color aparece en tres sitios y en ninguno más; el amarillo voto aparece solo como placa.\n\nRechazos confirmados: el panel genérico de barra oscura con tarjetas de colores y gráficas decorativas; las tablas en cebra; el recargo visual; nada del aspecto anterior de la app se conserva.",
+    "keyCharacteristics": [
+      "Pendón a toda altura en el color de la campaña (264px en escritorio; banda superior de 56px en celular).",
+      "Tinta sobre papel; filetes de 1px como única estructura.",
+      "Archivo variable: condensada 800 para nombres, títulos y cifras; ancho normal 400–650 para la interfaz.",
+      "Cifras titulares tabulares en tinta encabezando las pantallas.",
+      "Eliminar siempre aislado, discreto y al final de la fila.",
+      "Controles táctiles de 44px en todas las pantallas."
+    ],
+    "rules": [
+      {
+        "name": "The Pendón Rule",
+        "body": "El color de campaña vive solo en el pendón, la acción principal y el foco. Ni títulos, ni cifras, ni insignias, ni barras, ni enlaces llevan el color de campaña.",
+        "section": "colors"
+      },
+      {
+        "name": "The Placa Rule",
+        "body": "El amarillo voto es una placa con tinta encima, nunca un color de texto sobre papel ni un acento decorativo. Usos permitidos: selección, marca de Dynamic y la placa \"VOTÓ\".",
+        "section": "colors"
+      },
+      {
+        "name": "The Dynamic en Tinta Rule",
+        "body": "El superadmin no pertenece a ninguna campaña: ve el pendón de Dynamic en tinta (\"Dynamic Electoral\" en condensada) y solo la opción Campañas.",
+        "section": "colors"
+      },
+      {
+        "name": "The Cifra-Titular Rule",
+        "body": "El número es el titular: cifras en tinta, en condensada tabular, grandes y sin color. Nunca se tiñen con el color de campaña ni con verde o rojo.",
+        "section": "typography"
+      },
+      {
+        "name": "The Dos Anchos Rule",
+        "body": "Condensada solo para nombres, títulos y cifras; todo lo que se lee o se pulsa va en ancho normal. Los rótulos en mayúsculas etiquetan datos; no van sobre los títulos.",
+        "section": "typography"
+      },
+      {
+        "name": "The Filete Rule",
+        "body": "Las láminas, tablas y cifras se separan con filetes de 1px, nunca con sombras, cebra ni fondos de color. El hover de fila es fondo al 70%.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** limitar el color de campaña al pendón, el botón principal y el foco (anillo, cursor y casilla).",
+      "**Do** encabezar cada pantalla con un título condensado y, cuando haya números, con la fila de cifras titulares en tinta.",
+      "**Do** separar láminas, tablas y cifras con filetes de 1px sobre papel.",
+      "**Do** dejar eliminar como ícono rojo discreto, último en la fila y separado 16px de editar; el rojo sólido solo en la confirmación.",
+      "**Do** mantener 44px de alto táctil y 16px mínimos de letra en campos.",
+      "**Do** dar a cada dato de tabla su rótulo para la ficha del celular.",
+      "**Do** usar el amarillo voto solo como placa con tinta encima."
+    ],
+    "donts": [
+      "**Don't** usar el color de campaña en títulos, cifras, insignias, barras, enlaces ni fondos de sección.",
+      "**Don't** pintar cifras con color; las cifras van en tinta.",
+      "**Don't** usar tarjetas de colores, tablas en cebra ni gráficas decorativas.",
+      "**Don't** poner amarillo voto como texto sobre papel ni como acento decorativo.",
+      "**Don't** agrupar eliminar con las demás acciones ni darle fondo rojo sólido fuera de la confirmación.",
+      "**Don't** mostrar al superadmin un pendón de campaña ni datos de campañas; su pendón es Dynamic en tinta.",
+      "**Don't** poner rótulos en mayúsculas encima de los títulos de pantalla o de sección."
+    ]
+  }
+}

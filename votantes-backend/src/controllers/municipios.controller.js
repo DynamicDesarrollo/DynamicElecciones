@@ -1,9 +1,11 @@
 import db from '../utils/db.js';
+import { territorioDe, condicionMunicipios } from '../utils/territorio.js';
 
-// ✅ Obtener todos los municipios
+// ✅ Municipios del territorio de la campaña (todos para el superadmin o campañas sin territorio)
 export const getMunicipios = async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM municipios ORDER BY nombre');
+    const { sql, valores } = condicionMunicipios(await territorioDe(req.usuario));
+    const result = await db.query(`SELECT * FROM municipios m WHERE ${sql} ORDER BY m.nombre`, valores);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: 'Error al obtener municipios', details: err.message });

@@ -1,275 +1,152 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-  Legend,
-  LabelList,
-} from "recharts";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
-import html2canvas from "html2canvas";
+import { api, apiLista } from "../lib/api";
+import { esAdmin, nombreCargo, plural, territorio } from "../lib/campana";
+import { exportarPDF } from "../lib/exportar";
+import { numero, porcentaje } from "../lib/formato";
+import { Boton } from "../ui/Boton";
+import { Cifras, Encabezado, Lamina, Vacio } from "../ui/Pagina";
 
+// Fila de un desglose: nombre, barra proporcional en tinta y cifra
+function FilaDesglose({ nombre, detalle, total, maximo, totalGeneral, cabeza }) {
+  const ancho = maximo ? Math.max(2, (total / maximo) * 100) : 0;
+  return (
+    <li className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-4 gap-y-2 py-3.5">
+      <div className="min-w-0">
+        <p className={cabeza ? "condensada text-[1.6rem] uppercase leading-none" : "truncate text-[16px] font-[680]"}>{nombre}</p>
+        {detalle && <p className="text-[13px] text-tinta-3">{detalle}</p>}
+      </div>
+      <p className="text-right">
+        <span className="cifra text-[2rem]">{numero(total)}</span>
+        <span className="ml-2 text-[13px] font-[600] text-tinta-3">{porcentaje(total, totalGeneral)}</span>
+      </p>
+      <div className="col-span-2 h-2 overflow-hidden rounded-full bg-tinta/[0.07]">
+        <div
+          className="h-full rounded-full bg-tinta transition-[width] duration-700 ease-[var(--ease-salida)]"
+          style={{ width: `${ancho}%` }}
+        />
+      </div>
+    </li>
+  );
+}
 
-// Paleta de colores
-const colores = [
-  "#0d6efd",
-  "#198754",
-  "#dc3545",
-  "#ffc107",
-  "#6610f2",
-  "#20c997",
-  "#fd7e14",
-  "#6f42c1",
-  "#0dcaf0",
-  "#adb5bd",
-];
+// Desglose en forma de plantel: la cabeza de la campaña primero y aparte, luego el resto por aporte
+function Desglose({ titulo, descripcion, filas, totalGeneral, rotuloResto }) {
+  const maximo = Math.max(0, ...filas.map((f) => f.total));
+  const cabeza = filas.find((f) => f.cabeza);
+  const resto = filas.filter((f) => !f.cabeza);
+  return (
+    <Lamina titulo={titulo} descripcion={descripcion}>
+      {filas.length === 0 ? (
+        <Vacio icono="bi-bar-chart" titulo="Aún no hay votantes" texto="El desglose aparece en cuanto se registre el primero." />
+      ) : (
+        <>
+          {cabeza && (
+            <ol className="-mt-3.5 mb-2 border-b border-filete-fuerte">
+              <FilaDesglose {...cabeza} maximo={maximo} totalGeneral={totalGeneral} />
+            </ol>
+          )}
+          {cabeza && resto.length > 0 && rotuloResto && <p className="rotulo mt-4 text-tinta-3">{rotuloResto}</p>}
+          <ol className={`divide-y divide-filete ${cabeza ? "" : "-mt-3.5"} -mb-3.5`}>
+            {resto.map((f) => (
+              <FilaDesglose key={f.nombre} {...f} maximo={maximo} totalGeneral={totalGeneral} />
+            ))}
+          </ol>
+        </>
+      )}
+    </Lamina>
+  );
+}
 
 export default function DashboardPage() {
   const { usuario } = useAuth();
-
-  const [resumen, setResumen] = useState({
-    total_votantes: 0,
-    total_lideres: 0,
-    total_barrios: 0,
-  });
-
-  const [datosGrafico, setDatosGrafico] = useState([]);
-
-  const chartRef = useRef(null);
-
+  const admin = esAdmin(usuario);
+  const campana = usuario?.campana;
+  const [resumen, setResumen] = useState(null);
+  const [asistencias, setAsistencias] = useState(0);
+  const [porPartido, setPorPartido] = useState([]);
+  const [porAspirante, setPorAspirante] = useState([]);
 
   useEffect(() => {
-    if (!usuario?.token) return;
-
-    // Si el rol es 'user', mostrar todo en cero
-    if (usuario?.rol === 'user') {
-      setResumen({ total_votantes: 0, total_lideres: 0, total_barrios: 0 });
-      setDatosGrafico([]);
-      return;
+    if (!campana) return;
+    api("/reportes/dashboard").then(({ ok, data }) => ok && setResumen(data));
+    api("/asistencia/resumen").then(({ ok, data }) => ok && setAsistencias(data.total_asistencias || 0));
+    if (admin) {
+      apiLista("/reportes/votantesporpartido").then(setPorPartido);
+      apiLista("/reportes/votantesporaspirante").then(setPorAspirante);
     }
+  }, [campana, admin]);
 
-    const fetchResumen = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/reportes/dashboard`, {
-          headers: { Authorization: `Bearer ${usuario.token}` },
-        });
+  const total = resumen?.total_votantes || 0;
 
-        if (!res.ok) throw new Error("Error al obtener resumen");
-        const data = await res.json();
-        setResumen(data);
-      } catch (err) {
-        console.error("Error al cargar datos del dashboard:", err);
-      }
-    };
+  const filasAspirante = porAspirante.map((a) => ({
+    nombre: a.aspirante,
+    detalle: nombreCargo(a.cargo),
+    total: a.total,
+    cabeza: a.cargo === campana?.cargo_principal,
+  }));
+  const filasPartido = porPartido.map((p) => ({ nombre: p.partido, total: Number(p.total) }));
 
-    const fetchGrafico = async () => {
-      try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/reportes/votantesporpartido`, {
-          headers: { Authorization: `Bearer ${usuario.token}` },
-        });
-
-        if (!res.ok) throw new Error("Error al obtener datos del gráfico");
-
-        const data = await res.json();
-        setDatosGrafico(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.error("Error al cargar gráfica:", err);
-      }
-    };
-
-    fetchResumen();
-    fetchGrafico();
-  }, [usuario]);
-
-  const exportarResumenPDF = async () => {
-    const doc = new jsPDF("landscape", "pt", "a4");
-    const padding = 40;
-    const usableWidth = doc.internal.pageSize.getWidth() - padding * 2;
-    let cursorY = 60;
-
-    doc.setFontSize(22);
-    doc.text("Resumen del Dashboard", 40, cursorY);
-    cursorY += 25;
-
-    doc.setFontSize(12);
-    doc.text(`Fecha: ${new Date().toLocaleString()}`, padding, cursorY);
-    cursorY += 15;
-    if (usuario?.nombre) {
-      doc.text(`Generado por: ${usuario.nombre} (${usuario.rol})`, padding, cursorY);
-    } else if (usuario?.email) {
-      doc.text(`Generado por: ${usuario.email} (${usuario.rol})`, padding, cursorY);
-    }
-    cursorY += 30;
-
-    // Tarjetas resumen
-    doc.setFontSize(14);
-    const cardWidth = (usableWidth - 20) / 3;
-    const cardHeight = 70;
-    const gap = 20;
-    const startX = 40;
-
-    const tarjetas = [
-      { title: "Total Votantes", value: resumen.total_votantes, color: "#0d6efd", icon: "" },
-      { title: "Total Líderes", value: resumen.total_lideres, color: "#198754", icon: "" },
-      { title: "Total Barrios", value: resumen.total_barrios, color: "#ffc107", icon: "" },
-    ];
-
-    tarjetas.forEach((t, i) => {
-      const x = startX + i * (cardWidth + gap);
-      doc.setFillColor(t.color);
-      doc.roundedRect(x, cursorY, cardWidth, cardHeight, 6, 6, "F");
-      doc.setTextColor("#ffffff");
-      doc.setFontSize(10);
-      doc.text(t.icon, x + 8, cursorY + 18);
-      doc.setFontSize(12);
-      doc.text(t.title, x + 30, cursorY + 18);
-      doc.setFontSize(16);
-      doc.text(String(t.value), x + 30, cursorY + 38);
-    });
-
-    cursorY += cardHeight + 30;
-    doc.setTextColor("#000000");
-
-    // Gráfica: capturar con html2canvas
-    if (chartRef.current) {
-      try {
-        const canvas = await html2canvas(chartRef.current, { scale: 2 });
-        const imgData = canvas.toDataURL("image/png");
-        const imgWidth = doc.internal.pageSize.getWidth() - padding * 2;
-        const aspect = canvas.height / canvas.width;
-        const imgHeight = imgWidth * aspect;
-        doc.setFontSize(14);
-        doc.text("Votantes por Partido", padding, cursorY);
-        cursorY += 10;
-        doc.addImage(imgData, "PNG", padding, cursorY, imgWidth, imgHeight);
-        cursorY += imgHeight + 30;
-      } catch (err) {
-        console.warn("No se pudo capturar la gráfica:", err);
-        doc.setFontSize(12);
-        doc.text("La gráfica no pudo ser renderizada.", padding, cursorY);
-        cursorY += 30;
-      }
-    }
-
-    // Tabla con datos del gráfico
-    if (datosGrafico.length) {
-      doc.setFontSize(14);
-      doc.text("Detalle por Partido", padding, cursorY);
-      cursorY += 10;
-
-      const tableData = datosGrafico.map((d) => [d.partido, d.total]);
-      autoTable(doc, {
-        head: [["Partido", "Total"]],
-        body: tableData,
-        startY: cursorY,
-        theme: "striped",
-        styles: { fontSize: 10 },
-        headStyles: { fillColor: "#0d6efd", textColor: "#fff" },
-        columnStyles: {
-          1: { halign: "right" },
-        },
+  const exportar = async () => {
+    try {
+      await exportarPDF({
+        titulo: `Resumen · ${campana.nombre}`,
+        subtitulo: `${campana.tipo_nombre} · ${territorio(campana)} · ${new Date().toLocaleString("es-CO")}`,
+        columnas: ["Concepto", "Total"],
+        filas: [
+          ["Votantes", numero(total)],
+          ["Líderes con votantes", numero(resumen?.total_lideres)],
+          ["Barrios", numero(resumen?.total_barrios)],
+          ["Asistieron el día E", `${numero(asistencias)} (${porcentaje(asistencias, total)})`],
+          ...filasAspirante.map((a) => [`${a.detalle} ${a.nombre}`, numero(a.total)]),
+        ],
+        archivo: "resumen-campana.pdf",
       });
+    } catch {
+      toast.error("No se pudo generar el PDF");
     }
-
-    doc.save("resumen_dashboard.pdf");
   };
 
-  if (!usuario) {
-    return <div className="text-danger">❌ Usuario no autenticado</div>;
-  }
+  const titulo = !admin && usuario?.nombre_aspirante ? usuario.nombre_aspirante : "Resumen";
+  const descripcion = !admin && usuario?.nombre_aspirante
+    ? `Sus votantes como ${nombreCargo(usuario.cargo_aspirante).toLowerCase()} en ${campana?.nombre}.`
+    : `${campana?.tipo_nombre} · ${territorio(campana)}`;
 
   return (
     <>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <h2>📊 Resumen del Dashboard</h2>
-        </div>
-        <div>
-          <button
-            className="btn btn-outline-primary"
-            onClick={exportarResumenPDF}
-            disabled={usuario?.rol === 'user'}
-            title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
-          >
-            🖨️ Exportar resumen a PDF
-          </button>
-        </div>
-      </div>
+      <Encabezado titulo={titulo} descripcion={descripcion}>
+        <Boton variante="secundario" icono="bi-file-earmark-pdf" onClick={exportar} disabled={!resumen}>
+          Exportar PDF
+        </Boton>
+      </Encabezado>
 
-      <div className="row">
-        {/* Tarjetas */}
-        <div className="col-md-4 mb-3">
-          <div className="card shadow border-0 text-white bg-primary h-100">
-            <div className="card-body d-flex align-items-center">
-              <div className="me-3">
-                <i className="bi bi-person-lines-fill display-4"></i>
-              </div>
-              <div>
-                <h5 className="card-title">Total Votantes</h5>
-                <p className="card-text fs-3 mb-0">{resumen.total_votantes}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      <Cifras
+        items={[
+          { etiqueta: "Votantes", valor: total },
+          { etiqueta: "Líderes activos", valor: resumen?.total_lideres ?? 0, detalle: "con al menos un votante" },
+          { etiqueta: "Barrios", valor: resumen?.total_barrios ?? 0 },
+          { etiqueta: "Asistieron", valor: asistencias, detalle: total ? `${porcentaje(asistencias, total)} de los votantes` : "el día de la elección" },
+        ]}
+      />
 
-        <div className="col-md-4 mb-3">
-          <div className="card shadow border-0 text-white bg-success h-100">
-            <div className="card-body d-flex align-items-center">
-              <div className="me-3">
-                <i className="bi bi-person-badge-fill display-4"></i>
-              </div>
-              <div>
-                <h5 className="card-title">Total Líderes</h5>
-                <p className="card-text fs-3 mb-0">{resumen.total_lideres}</p>
-              </div>
-            </div>
-          </div>
+      {admin && (
+        <div className="mt-6 grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+          <Desglose
+            titulo="Por aspirante"
+            descripcion="Cuántos votantes aporta cada uno a la campaña."
+            filas={filasAspirante}
+            totalGeneral={total}
+            rotuloResto={campana?.cargo_secundario ? plural(nombreCargo(campana.cargo_secundario)) : null}
+          />
+          <Desglose
+            titulo="Por partido"
+            descripcion="Según el partido de cada aspirante."
+            filas={filasPartido}
+            totalGeneral={total}
+          />
         </div>
-
-        <div className="col-md-4 mb-3">
-          <div className="card shadow border-0 text-white bg-warning h-100">
-            <div className="card-body d-flex align-items-center">
-              <div className="me-3">
-                <i className="bi bi-house-door-fill display-4"></i>
-              </div>
-              <div>
-                <h5 className="card-title">Total Barrios</h5>
-                <p className="card-text fs-3 mb-0">{resumen.total_barrios}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Gráfica de votantes por partido */}
-        <div className="col-12 mt-4">
-          <h4 className="text-center mb-4">🗳️ Votantes por Partido</h4>
-          <div style={{ width: "100%", height: 300 }} ref={chartRef}>
-            <ResponsiveContainer>
-              <BarChart data={datosGrafico}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="partido" />
-                <YAxis allowDecimals={false} />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="total" isAnimationActive={false}>
-                  {datosGrafico.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={colores[index % colores.length]} />
-                  ))}
-                  <LabelList dataKey="total" position="top" />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-      </div>
+      )}
     </>
   );
 }

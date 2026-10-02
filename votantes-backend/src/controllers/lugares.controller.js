@@ -1,13 +1,18 @@
 import db from '../utils/db.js';
+import { territorioDe, condicionMunicipios } from '../utils/territorio.js';
 
-// ✅ Obtener todos los lugares
+// ✅ Puestos de votación del territorio de la campaña, con su municipio
 export const getLugares = async (req, res) => {
   try {
+    const territorio = await territorioDe(req.usuario);
+    const { sql, valores } = condicionMunicipios(territorio);
     const result = await db.query(`
-      SELECT l.*
+      SELECT l.*, m.nombre AS municipio_nombre
       FROM lugares_votacion l
+      ${territorio ? 'JOIN' : 'LEFT JOIN'} municipios m ON m.id = l.municipio_id
+      WHERE ${sql}
       ORDER BY l.nombre
-    `);
+    `, valores);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: 'Error al obtener lugares', details: err.message });

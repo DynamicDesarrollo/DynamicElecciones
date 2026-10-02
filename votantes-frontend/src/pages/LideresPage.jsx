@@ -1,347 +1,194 @@
-// Forzar build Vercel - intento 2
-// Forzar commit y push - build definitivo
-// Forzar build Vercel 2026-02-02
-// Forzar commit y push - 2026-02-02
-// Forzar redeploy Vercel - 2026-02-02
-// Cambio menor para forzar redeploy en Vercel
-// Cambio para forzar redeploy en Vercel 2026-02-03
-
+import { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
-import { useEffect, useState, useRef } from "react";
-import { Modal } from "bootstrap";
-import Swal from "sweetalert2";
-import { toast } from "react-toastify";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import { api, apiLista } from "../lib/api";
+import { esAdmin, nombreCargo } from "../lib/campana";
+import { exportarExcel, exportarPDF } from "../lib/exportar";
+import { numero } from "../lib/formato";
+import LiderForm from "../components/Lideres/LiderForm";
+import { Boton, BotonIcono } from "../ui/Boton";
+import { Entrada } from "../ui/Campo";
+import { useConfirmar } from "../ui/Confirmar";
+import { Modal } from "../ui/Modal";
+import { Cargando, Encabezado, Paginacion, Tabla, Vacio } from "../ui/Pagina";
 
-import CrearLiderForm from "../components/Lideres/CrearLiderForm";
-import EditarLiderForm from "../components/Lideres/EditarLiderForm";
-
+const POR_PAGINA = 15;
 
 export default function LideresPage() {
   const { usuario } = useAuth();
+  const admin = esAdmin(usuario);
+  const legado = usuario?.rol === "user";
+  const confirmar = useConfirmar();
+
   const [lideres, setLideres] = useState([]);
-  const [filtroNombre, setFiltroNombre] = useState("");
-  const [filtroCedula, setFiltroCedula] = useState("");
-  const [page, setPage] = useState(1);
-  const [totalPaginas, setTotalPaginas] = useState(1);
-  const lideresPorPagina = 10;
+  const [cargando, setCargando] = useState(true);
+  const [busqueda, setBusqueda] = useState("");
+  const [pagina, setPagina] = useState(1);
+  const [editando, setEditando] = useState(null); // líder, "nuevo" o null
 
-  const [liderAEditar, setLiderAEditar] = useState(null);
-  const modalRef = useRef();
-
-  const cargarLideres = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/lideres`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const data = await res.json();
-      // Validar que la respuesta sea un array antes de usar .filter
-      if (!Array.isArray(data)) {
-        setLideres([]);
-        setTotalPaginas(1);
-        toast.error("❌ Error al cargar líderes: respuesta inválida");
-        return;
-      }
-
-      const filtrados = data.filter((l) =>
-        l.nombre_completo.toLowerCase().includes(filtroNombre.toLowerCase()) &&
-        (l.cedula || "").toLowerCase().includes(filtroCedula.toLowerCase())
-      );
-
-      setTotalPaginas(Math.ceil(filtrados.length / lideresPorPagina));
-      setLideres(
-        filtrados.slice((page - 1) * lideresPorPagina, page * lideresPorPagina)
-      );
-    } catch (err) {
-      toast.error("❌ Error al cargar líderes");
-      console.error(err);
-    }
+  const cargar = async () => {
+    setCargando(true);
+    setLideres(await apiLista("/lideres"));
+    setCargando(false);
   };
-
 
   useEffect(() => {
-    if (!usuario) return;
-    cargarLideres();
-  }, [usuario, page, filtroNombre, filtroCedula]);
+    cargar();
+  }, [usuario?.campana?.id]);
 
-  const eliminarLider = async (id) => {
-    const confirmar = await Swal.fire({
-      title: '¿Desea eliminar este líder?',
-      text: 'Esta acción eliminará el líder permanentemente',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar',
-    });
-    if (!confirmar.isConfirmed) return;
+  const filtrados = useMemo(() => {
+    const q = busqueda.trim().toLowerCase();
+    if (!q) return lideres;
+    return lideres.filter((l) => l.nombre_completo.toLowerCase().includes(q) || (l.cedula || "").includes(q));
+  }, [lideres, busqueda]);
 
-    try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/lideres/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+  const totalPaginas = Math.max(1, Math.ceil(filtrados.length / POR_PAGINA));
+  const visibles = filtrados.slice((pagina - 1) * POR_PAGINA, pagina * POR_PAGINA);
+  const totalVotantes = lideres.reduce((s, l) => s + (l.total_votantes || 0), 0);
 
-      if (res.ok) {
-        cargarLideres();
-        Swal.fire('✅ Eliminado', 'El líder fue eliminado correctamente.', 'success');
-      } else {
-        // Intentar leer el error del backend
-        let errorMsg = 'No se pudo eliminar el líder.';
-        try {
-          const errorData = await res.json();
-          if (errorData?.error && errorData?.totalVotantes !== undefined) {
-            errorMsg = `No se puede eliminar el líder porque tiene ${errorData.totalVotantes} votante(s) asociado(s).`;
-          } else if (errorData?.error) {
-            errorMsg = errorData.error;
-          }
-        } catch {}
-        Swal.fire('❌ Error', errorMsg, 'error');
-      }
-    } catch (err) {
-      console.error("Error al eliminar líder:", err);
-      Swal.fire('⚠️ Error', 'Ocurrió un error inesperado.', 'error');
+  const eliminar = async (l) => {
+    if (l.total_votantes > 0) {
+      return toast.error(`${l.nombre_completo} tiene ${numero(l.total_votantes)} votantes. Páselos a otro líder antes de eliminarlo.`);
     }
-  };
-
-  const exportarExcel = () => {
-    const datos = lideres.map((l) => ({
-      Nombre: l.nombre_completo,
-      Cédula: l.cedula,
-      Municipio: l.municipio,
-      Teléfono: l.telefono,
-      Barrio: l.barrio,
-    }));
-    const ws = XLSX.utils.json_to_sheet(datos);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Lideres");
-    const excelBuffer = XLSX.write(wb, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
-    saveAs(blob, "lideres.xlsx");
-  };
-
-  const exportarPDF = () => {
-    const doc = new jsPDF();
-    doc.text("Líderes", 14, 15);
-    const rows = lideres.map((l) => [
-      l.nombre_completo,
-      l.cedula,
-      l.municipio,
-      l.telefono,
-      l.barrio,
-    ]);
-    autoTable(doc,{
-      head: [["Nombre", "Cédula", "Municipio", "Teléfono", "Barrio"]],
-      body: rows,
-      startY: 20,
-      styles: { fontSize: 8 },
+    const ok = await confirmar({
+      titulo: "¿Eliminar líder?",
+      texto: `${l.nombre_completo} se borrará de la campaña. Esta acción no se puede deshacer.`,
+      accion: "Eliminar líder",
     });
-    doc.save("lideres.pdf");
+    if (!ok) return;
+    const { ok: listo, data } = await api(`/lideres/${l.id}`, { method: "DELETE" });
+    if (!listo) return toast.error(data?.error || "No se pudo eliminar el líder");
+    toast.success("Líder eliminado");
+    cargar();
   };
 
-  if (!usuario) {
-    return <div className="container mt-4 text-danger">❌ Usuario no autenticado</div>;
-  }
+  const filasExportar = () =>
+    filtrados.map((l) => ({
+      Nombre: l.nombre_completo,
+      Cédula: l.cedula || "",
+      Teléfono: l.telefono || "",
+      Municipio: l.municipio_nombre || "",
+      Barrio: l.barrio_nombre || "",
+      "A quién pertenece": l.direccion || "",
+      Aspirante: l.aspirante_nombre || "",
+      Votantes: l.total_votantes,
+    }));
+
+  const exportarPdf = async () => {
+    const filas = filasExportar();
+    await exportarPDF({
+      titulo: "Líderes",
+      columnas: Object.keys(filas[0] || { Nombre: "" }),
+      filas: filas.map((f) => Object.values(f)),
+      archivo: "lideres.pdf",
+      orientacion: "landscape",
+    });
+  };
 
   return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>👥 Líderes</h3>
-        <button
-          className="btn btn-primary"
-          onClick={() => {
-            setLiderAEditar(null);
-            const modal = new Modal(modalRef.current);
-            modal.show();
-          }}
-        >
-          <i className="bi bi-plus-circle me-2"></i>Nuevo Líder
-        </button>
+    <>
+      <Encabezado
+        titulo="Líderes"
+        descripcion={`${numero(lideres.length)} líderes reúnen ${numero(totalVotantes)} votantes.`}
+      >
+        {!legado && lideres.length > 0 && (
+          <>
+            <Boton variante="secundario" icono="bi-file-earmark-spreadsheet" onClick={() => exportarExcel({ hoja: "Líderes", filas: filasExportar(), archivo: "lideres.xlsx" })}>
+              Excel
+            </Boton>
+            <Boton variante="secundario" icono="bi-file-earmark-pdf" onClick={exportarPdf}>PDF</Boton>
+          </>
+        )}
+        <Boton icono="bi-person-plus" onClick={() => setEditando("nuevo")}>Nuevo líder</Boton>
+      </Encabezado>
+
+      <div className="relative mb-4 sm:max-w-md">
+        <i className="bi bi-search pointer-events-none absolute left-3.5 top-1/2 z-10 -translate-y-1/2 text-tinta-3" aria-hidden="true" />
+        <Entrada
+          type="search"
+          placeholder="Buscar por nombre o cédula"
+          aria-label="Buscar líderes por nombre o cédula"
+          value={busqueda}
+          onChange={(e) => { setBusqueda(e.target.value); setPagina(1); }}
+          className="pl-10"
+        />
       </div>
 
-      <div className="row mb-3 align-items-end">
-        <div className="col-md-4 mb-2">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="🔍 Buscar por nombre"
-            value={filtroNombre}
-            onChange={(e) => {
-              setFiltroNombre(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
-        <div className="col-md-4 mb-2">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="🔍 Buscar por cédula"
-            value={filtroCedula}
-            onChange={(e) => {
-              setFiltroCedula(e.target.value);
-              setPage(1);
-            }}
-          />
-        </div>
-        <div className="col-md-4 d-flex justify-content-end gap-2 mb-2">
-          <button
-            className="btn btn-outline-success btn-sm"
-            onClick={exportarExcel}
-            disabled={usuario?.rol === 'user'}
-            title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
-          >
-            📄 Excel
-          </button>
-          <button
-            className="btn btn-outline-danger btn-sm"
-            onClick={exportarPDF}
-            disabled={usuario?.rol === 'user'}
-            title={usuario?.rol === 'user' ? 'Exportación deshabilitada para usuarios' : ''}
-          >
-            🧾 PDF
-          </button>
-        </div>
-      </div>
-
-      <div className="table-responsive">
-        <table className="table table-hover table-bordered">
-          <thead className="table-dark">
+      {visibles.length > 0 && (
+        <Tabla>
+          <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Cédula</th>
-              <th>Municipio</th>
+              <th>Líder</th>
               <th>Teléfono</th>
-              {usuario?.rol !== 'user' && <th>A quien Pertenece</th>}
-              <th>Acciones</th>
+              <th>Barrio</th>
+              <th>A quién pertenece</th>
+              {admin && <th>Aspirante</th>}
+              <th className="text-right">Votantes</th>
+              <th className="w-[1%]"><span className="sr-only">Acciones</span></th>
             </tr>
           </thead>
           <tbody>
-            {lideres.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="text-center">
-                  No hay resultados
+            {visibles.map((l) => (
+              <tr key={l.id}>
+                <td className="max-sm:!block max-sm:!text-left max-sm:pb-2">
+                  <p className="font-[680]">{l.nombre_completo}</p>
+                  {l.cedula && <p className="text-[13px] tabular-nums text-tinta-3">C.C. {numero(l.cedula)}</p>}
+                </td>
+                <td data-etiqueta="Teléfono" className="tabular-nums">{l.telefono || "—"}</td>
+                <td data-etiqueta="Barrio">
+                  <span>
+                    {l.barrio_nombre || "—"}
+                    {l.municipio_nombre && <span className="block text-[13px] text-tinta-3">{l.municipio_nombre}</span>}
+                  </span>
+                </td>
+                <td data-etiqueta="Pertenece a">{l.direccion || "—"}</td>
+                {admin && (
+                  <td data-etiqueta="Aspirante">
+                    <span>
+                      {l.aspirante_nombre}
+                      <span className="block text-[13px] text-tinta-3">{nombreCargo(l.aspirante_cargo)}</span>
+                    </span>
+                  </td>
+                )}
+                <td data-etiqueta="Votantes" className="text-right">
+                  <span className="cifra text-[1.6rem]">{numero(l.total_votantes)}</span>
+                </td>
+                <td className="max-sm:!justify-end max-sm:pt-2">
+                  <div className="flex items-center justify-end">
+                    <BotonIcono etiqueta={`Editar a ${l.nombre_completo}`} icono="bi-pencil" onClick={() => setEditando(l)} />
+                    <BotonIcono etiqueta={`Eliminar a ${l.nombre_completo}`} icono="bi-trash3" variante="peligro-suave" className="ml-4" onClick={() => eliminar(l)} />
+                  </div>
                 </td>
               </tr>
-            ) : (
-              lideres.map((l) => (
-                <tr key={l.id}>
-                  <td>{l.nombre_completo}</td>
-                  <td>{l.cedula || "—"}</td>
-                  <td>{l.municipio_nombre || "—"}</td>
-                  <td>{l.telefono || "—"}</td>
-                  {usuario?.rol !== 'user' && <td>{l.direccion || "—"}</td>}
-                  <td className="text-center">
-                    <button
-                      className="btn btn-sm btn-warning me-2"
-                      title="Editar"
-                      onClick={() => {
-                        setLiderAEditar(l);
-                        const modal = new Modal(modalRef.current);
-                        modal.show();
-                      }}
-                    >
-                      <i className="bi bi-pencil-square"></i>
-                    </button>
-                    <button
-                      className="btn btn-sm btn-danger"
-                      title="Eliminar"
-                      onClick={() => eliminarLider(l.id)}
-                    >
-                      <i className="bi bi-trash"></i>
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
-        </table>
-      </div>
+        </Tabla>
+      )}
 
-      <div className="d-flex justify-content-center align-items-center mt-3 gap-3">
-        <button
-          className="btn btn-primary"
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-        >
-          ← Anterior
-        </button>
-        <span className="fw-bold text-primary">
-          Página {page} de {totalPaginas}
-        </span>
-        <button
-          className="btn btn-primary"
-          onClick={() => setPage((prev) => Math.min(prev + 1, totalPaginas))}
-          disabled={page === totalPaginas}
-        >
-          Siguiente →
-        </button>
-      </div>
-
-      {/* Modal único para crear/editar líder */}
-      <div
-        className="modal fade"
-        tabIndex="-1"
-        ref={modalRef}
-        id="modalLider"
-      >
-        <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">
-                {liderAEditar ? "Editar Líder" : "Nuevo Líder"}
-              </h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" />
-            </div>
-            <div className="modal-body">
-              {liderAEditar ? (
-                <EditarLiderForm
-                  lider={liderAEditar}
-                  onLiderActualizado={() => {
-                    cargarLideres();
-                    setLiderAEditar(null);
-                    const modal = Modal.getInstance(modalRef.current);
-                    modal.hide();
-                    // Limpieza forzada de clase y backdrop
-                    setTimeout(() => {
-                      document.body.classList.remove('modal-open');
-                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                    }, 300);
-                    toast.success("✅ Líder actualizado exitosamente");
-                  }}
-                />
-              ) : (
-                <CrearLiderForm
-                  onLiderCreado={() => {
-                    cargarLideres();
-                    setLiderAEditar(null);
-                    const modal = Modal.getInstance(modalRef.current);
-                    modal.hide();
-                    // Limpieza forzada de clase y backdrop
-                    setTimeout(() => {
-                      document.body.classList.remove('modal-open');
-                      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-                    }, 300);
-                    toast.success("✅ Líder creado exitosamente");
-                  }}
-                />
-              )}
-            </div>
-          </div>
+      {cargando && lideres.length === 0 && <Cargando texto="Cargando líderes…" />}
+      {!cargando && visibles.length === 0 && (
+        <div className="rounded-lg bg-papel ring-1 ring-filete">
+          <Vacio
+            icono="bi-megaphone"
+            titulo={busqueda ? "Ningún líder coincide" : "Todavía no hay líderes"}
+            texto={busqueda ? "Pruebe con otra parte del nombre o con la cédula." : "Los líderes agrupan votantes y definen a qué aspirante pertenecen."}
+          >
+            {!busqueda && <Boton icono="bi-person-plus" onClick={() => setEditando("nuevo")}>Nuevo líder</Boton>}
+          </Vacio>
         </div>
-      </div>
-    </div>
+      )}
+
+      <Paginacion pagina={pagina} totalPaginas={totalPaginas} total={filtrados.length} porPagina={POR_PAGINA} alCambiar={setPagina} />
+
+      <Modal abierto={!!editando} alCerrar={() => setEditando(null)} titulo={editando === "nuevo" ? "Nuevo líder" : "Editar líder"}>
+        {editando && (
+          <LiderForm
+            key={editando.id || "nuevo"}
+            lider={editando === "nuevo" ? null : editando}
+            onGuardado={() => { setEditando(null); cargar(); }}
+          />
+        )}
+      </Modal>
+    </>
   );
 }

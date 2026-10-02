@@ -5,12 +5,8 @@ const {
   getLiderById,
   createLider,
   updateLider,
-  deleteLider,
-  getAllLideresRaw
+  deleteLider
 } = require('../controllers/lideres.controller');
-
-// Endpoint temporal para comparar líderes con Neon
-router.get('/todos-raw', getAllLideresRaw);
 
 router.get('/', getLideres);
 router.get('/:id', getLiderById);

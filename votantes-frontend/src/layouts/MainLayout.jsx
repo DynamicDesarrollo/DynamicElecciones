@@ -1,62 +1,42 @@
-
-import Sidebar from "../components/Sidebar";
-import Header from "../components/Header";
-import { Outlet } from "react-router-dom";
-import { useState } from "react";
-import CrearUsuarioForm from "../components/Usuarios/CrearUsuarioForm";
-import ModalPortal from "../components/ModalPortal";
+import { useEffect } from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
+import Pendon from "../components/Pendon";
+import { useAuth } from "../context/AuthContext";
+import { esSuperadmin } from "../lib/campana";
+import { estiloCampana } from "../lib/marca";
+import { Lamina } from "../ui/Pagina";
 
 export default function MainLayout() {
-  const [mostrarModal, setMostrarModal] = useState(false);
+  const { usuario } = useAuth();
+  const location = useLocation();
+  // El superadmin solo gestiona campañas: no entra a los datos de ninguna
+  const superadmin = esSuperadmin(usuario);
+  const sinCampana = !superadmin && !usuario?.campana;
+
+  // La barra del navegador en celular toma el color de la campaña
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = estiloCampana(usuario?.campana)["--campana"];
+  }, [usuario?.campana]);
+
   return (
-    <>
-      <div className="d-flex" style={{ minHeight: "100vh" }}>
-        {/* Sidebar */}
-        <div style={{ width: "200px", flexShrink: 0 }}>
-          <Sidebar onAbrirCrearUsuario={() => setMostrarModal(true)} />
-        </div>
-
-        {/* Contenedor principal */}
-        <div className="flex-grow-1 d-flex flex-column min-vh-100">
-          {/* Header */}
-          <div style={{ flexShrink: 0 }}>
-            <Header />
-          </div>
-
-          {/* Contenido scrollable */}
-          <div
-            className="flex-grow-1 overflow-auto p-4"
-            style={{ backgroundColor: "#f8f9fa", minHeight: 'calc(100vh - 64px)' }}
-          >
+    <div style={estiloCampana(usuario?.campana)} className="min-h-dvh lg:flex">
+      <Pendon />
+      <main className="min-w-0 flex-1">
+        <div className="mx-auto w-full max-w-[1240px] px-4 pb-16 pt-6 sm:px-8 sm:pt-10">
+          {superadmin && location.pathname !== "/campanas" ? (
+            <Navigate to="/campanas" replace />
+          ) : sinCampana ? (
+            <Lamina titulo="Sin campaña asignada" className="mx-auto max-w-lg">
+              <p className="text-[15px] text-tinta-2">
+                Su usuario no tiene una campaña asignada. Contacte al administrador.
+              </p>
+            </Lamina>
+          ) : (
             <Outlet />
-          </div>
+          )}
         </div>
-      </div>
-      {/* Modal para crear usuario, fuera del layout principal */}
-      {mostrarModal && (
-        <ModalPortal>
-          <div style={{position:'fixed', inset:0, zIndex: 99999}}>
-            <div style={{position:'absolute', inset:0, background:'#212529', opacity:0.96, width:'100%', height:'100%'}}></div>
-            <div className="d-flex align-items-center justify-content-center h-100 w-100" style={{minHeight:'100vh', position:'relative'}}>
-              <div className="modal-dialog modal-dialog-centered" style={{maxWidth:'420px', width:'100%', zIndex:100000}}>
-                <div className="modal-content p-0 position-relative" style={{background:'#fff', borderRadius:'1rem', border:'1px solid #dee2e6', boxShadow:'0 0.5rem 1rem rgba(0,0,0,.15)'}}>
-                  <button
-                    type="button"
-                    className="btn-close position-absolute end-0 top-0 m-3"
-                    aria-label="Cerrar"
-                    onClick={() => setMostrarModal(false)}
-                  ></button>
-                  <div className="modal-body p-4">
-                    <CrearUsuarioForm
-                      onUsuarioCreado={() => setMostrarModal(false)}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </ModalPortal>
-      )}
-    </>
+      </main>
+    </div>
   );
 }

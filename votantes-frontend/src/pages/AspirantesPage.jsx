@@ -1,177 +1,248 @@
-import { useState, useEffect } from "react";
-import { useRef } from "react";
-import { Modal } from "bootstrap";
-import CrearAspiranteForm from "../components/Aspirantes/CrearAspiranteForm";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useAuth } from "../context/AuthContext";
+import { api, apiLista } from "../lib/api";
+import { nombreCargo, plural } from "../lib/campana";
+import { numero } from "../lib/formato";
+import { Boton, BotonIcono } from "../ui/Boton";
+import { Campo, Casilla, Entrada, Rejilla, Seleccion } from "../ui/Campo";
+import { useConfirmar } from "../ui/Confirmar";
+import { Modal } from "../ui/Modal";
+import { Cargando, Encabezado, Insignia, Vacio } from "../ui/Pagina";
 
-export default function AspirantesPage() {
-    const [mostrarModal, setMostrarModal] = useState(false);
-    const modalRef = useRef();
-  const [form, setForm] = useState({
-    nombre: "",
-    correo: "",
-    telefono: "",
-    tipo_aspirante: "",
-    partido: "",
-    municipio: ""
-  });
-  const [mensaje, setMensaje] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [aspirantes, setAspirantes] = useState([]);
-  const [recargar, setRecargar] = useState(false);
+const FORM_VACIO = {
+  nombre_completo: "",
+  cedula: "",
+  telefono: "",
+  direccion: "",
+  barrio: "",
+  fecha_nace: "",
+  partido_id: "",
+  municipio_id: "",
+  coalicion: false,
+};
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/aspirantes`)
-      .then(res => res.json())
-      .then(data => setAspirantes(Array.isArray(data) ? data : []));
-  }, [recargar]);
+// Ficha fija de cada aspirante: lo que aporta y si ya tiene acceso
+function Ficha({ a }) {
+  return (
+    <dl className="flex gap-6 text-right">
+      <div>
+        <dt className="rotulo text-tinta-3">Líderes</dt>
+        <dd className="cifra mt-1 text-[1.75rem]">{numero(a.total_lideres)}</dd>
+      </div>
+      <div>
+        <dt className="rotulo text-tinta-3">Votantes</dt>
+        <dd className="cifra mt-1 text-[1.75rem]">{numero(a.total_votantes)}</dd>
+      </div>
+    </dl>
+  );
+}
 
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+function FormAspirante({ aspirante, partidos, municipios, onGuardado }) {
+  const [form, setForm] = useState(() =>
+    aspirante
+      ? {
+          ...Object.fromEntries(Object.keys(FORM_VACIO).map((k) => [k, aspirante[k] ?? FORM_VACIO[k]])),
+          fecha_nace: aspirante.fecha_nace ? aspirante.fecha_nace.slice(0, 10) : "",
+        }
+      : FORM_VACIO
+  );
+  const [guardando, setGuardando] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
   };
 
-  const handleSubmit = async e => {
+  const guardar = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError("");
-    setMensaje("");
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/aspirantes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form)
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Error al crear aspirante");
-      setMensaje("Aspirante creado correctamente");
-      setForm({ nombre: "", correo: "", telefono: "", tipo_aspirante: "", partido: "", municipio: "" });
-      setRecargar(r => !r);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleEliminar = async (id) => {
-    if (!window.confirm("¿Seguro que deseas eliminar este aspirante?")) return;
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/aspirantes/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Error al eliminar");
-      setRecargar(r => !r);
-    } catch (err) {
-      alert("No se pudo eliminar");
-    }
+    setGuardando(true);
+    setError(null);
+    const { ok, data } = await api(aspirante ? `/aspirantes/${aspirante.id}` : "/aspirantes", {
+      method: aspirante ? "PUT" : "POST",
+      body: form,
+    });
+    setGuardando(false);
+    if (!ok) return setError(data?.error || "No se pudo guardar el aspirante");
+    onGuardado(aspirante ? "Aspirante actualizado" : "Aspirante registrado");
   };
 
   return (
-    <div className="container py-4">
-      <div className="d-flex justify-content-between align-items-center mb-4">
-        <h2 className="mb-0">Aspirantes</h2>
-        <button className="btn btn-success" onClick={() => {
-          setMostrarModal(true);
-          setTimeout(() => {
-            if (modalRef.current) {
-              const modal = new Modal(modalRef.current);
-              modal.show();
-            }
-          }, 100);
-        }}>
-          <i className="bi bi-person-plus me-2"></i> Crear Aspirante
-        </button>
-      </div>
-      <div
-        className="modal fade"
-        tabIndex="-1"
-        ref={modalRef}
-        id="modalAspirante"
-        style={{ display: mostrarModal ? 'block' : 'none' }}
-      >
-        <div className="modal-dialog modal-lg modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header">
-              <h5 className="modal-title">Crear Aspirante</h5>
-              <button type="button" className="btn-close" data-bs-dismiss="modal" onClick={() => {
-                setMostrarModal(false);
-                setTimeout(() => {
-                  if (modalRef.current) {
-                    const modal = Modal.getInstance(modalRef.current);
-                    if (modal) modal.hide();
-                  }
-                }, 100);
-              }} />
-            </div>
-            <div className="modal-body">
-              <CrearAspiranteForm
-                onAspiranteCreado={() => {
-                  setMostrarModal(false);
-                  setRecargar(r => !r);
-                  setForm({ nombre: "", correo: "", telefono: "", tipo_aspirante: "", partido: "", municipio: "" });
-                  setError("");
-                  setMensaje("");
-                  setTimeout(() => {
-                    if (modalRef.current) {
-                      const modal = Modal.getInstance(modalRef.current);
-                      if (modal) modal.hide();
-                    }
-                  }, 100);
-                }}
-                onCancel={() => {
-                  setMostrarModal(false);
-                  setTimeout(() => {
-                    if (modalRef.current) {
-                      const modal = Modal.getInstance(modalRef.current);
-                      if (modal) modal.hide();
-                    }
-                  }, 100);
-                }}
-              />
-            </div>
+    <form onSubmit={guardar} className="flex flex-col gap-5">
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      <Rejilla columnas={2}>
+        <Campo etiqueta="Nombre completo" id="a-nombre" className="sm:col-span-2">
+          <Entrada id="a-nombre" name="nombre_completo" value={form.nombre_completo} onChange={handleChange} required autoComplete="off" autoFocus />
+        </Campo>
+        <Campo etiqueta="Cédula" id="a-cedula">
+          <Entrada id="a-cedula" name="cedula" value={form.cedula} onChange={handleChange} inputMode="numeric" />
+        </Campo>
+        <Campo etiqueta="Teléfono" id="a-tel">
+          <Entrada id="a-tel" name="telefono" type="tel" inputMode="tel" value={form.telefono} onChange={handleChange} />
+        </Campo>
+        <Campo etiqueta="Partido" id="a-partido">
+          <Seleccion id="a-partido" name="partido_id" value={form.partido_id} onChange={handleChange}>
+            <option value="">Sin partido</option>
+            {partidos.map((p) => <option key={p.id} value={p.id}>{p.nombre}</option>)}
+          </Seleccion>
+        </Campo>
+        <Campo etiqueta="Municipio" id="a-muni">
+          <Seleccion id="a-muni" name="municipio_id" value={form.municipio_id} onChange={handleChange}>
+            <option value="">Seleccione…</option>
+            {municipios.map((m) => <option key={m.id} value={m.id}>{m.nombre}</option>)}
+          </Seleccion>
+        </Campo>
+        <Campo etiqueta="Dirección" id="a-dir">
+          <Entrada id="a-dir" name="direccion" value={form.direccion} onChange={handleChange} />
+        </Campo>
+        <Campo etiqueta="Barrio" id="a-barrio">
+          <Entrada id="a-barrio" name="barrio" value={form.barrio} onChange={handleChange} />
+        </Campo>
+        <Campo etiqueta="Fecha de nacimiento" id="a-fecha">
+          <Entrada id="a-fecha" name="fecha_nace" type="date" value={form.fecha_nace} onChange={handleChange} />
+        </Campo>
+        {aspirante?.es_principal && (
+          <div className="flex items-end">
+            <Casilla id="a-coal" name="coalicion" etiqueta="Aspira en coalición" checked={form.coalicion} onChange={handleChange} />
           </div>
-        </div>
+        )}
+      </Rejilla>
+      <div className="flex justify-end border-t border-filete pt-4">
+        <Boton type="submit" cargando={guardando} className="max-sm:w-full max-sm:justify-center">Guardar</Boton>
       </div>
-      <hr className="my-5" />
-      <h3 className="mb-3">Lista de Aspirantes</h3>
-      <div className="table-responsive">
-        <table className="table table-bordered table-hover align-middle">
-          <thead className="table-light">
-            <tr>
-              <th>Nombre</th>
-              <th>Tipo</th>
-              <th>Correo</th>
-              <th>Teléfono</th>
-              <th>Partido</th>
-              <th>Municipio</th>
-              <th style={{minWidth:120}}>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {aspirantes.length === 0 && (
-              <tr><td colSpan={7} className="text-center">No hay aspirantes registrados</td></tr>
+    </form>
+  );
+}
+
+export default function AspirantesPage() {
+  const { usuario } = useAuth();
+  const campana = usuario?.campana;
+  const cargoSecundario = nombreCargo(campana?.cargo_secundario);
+  const confirmar = useConfirmar();
+
+  const [aspirantes, setAspirantes] = useState(null);
+  const [partidos, setPartidos] = useState([]);
+  const [municipios, setMunicipios] = useState([]);
+  const [editando, setEditando] = useState(null); // aspirante, "nuevo" o null
+
+  const cargar = () => apiLista("/aspirantes").then(setAspirantes);
+
+  useEffect(() => {
+    cargar();
+    apiLista("/partidos").then(setPartidos);
+    apiLista("/municipios").then(setMunicipios);
+  }, [campana?.id]);
+
+  const principal = aspirantes?.find((a) => a.es_principal);
+  const secundarios = aspirantes?.filter((a) => !a.es_principal) || [];
+
+  const eliminar = async (a) => {
+    const ok = await confirmar({
+      titulo: `¿Eliminar a ${a.nombre_completo}?`,
+      texto: "Solo se puede eliminar si no tiene líderes, votantes ni usuarios.",
+      accion: "Eliminar aspirante",
+    });
+    if (!ok) return;
+    const res = await api(`/aspirantes/${a.id}`, { method: "DELETE" });
+    if (!res.ok) return toast.error(res.data?.error || "No se pudo eliminar el aspirante");
+    toast.success("Aspirante eliminado");
+    cargar();
+  };
+
+  if (!aspirantes) return <Cargando texto="Cargando aspirantes…" />;
+
+  return (
+    <>
+      <Encabezado
+        titulo="Aspirantes"
+        descripcion={
+          campana?.cargo_secundario
+            ? `El ${nombreCargo(campana.cargo_principal).toLowerCase()} encabeza la campaña y cada ${cargoSecundario.toLowerCase()} trae sus propios líderes y votantes.`
+            : `Campaña de ${campana?.tipo_nombre}: un solo aspirante.`
+        }
+      >
+        {campana?.cargo_secundario && (
+          <Boton icono="bi-person-plus" onClick={() => setEditando("nuevo")}>Nuevo {cargoSecundario.toLowerCase()}</Boton>
+        )}
+      </Encabezado>
+
+      {principal && (
+        <section className="flex flex-col gap-5 rounded-lg bg-papel p-5 ring-1 ring-filete sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="min-w-0">
+            <p className="condensada text-[2.25rem] uppercase leading-[0.9] sm:text-[2.75rem]">{principal.nombre_completo}</p>
+            <p className="mt-2 text-[15px] text-tinta-2">
+              <span className="font-[650] text-tinta">{principal.cargo_nombre} principal</span>
+              {principal.partido && <> · {principal.partido}</>}
+              {principal.coalicion && <> · en coalición</>}
+            </p>
+          </div>
+          <div className="flex items-center gap-4 max-sm:justify-between">
+            <Ficha a={principal} />
+            <BotonIcono etiqueta={`Editar a ${principal.nombre_completo}`} icono="bi-pencil" onClick={() => setEditando(principal)} variante="secundario" />
+          </div>
+        </section>
+      )}
+
+      {campana?.cargo_secundario && (
+        <section className="mt-8">
+          <h2 className="condensada mb-3 text-[1.75rem] leading-none">
+            {plural(cargoSecundario)} <span className="text-tinta-3">{secundarios.length}</span>
+          </h2>
+          <div className="rounded-lg bg-papel ring-1 ring-filete">
+            {secundarios.length === 0 ? (
+              <Vacio
+                icono="bi-person-badge"
+                titulo={`Aún no hay ${plural(cargoSecundario).toLowerCase()}`}
+                texto={`Regístrelos para que cada uno tenga su usuario y vea solo a sus votantes.`}
+              >
+                <Boton icono="bi-person-plus" onClick={() => setEditando("nuevo")}>Nuevo {cargoSecundario.toLowerCase()}</Boton>
+              </Vacio>
+            ) : (
+              <ul className="divide-y divide-filete">
+                {secundarios.map((a) => (
+                  <li key={a.id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:gap-6 sm:px-6">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-[17px] font-[700]">{a.nombre_completo}</p>
+                      <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-tinta-2">
+                        {a.partido || "Sin partido"}
+                        {a.total_usuarios > 0 ? (
+                          <Insignia icono="bi-person-check">{a.total_usuarios} usuario{a.total_usuarios > 1 ? "s" : ""}</Insignia>
+                        ) : (
+                          <Insignia tono="alerta" icono="bi-person-dash">Sin usuario</Insignia>
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex items-center justify-between gap-4 sm:justify-end">
+                      <Ficha a={a} />
+                      <div className="flex items-center">
+                        <BotonIcono etiqueta={`Editar a ${a.nombre_completo}`} icono="bi-pencil" onClick={() => setEditando(a)} />
+                        <BotonIcono etiqueta={`Eliminar a ${a.nombre_completo}`} icono="bi-trash3" variante="peligro-suave" className="ml-4" onClick={() => eliminar(a)} />
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
             )}
-            {aspirantes.map(a => (
-              <tr key={a.id}>
-                <td>{a.nombre}</td>
-                <td>{a.tipo_aspirante}</td>
-                <td>{a.correo}</td>
-                <td>{a.telefono}</td>
-                <td>{a.partido}</td>
-                <td>{a.municipio}</td>
-                <td>
-                  {/* Botón editar (no implementado aún) */}
-                  <button className="btn btn-sm btn-warning me-2" disabled title="Editar próximamente">
-                    <i className="bi bi-pencil"></i>
-                  </button>
-                  {/* Botón eliminar */}
-                  <button className="btn btn-sm btn-danger" onClick={() => handleEliminar(a.id)}>
-                    <i className="bi bi-trash"></i>
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </div>
+        </section>
+      )}
+
+      <Modal
+        abierto={!!editando}
+        alCerrar={() => setEditando(null)}
+        titulo={editando === "nuevo" ? `Nuevo ${cargoSecundario.toLowerCase()}` : `Editar ${nombreCargo(editando?.cargo).toLowerCase()}`}
+      >
+        {editando && (
+          <FormAspirante
+            key={editando.id || "nuevo"}
+            aspirante={editando === "nuevo" ? null : editando}
+            partidos={partidos}
+            municipios={municipios}
+            onGuardado={(mensaje) => { toast.success(mensaje); setEditando(null); cargar(); }}
+          />
+        )}
+      </Modal>
+    </>
   );
 }

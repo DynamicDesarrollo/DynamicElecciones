@@ -1,379 +1,226 @@
-// src/pages/AsistenciaPage.jsx
-//hahshasas   
-import { useState, useEffect } from "react";
-import Swal from "sweetalert2";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
-import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable";
+import { api } from "../lib/api";
+import { exportarPDF } from "../lib/exportar";
+import { fechaHora, numero, porcentaje } from "../lib/formato";
+import { Boton } from "../ui/Boton";
+import { Campo, Entrada } from "../ui/Campo";
+import { Cifras, Encabezado } from "../ui/Pagina";
+
+const CLAVE_PUESTO = "dynamic.puestoControl";
+
+// Recuerda el puesto de control en este dispositivo para no reescribirlo con cada votante
+const leerPuesto = () => {
+  try {
+    return localStorage.getItem(CLAVE_PUESTO) || "";
+  } catch {
+    return "";
+  }
+};
+const guardarPuesto = (valor) => {
+  try {
+    localStorage.setItem(CLAVE_PUESTO, valor);
+  } catch {
+    /* almacenamiento bloqueado: el puesto solo dura esta sesión */
+  }
+};
+
+function Dato({ etiqueta, children }) {
+  return (
+    <div>
+      <dt className="rotulo text-tinta-3">{etiqueta}</dt>
+      <dd className="mt-1 text-[16px] font-[620]">{children || "—"}</dd>
+    </div>
+  );
+}
 
 export default function AsistenciaPage() {
   const { usuario } = useAuth();
   const [cedula, setCedula] = useState("");
   const [votante, setVotante] = useState(null);
-  const [loadingVotante, setLoadingVotante] = useState(false);
-  const [puestoControl, setPuestoControl] = useState("");
+  const [noEncontrado, setNoEncontrado] = useState(null);
+  const [buscando, setBuscando] = useState(false);
+  const [puesto, setPuesto] = useState(leerPuesto);
+  // Con un puesto ya guardado, el campo se muestra compacto para dejar la confirmación a la vista
+  const [editandoPuesto, setEditandoPuesto] = useState(() => !leerPuesto());
   const [confirmando, setConfirmando] = useState(false);
-  const [lastAsistencia, setLastAsistencia] = useState(null);
+  const [confirmado, setConfirmado] = useState(null); // último votante confirmado
+  const [resumen, setResumen] = useState({ total: 0, asistieron: 0 });
+  const entradaRef = useRef(null);
 
-  const [resumenAsistencia, setResumenAsistencia] = useState({
-    total_votantes: 0,
-    total_asistencias: 0,
-  });
-
-  // Traer resumen de asistencias y total votantes
-  const fetchResumen = async () => {
-    try {
-      const headers = { Authorization: `Bearer ${usuario.token}` };
-
-      const [vtRes, asRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/api/votantes/total`, { headers }),
-        fetch(`${import.meta.env.VITE_API_URL}/api/asistencia/resumen`, { headers }),
-      ]);
-
-      if (vtRes.ok) {
-        const vtData = await vtRes.json();
-        setResumenAsistencia((prev) => ({ ...prev, total_votantes: vtData.total || 0 }));
-      }
-
-      if (asRes.ok) {
-        const asData = await asRes.json();
-        setResumenAsistencia((prev) => ({ ...prev, total_asistencias: asData.total_asistencias || 0 }));
-      }
-    } catch (err) {
-      console.error("Error cargando resumen de asistencia:", err);
-    }
-  };
-
-  useEffect(() => {
-    if (!usuario?.token) return;
-
-    fetchResumen(); // primera vez
-
-    const intervalo = setInterval(() => {
-      fetchResumen(); // cada 15 segundos
-    }, 15000);
-
-    return () => clearInterval(intervalo); // limpiar al desmontar
-  }, [usuario]);
-
-
-  const buscarVotante = async () => {
-    if (!cedula.trim()) {
-      Swal.fire("Atención", "Ingresa una cédula válida", "warning");
-      return;
-    }
-    setLoadingVotante(true);
-    setVotante(null);
-    setLastAsistencia(null);
-    try {
-      const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/asistencia?cedula=${encodeURIComponent(cedula)}`,
-        {
-          headers: { Authorization: `Bearer ${usuario.token}` },
-        }
-      );
-      if (res.status === 404) {
-        Swal.fire("No encontrado", "No se encontró ningún votante con esa cédula", "info");
-        return;
-      }
-      if (!res.ok) throw new Error("Error al buscar votante");
-      const data = await res.json();
-      setVotante(data);
-
-      // Si la respuesta trae asistencia previa embedded, la asignamos
-      if (data.puesto_control || data.fecha_asistencia) {
-        setLastAsistencia({
-          puesto_control: data.puesto_control,
-          lugar: data.lugar_nombre || "—",
-          mesa: data.mesa_numero || "—",
-          fecha: data.fecha_asistencia || null,
-        });
-      }
-    } catch (err) {
-      console.error("Error buscando votante:", err);
-      Swal.fire("Error", "Ocurrió un error al buscar el votante", "error");
-    } finally {
-      setLoadingVotante(false);
-    }
-  };
-
-  const confirmarAsistencia = async () => {
-    if (!votante) {
-      Swal.fire("Atención", "Primero busca un votante válido", "warning");
-      return;
-    }
-    if (!puestoControl.trim()) {
-      Swal.fire("Atención", "Ingresa el puesto de control", "warning");
-      return;
-    }
-
-    setConfirmando(true);
-    console.log("Enviando:", {
-      votante_uuid: votante?.id,
-      puesto_control: puestoControl,
+  const cargarResumen = useCallback(async () => {
+    const [vt, as] = await Promise.all([api("/votantes/total"), api("/asistencia/resumen")]);
+    setResumen({
+      total: vt.ok ? vt.data.total : 0,
+      asistieron: as.ok ? as.data.total_asistencias : 0,
     });
-    try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/asistencia`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${usuario.token}`,
-        },
-        body: JSON.stringify({
-          votante_uuid: votante.id || votante.votante_uuid || votante.uuid, // según cómo venga
-          puesto_control: puestoControl,
-        }),
-      });
+  }, []);
 
-      if (!res.ok) {
-        const errBody = await res.json().catch(() => ({}));
-        throw new Error(errBody.error || "Error al registrar asistencia");
-      }
+  // El conteo se actualiza solo cada 15 segundos
+  useEffect(() => {
+    cargarResumen();
+    const intervalo = setInterval(cargarResumen, 15000);
+    return () => clearInterval(intervalo);
+  }, [cargarResumen, usuario?.campana?.id]);
 
-      Swal.fire("Listo", "Asistencia registrada correctamente", "success");
-      setLastAsistencia({
-        puesto_control: puestoControl,
-        lugar: votante.lugar_nombre || "—",
-        mesa: votante.mesa_numero || "—",
-      });
-      setPuestoControl("");
-      // refrescar resumen
-      await fetchResumen();
-    } catch (err) {
-      console.error("Error creando asistencia:", err);
-      Swal.fire("Error", err.message || "No se pudo registrar asistencia", "error");
-    } finally {
-      setConfirmando(false);
+  const buscar = async (e) => {
+    e?.preventDefault();
+    const valor = cedula.replace(/\D/g, "");
+    if (valor.length < 5) {
+      setNoEncontrado("Escriba la cédula completa, sin puntos.");
+      return;
     }
+    setBuscando(true);
+    setVotante(null);
+    setNoEncontrado(null);
+    setConfirmado(null);
+    const { ok, status, data } = await api(`/asistencia?cedula=${encodeURIComponent(valor)}`);
+    setBuscando(false);
+    if (status === 404) return setNoEncontrado(`La cédula ${numero(valor)} no está registrada en la campaña.`);
+    if (!ok) return toast.error(data?.error || "No se pudo buscar el votante");
+    setVotante(data);
   };
 
-  const faltanPorAsistir =
-    Math.max(0, resumenAsistencia.total_votantes - resumenAsistencia.total_asistencias);
-
-  const exportarResumenPDF = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("Resumen de Asistencias", 14, 16);
-
-    doc.setFontSize(12);
-    doc.text(`Total votantes: ${resumenAsistencia.total_votantes}`, 14, 26);
-    doc.text(`Total asistencias: ${resumenAsistencia.total_asistencias}`, 14, 32);
-    doc.text(`Faltan por asistir: ${faltanPorAsistir}`, 14, 38);
-
-    if (votante) {
-      doc.text(" ", 14, 44);
-      doc.setFontSize(14);
-      doc.text("Votante buscado", 14, 50);
-      doc.setFontSize(12);
-      const votanteRows = [
-        ["Nombre", votante.nombre_completo || "—"],
-        ["Cédula", votante.cedula || "—"],
-        ["Teléfono", votante.telefono || "—"],
-        ["Barrio", votante.barrio_nombre || "—"],
-        ["Municipio", votante.municipio_nombre || "—"],
-        ["Zona", votante.zona || "—"],
-      ];
-      autoTable(doc, {
-        startY: 55,
-        theme: "grid",
-        head: [["Campo", "Valor"]],
-        body: votanteRows,
-        styles: { fontSize: 10 },
-      });
-
-      if (lastAsistencia) {
-        const startY = doc.lastAutoTable?.finalY ? doc.lastAutoTable.finalY + 6 : 100;
-        doc.setFontSize(14);
-        doc.text("Última asistencia", 14, startY);
-        const asistenciaRows = [
-          ["Puesto control", lastAsistencia.puesto_control || "—"],
-          ["Lugar", lastAsistencia.lugar || "—"],
-          ["Mesa", lastAsistencia.mesa || "—"],
-          ["Fecha", lastAsistencia.fecha || "—"],
-        ];
-        autoTable(doc,{
-          startY: startY + 5,
-          theme: "grid",
-          head: [["Campo", "Valor"]],
-          body: asistenciaRows,
-          styles: { fontSize: 10 },
-        });
-      }
+  const confirmar = async () => {
+    if (!puesto.trim()) {
+      setEditandoPuesto(true);
+      toast.warning("Escriba el puesto de control antes de confirmar");
+      return;
     }
-
-    doc.save("resumen_asistencias.pdf");
+    setConfirmando(true);
+    const { ok, data } = await api("/asistencia", {
+      method: "POST",
+      body: { votante_uuid: votante.id, puesto_control: puesto.trim() },
+    });
+    setConfirmando(false);
+    if (!ok) return toast.error(data?.error || "No se pudo registrar la asistencia");
+    guardarPuesto(puesto.trim());
+    setEditandoPuesto(false);
+    setConfirmado(votante);
+    setVotante(null);
+    setCedula("");
+    cargarResumen();
+    entradaRef.current?.focus();
   };
+
+  const faltan = Math.max(0, resumen.total - resumen.asistieron);
+
+  const exportar = () =>
+    exportarPDF({
+      titulo: "Asistencia día E",
+      columnas: ["Concepto", "Total"],
+      filas: [
+        ["Votantes", numero(resumen.total)],
+        ["Asistieron", `${numero(resumen.asistieron)} (${porcentaje(resumen.asistieron, resumen.total)})`],
+        ["Faltan", numero(faltan)],
+      ],
+      archivo: "asistencia.pdf",
+    });
 
   return (
-    <div className="container mt-4">
-      <div className="d-flex justify-content-between align-items-start mb-2">
-        <div>
-          <h2>📋 Control de Asistencias</h2>
-        </div>
-        <div>
-          <button className="btn btn-outline-primary" onClick={exportarResumenPDF}>
-            🖨️ Exportar resumen a PDF
-          </button>
-        </div>
-      </div>
+    <div className="flex flex-col">
+      <Encabezado titulo="Asistencia día E" descripcion="Busque la cédula y confirme que el votante llegó.">
+        <Boton variante="secundario" icono="bi-file-earmark-pdf" onClick={exportar} className="max-sm:hidden">Exportar</Boton>
+      </Encabezado>
 
-      {/* Resumen general */}
-      <div className="row mb-4">
-        <div className="col-md-4 mb-2">
-          <div className="card shadow border-0 text-white bg-primary h-100">
-            <div className="card-body d-flex align-items-center">
-              <div className="me-3">
-                <i className="bi bi-people-fill display-4"></i>
-              </div>
-              <div>
-                <h6 className="card-title mb-1">Total Votantes</h6>
-                <p className="card-text fs-4 mb-0">{resumenAsistencia.total_votantes}</p>
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* En celular, la búsqueda y la confirmación van primero; las cifras después */}
+      <Cifras
+        className="max-sm:order-3 max-sm:mt-6"
+        items={[
+          { etiqueta: "Asistieron", valor: resumen.asistieron, detalle: `${porcentaje(resumen.asistieron, resumen.total)} del total` },
+          { etiqueta: "Faltan", valor: faltan },
+          { etiqueta: "Votantes", valor: resumen.total },
+        ]}
+      />
 
-        <div className="col-md-4 mb-2">
-          <div className="card shadow border-0 text-white bg-success h-100">
-            <div className="card-body d-flex align-items-center">
-              <div className="me-3">
-                <i className="bi bi-check2-circle display-4"></i>
-              </div>
-              <div>
-                <h6 className="card-title mb-1">Asistencias</h6>
-                <p className="card-text fs-4 mb-0">{resumenAsistencia.total_asistencias}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-md-4 mb-2">
-          <div className="card shadow border-0 text-white bg-warning h-100">
-            <div className="card-body d-flex align-items-center">
-              <div className="me-3">
-                <i className="bi bi-exclamation-circle display-4"></i>
-              </div>
-              <div>
-                <h6 className="card-title mb-1">Faltan por asistir</h6>
-                <p className="card-text fs-4 mb-0">{faltanPorAsistir}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Buscador + puesto */}
-      <div className="card shadow p-4 mb-4">
-        <div className="row g-3">
-          <div className="col-md-3">
-            <label className="form-label">Cédula del votante</label>
-            <div className="input-group">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Ej: 12345678"
-                value={cedula}
-                onChange={(e) => setCedula(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    buscarVotante();
-                  }
-                }}
-              />
-              <button
-                className="btn btn-primary"
-                onClick={buscarVotante}
-                disabled={loadingVotante}
-              >
-                {loadingVotante ? "Buscando..." : "Buscar"}
-              </button>
-            </div>
-          </div>
-
-          <div className="col-md-3">
-            <label className="form-label">Puesto de control</label>
+      <div className="mt-6 grid grid-cols-1 gap-6 max-sm:order-2 max-sm:mt-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+        <form onSubmit={buscar} className="rounded-lg bg-papel p-5 ring-1 ring-filete sm:p-6">
+          <label htmlFor="cedula-asistencia" className="condensada block text-[1.6rem] leading-none">Cédula del votante</label>
+          <div className="mt-4 flex gap-2">
             <input
-              type="text"
-              className="form-control"
-              placeholder="Ej: Puesto A / Entrada"
-              value={puestoControl}
-              onChange={(e) => setPuestoControl(e.target.value)}
+              id="cedula-asistencia"
+              ref={entradaRef}
+              value={cedula}
+              onChange={(e) => setCedula(e.target.value)}
+              inputMode="numeric"
+              autoComplete="off"
+              autoFocus
+              placeholder="Ej. 1067845123"
+              aria-invalid={!!noEncontrado}
+              className="cifra h-16 min-w-0 flex-1 rounded-md bg-papel px-4 text-[2rem] ring-1 ring-inset ring-filete-fuerte placeholder:text-[1.25rem] placeholder:font-[500] placeholder:text-tinta-3 focus:outline-none focus:ring-2 focus:ring-campana"
             />
+            <Boton type="submit" cargando={buscando} className="h-16 px-5 text-[17px]" icono="bi-search">
+              <span className="max-sm:sr-only">Buscar</span>
+            </Boton>
           </div>
+          {noEncontrado && <p className="mt-3 text-[15px] font-[560] text-error" role="alert">{noEncontrado}</p>}
 
-          <div className="col-md-3 d-flex align-items-end">
-            <button
-              className="btn btn-success w-100"
-              onClick={confirmarAsistencia}
-              disabled={!votante || confirmando}
-            >
-              {confirmando ? "Confirmando..." : "Confirmar asistencia"}
-            </button>
-          </div>
-        </div>
-      </div>
+          {editandoPuesto ? (
+            <Campo etiqueta="Puesto de control" id="puesto" ayuda="Queda guardado en este dispositivo." className="mt-6">
+              <Entrada id="puesto" value={puesto} onChange={(e) => setPuesto(e.target.value)} placeholder="Ej. Colegio San José, entrada norte" />
+            </Campo>
+          ) : (
+            <p className="mt-4 flex flex-wrap items-center gap-x-2 text-[15px] text-tinta-2">
+              <i className="bi bi-geo-alt" aria-hidden="true" />
+              Puesto: <strong className="font-[650] text-tinta">{puesto}</strong>
+              <button type="button" onClick={() => setEditandoPuesto(true)} className="inline-flex min-h-11 items-center font-[620] text-tinta underline">
+                Cambiar
+              </button>
+            </p>
+          )}
+        </form>
 
-      {/* Info del votante y última asistencia */}
-      {votante && (
-        <div className="card shadow mb-4">
-          <div className="card-body">
-            <h5 className="card-title">🧍 Datos del Votante</h5>
-            <div className="row">
-              <div className="col-md-4">
-                <p>
-                  <strong>Nombre:</strong> {votante.nombre_completo}
-                </p>
-                <p>
-                  <strong>Cédula:</strong> {votante.cedula}
-                </p>
+        <section aria-live="polite" className="min-h-[260px]">
+          {votante ? (
+            <div className="overflow-hidden rounded-lg bg-papel ring-1 ring-filete animate-aparecer">
+              <div className="border-b border-dashed border-filete-fuerte px-5 py-5 sm:px-6">
+                <p className="condensada text-[2.25rem] uppercase leading-[0.92]">{votante.nombre_completo}</p>
+                <p className="mt-1.5 text-[15px] tabular-nums text-tinta-2">C.C. {numero(votante.cedula)}</p>
               </div>
-              <div className="col-md-4">
-                <p>
-                  <strong>Teléfono:</strong> {votante.telefono || "—"}
+              <dl className="grid grid-cols-2 gap-x-6 gap-y-4 px-5 py-5 sm:grid-cols-3 sm:px-6">
+                <Dato etiqueta="Lugar">{votante.lugar_nombre}</Dato>
+                <Dato etiqueta="Mesa"><span className="cifra text-[1.6rem]">{votante.mesa_numero || "—"}</span></Dato>
+                <Dato etiqueta="Zona">{votante.zona}</Dato>
+                <Dato etiqueta="Barrio">{votante.barrio_nombre}</Dato>
+                <Dato etiqueta="Municipio">{votante.municipio_nombre}</Dato>
+                <Dato etiqueta="Teléfono">{votante.telefono}</Dato>
+              </dl>
+              {votante.fecha_asistencia && (
+                <p className="mx-5 mb-4 rounded-md bg-alerta-suave px-4 py-3 text-sm text-alerta sm:mx-6">
+                  <i className="bi bi-exclamation-triangle mr-1.5" aria-hidden="true" />
+                  Ya se registró el {fechaHora(votante.fecha_asistencia)} en {votante.puesto_control}. Confirme solo si es otro puesto.
                 </p>
-                <p>
-                  <strong>Barrio:</strong> {votante.barrio_nombre || "—"}
-                </p>
-              </div>
-              <div className="col-md-4">
-                <p>
-                  <strong>Municipio:</strong> {votante.municipio_nombre || "—"}
-                </p>
-                <p>
-                  <strong>Zona:</strong> {votante.zona || "—"}
-                </p>
+              )}
+              <div className="border-t border-filete bg-fondo/60 px-5 py-4 sm:px-6">
+                <Boton onClick={confirmar} cargando={confirmando} icono="bi-check2-circle" className="h-14 w-full justify-center text-[17px]">
+                  Confirmar asistencia
+                </Boton>
               </div>
             </div>
-            {lastAsistencia && (
-              <div className="row mt-3">
-                <div className="col-md-3">
-                  <p>
-                    <strong>Puesto de control:</strong> {lastAsistencia.puesto_control}
-                  </p>
-                </div>
-                <div className="col-md-3">
-                  <p>
-                    <strong>Lugar:</strong> {lastAsistencia.lugar}
-                  </p>
-                </div>
-                <div className="col-md-3">
-                  <p>
-                    <strong>Mesa:</strong> {lastAsistencia.mesa}
-                  </p>
-                </div>
-                {lastAsistencia.fecha && (
-                  <div className="col-md-3">
-                    <p>
-                      <strong>Fecha:</strong> {new Date(lastAsistencia.fecha).toLocaleString()}
-                    </p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+          ) : confirmado ? (
+            <div className="flex h-full flex-col items-center justify-center rounded-lg bg-voto px-6 py-10 text-center text-tinta animate-aparecer">
+              <svg viewBox="0 0 28 40" className="h-14 w-10" aria-hidden="true">
+                <path d="M0 0h28v40l-14-8-14 8z" fill="#121417" />
+                <path d="M7 15l5 5 9-10" fill="none" stroke="#FFD23F" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+              <p className="condensada mt-4 text-[3rem] uppercase leading-none">Votó</p>
+              <p className="mt-2 text-[17px] font-[680]">{confirmado.nombre_completo}</p>
+              <p className="mt-1 text-sm">Asistencia número <span className="cifra text-[1.25rem]">{numero(resumen.asistieron)}</span>. Lista la siguiente cédula.</p>
+            </div>
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-filete-fuerte px-6 py-10 text-center">
+              <i className="bi bi-person-vcard text-[2rem] text-tinta-3" aria-hidden="true" />
+              <p className="mt-3 text-[17px] font-[680]">Aquí aparece el votante</p>
+              <p className="mt-1 max-w-[36ch] text-[15px] text-tinta-2">Con su lugar y mesa, para confirmar en un toque.</p>
+            </div>
+          )}
+        </section>
+      </div>
+
+      <Boton variante="secundario" icono="bi-file-earmark-pdf" onClick={exportar} className="order-4 mt-4 justify-center sm:hidden">
+        Exportar resumen
+      </Boton>
     </div>
   );
 }

@@ -1,21 +1,16 @@
 
 const express = require('express');
 const {
-  getAspirantesAlcaldia,
-  createAspiranteAlcaldia,
-  updateAspiranteAlcaldia,
-  deleteAspiranteAlcaldia,
-  crearAspirante,
-  listarAspirantes
+  listarAspirantes,
+  createAspirante,
+  updateAspirante,
+  deleteAspirante
 } = require('../controllers/aspirantes.controller');
+const { requireRol } = require('../middlewares/auth');
 const router = express.Router();
-// Rutas antiguas (alcaldía)
-router.get('/alcaldia', getAspirantesAlcaldia);
-router.post('/alcaldia', createAspiranteAlcaldia);
-
-// Rutas nuevas generales
+const soloAdmin = requireRol('superadmin', 'admin');
 router.get('/', listarAspirantes);
-router.post('/', crearAspirante);
-router.put('/alcaldia/:id', updateAspiranteAlcaldia);
-router.delete('/alcaldia/:id', deleteAspiranteAlcaldia);
+router.post('/', soloAdmin, createAspirante);
+router.put('/:id', soloAdmin, updateAspirante);
+router.delete('/:id', soloAdmin, deleteAspirante);
 module.exports = router;

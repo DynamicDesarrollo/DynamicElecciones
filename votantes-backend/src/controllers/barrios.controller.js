@@ -1,14 +1,17 @@
 import db from '../utils/db.js';
+import { territorioDe, condicionMunicipios } from '../utils/territorio.js';
 
-// ✅ Obtener todos los barrios
+// ✅ Barrios de los municipios del territorio de la campaña
 export const getBarrios = async (req, res) => {
   try {
+    const { sql, valores } = condicionMunicipios(await territorioDe(req.usuario));
     const result = await db.query(`
       SELECT b.*, m.nombre AS municipio
       FROM barrios b
       JOIN municipios m ON b.municipio_id = m.id
+      WHERE ${sql}
       ORDER BY b.nombre
-    `);
+    `, valores);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: 'Error al obtener barrios', details: err.message });

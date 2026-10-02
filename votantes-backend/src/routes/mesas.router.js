@@ -8,12 +8,15 @@ const {
 } = require('../controllers/mesas.controller');
 
 
+const { requireRol } = require('../middlewares/auth');
 const router = express.Router();
+// Catálogo compartido: lo modifica solo superadmin
+const puedeEditar = requireRol('superadmin');
 
 
 router.get('/', getMesas);
-router.post('/', createMesa);
-router.put('/:id', updateMesa);
-router.delete('/:id', deleteMesa);
+router.post('/', puedeEditar, createMesa);
+router.put('/:id', puedeEditar, updateMesa);
+router.delete('/:id', puedeEditar, deleteMesa);
 
 module.exports = router;

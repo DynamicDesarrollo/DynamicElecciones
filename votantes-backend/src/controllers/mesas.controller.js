@@ -1,13 +1,17 @@
 import db from '../utils/db.js';
+import { territorioDe, condicionMunicipios } from '../utils/territorio.js';
 
-// ✅ Obtener todos los barrios
+// ✅ Mesas de los puestos del territorio de la campaña, en orden numérico
 export const getMesas = async (req, res) => {
   try {
+    const territorio = await territorioDe(req.usuario);
+    const { sql, valores } = condicionMunicipios(territorio, 'mu');
     const result = await db.query(`
       SELECT m.*
       FROM mesas_votacion m
-      ORDER BY m.numero
-    `);
+      ${territorio ? `JOIN lugares_votacion l ON l.id = m.lugar_id JOIN municipios mu ON mu.id = l.municipio_id WHERE ${sql}` : ''}
+      ORDER BY m.lugar_id, NULLIF(regexp_replace(m.numero, '\\D', '', 'g'), '')::int NULLS LAST, m.numero
+    `, valores);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: 'Error al obtener mesas', details: err.message });

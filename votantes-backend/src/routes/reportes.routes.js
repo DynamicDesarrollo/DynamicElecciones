@@ -1,11 +1,9 @@
 
 const express = require('express');
-const { getVotantesDuplicados, filtrarVotantes, getResumenVotantes, obtenerResumenDashboard, getVotantesPorPartido } = require('../controllers/reportes.controller');
-const { verificarToken } = require('../middlewares/auth');
+const { filtrarVotantes, obtenerResumenDashboard, getVotantesPorPartido, getVotantesPorAspirante } = require('../controllers/reportes.controller');
 const router = express.Router();
-router.get('/votantesduplicados', getVotantesDuplicados);
 router.get('/filtrarvotantes', filtrarVotantes);
-router.get('/resumenvotantes', getResumenVotantes);
-router.get('/dashboard', verificarToken, obtenerResumenDashboard);
-router.get('/votantesporpartido', verificarToken, getVotantesPorPartido);
+router.get('/dashboard', obtenerResumenDashboard);
+router.get('/votantesporpartido', getVotantesPorPartido);
+router.get('/votantesporaspirante', getVotantesPorAspirante);
 module.exports = router;
