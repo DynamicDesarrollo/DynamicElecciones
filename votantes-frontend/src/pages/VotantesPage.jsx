@@ -151,26 +151,26 @@ export default function VotantesPage() {
                     {v.nombre_completo}
                     {v.activo === false && <span className="ml-2 align-middle"><Insignia>Inactivo</Insignia></span>}
                   </p>
-                  <p className="text-[13px] tabular-nums text-tinta-3">C.C. {numero(v.cedula)}</p>
+                  <p className="text-nota tabular-nums text-tinta-3">C.C. {numero(v.cedula)}</p>
                 </td>
                 <td data-etiqueta="Teléfono" className="tabular-nums">{v.telefono || "—"}</td>
                 <td data-etiqueta="Barrio">
                   <span>
                     {v.barrio_nombre || "—"}
-                    {v.municipio_nombre && <span className="block text-[13px] text-tinta-3">{v.municipio_nombre}</span>}
+                    {v.municipio_nombre && <span className="block text-nota text-tinta-3">{v.municipio_nombre}</span>}
                   </span>
                 </td>
                 <td data-etiqueta="Líder">
                   <span>
                     {v.lider_nombre || <span className="text-tinta-3">Sin líder</span>}
-                    {v.direccion_lider && <span className="block text-[13px] text-tinta-3">{v.direccion_lider}</span>}
+                    {v.direccion_lider && <span className="block text-nota text-tinta-3">{v.direccion_lider}</span>}
                   </span>
                 </td>
                 {admin && (
                   <td data-etiqueta="Aspirante">
                     <span>
                       {v.aspirante_nombre}
-                      <span className="block text-[13px] text-tinta-3">{nombreCargo(v.aspirante_cargo)}</span>
+                      <span className="block text-nota text-tinta-3">{nombreCargo(v.aspirante_cargo)}</span>
                     </span>
                   </td>
                 )}

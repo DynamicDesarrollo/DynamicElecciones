@@ -85,7 +85,7 @@ export default function LiderForm({ lider, onGuardado }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-cuerpo font-[560] text-error" role="alert">{error}</p>}
 
       <Rejilla columnas={2}>
         <Campo etiqueta="Nombre completo" id="l-nombre">

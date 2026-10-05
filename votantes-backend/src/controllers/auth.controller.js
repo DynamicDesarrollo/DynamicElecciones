@@ -87,6 +87,13 @@ export const yo = async (req, res) => {
 };
 
 // -----------------------------
+// RENOVAR SESIÓN: token nuevo para quien sigue trabajando, así no se vence en mitad de un formulario
+// -----------------------------
+export const renovar = (req, res) => {
+  res.json({ token: jwt.sign({ id: req.usuario.id }, secret, { expiresIn: "8h" }) });
+};
+
+// -----------------------------
 // CAMBIAR MI CONTRASEÑA (exige la actual)
 // -----------------------------
 export const cambiarPassword = async (req, res) => {

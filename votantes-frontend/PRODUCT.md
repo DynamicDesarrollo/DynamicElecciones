@@ -37,7 +37,8 @@ La jerarquía de la campaña (aspirante principal → secundarios → líderes �
 - Roles: superadmin, admin, aspirante (equipo de un secundario), user (rol anterior, solo ve lo que registró).
 - El admin crea un único usuario por aspirante secundario; ese aspirante crea los demás usuarios de su equipo. Los líderes no tienen usuario.
 - Cédula repetida: se bloquea bajo el mismo aspirante; entre aspirantes distintos se permite y solo el admin lo ve.
-- Pendiente: catálogo de partidos con eslogan, departamentos/municipios desde la API de la Registraduría, puestos de control configurables por aspirante.
+- Puestos de control: el admin crea los de toda la campaña o los de un aspirante; el equipo de cada aspirante crea los suyos y puede usar los de la campaña. La asistencia se confirma eligiendo un puesto de la lista.
+- Pendiente: color, logo y número en el tarjetón por campaña.
 
 ## Brand Commitments
 

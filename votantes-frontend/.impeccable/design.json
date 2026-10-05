@@ -338,19 +338,19 @@
     "typographyMeta": {
       "display": {
         "displayName": "Display (pendón)",
-        "purpose": "Nombre del aspirante principal en el pendón; baja a 2.35rem y 1.85rem según el largo. En el ingreso, Dynamic Electoral hasta 6rem."
+        "purpose": "Nombre del aspirante principal en el pendón; baja de 2.125rem a 1.75rem y 1.375rem según el largo. En el ingreso, Dynamic Electoral hasta 4.25rem."
       },
       "headline": {
         "displayName": "Titular de pantalla",
-        "purpose": "Título del encabezado de cada pantalla: 2.5rem en celular, 3.25rem desde 640px."
+        "purpose": "Título del encabezado de cada pantalla: 1.875rem en celular, 2.375rem desde 640px."
       },
       "title": {
         "displayName": "Título de sección",
-        "purpose": "Láminas (1.6rem) y modales (1.75rem); la cabeza del desglose en mayúsculas."
+        "purpose": "Láminas (1.125rem), secciones y modales (1.25rem); la cabeza del desglose en mayúsculas."
       },
       "cifra": {
         "displayName": "Cifra titular",
-        "purpose": "Números protagonistas en tinta: 4.5rem en escritorio, 2.75rem o 2.25rem en celular, 2rem en desgloses."
+        "purpose": "Números protagonistas en tinta: 3.5rem en escritorio, 2.125rem o 1.75rem en celular, 1.625rem en desgloses."
       },
       "body": {
         "displayName": "Cuerpo",
@@ -446,7 +446,7 @@
       "refersTo": "button-primary",
       "description": "La acción principal de cada pantalla, arriba a la derecha, en el color de la campaña.",
       "html": "<button class=\"ds-btn-primario\" style=\"--campana:#00607A\">Nuevo votante</button>",
-      "css": ".ds-btn-primario{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border:0;border-radius:6px;font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);font-size:15px;font-weight:620;white-space:nowrap;cursor:pointer;transition:transform 150ms cubic-bezier(0.23,1,0.32,1),background-color 150ms cubic-bezier(0.23,1,0.32,1),filter 150ms cubic-bezier(0.23,1,0.32,1);background:var(--campana,#121417);color:#fff;box-shadow:0 1px 2px rgb(18 20 23/0.18);}.ds-btn-primario:hover{filter:brightness(1.08);}.ds-btn-primario:active{transform:scale(0.97);}.ds-btn-primario:focus-visible{outline:2px solid var(--campana,#121417);outline-offset:2px;}"
+      "css": ".ds-btn-primario{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border:0;border-radius:6px;font-family:var(--font-sans,\"Figtree Variable\",Figtree,system-ui,sans-serif);font-size:15px;font-weight:620;white-space:nowrap;cursor:pointer;transition:transform 150ms cubic-bezier(0.23,1,0.32,1),background-color 150ms cubic-bezier(0.23,1,0.32,1),filter 150ms cubic-bezier(0.23,1,0.32,1);background:var(--campana,#121417);color:#fff;box-shadow:0 1px 2px rgb(18 20 23/0.18);}.ds-btn-primario:hover{filter:brightness(1.08);}.ds-btn-primario:active{transform:scale(0.97);}.ds-btn-primario:focus-visible{outline:2px solid var(--campana,#121417);outline-offset:2px;}"
     },
     {
       "name": "Botón secundario",
@@ -454,7 +454,7 @@
       "refersTo": "button-secondary",
       "description": "Exportar, cancelar y paginar: papel con contorno de filete fuerte.",
       "html": "<button class=\"ds-btn-secundario\">Exportar PDF</button>",
-      "css": ".ds-btn-secundario{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border:0;border-radius:6px;font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);font-size:15px;font-weight:620;white-space:nowrap;cursor:pointer;transition:transform 150ms cubic-bezier(0.23,1,0.32,1),background-color 150ms cubic-bezier(0.23,1,0.32,1),filter 150ms cubic-bezier(0.23,1,0.32,1);background:#fff;color:#121417;box-shadow:inset 0 0 0 1px #b9b6ae;}.ds-btn-secundario:hover{background:#f2f2ef;}.ds-btn-secundario:active{transform:scale(0.97);}.ds-btn-secundario:focus-visible{outline:2px solid var(--campana,#121417);outline-offset:2px;}"
+      "css": ".ds-btn-secundario{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border:0;border-radius:6px;font-family:var(--font-sans,\"Figtree Variable\",Figtree,system-ui,sans-serif);font-size:15px;font-weight:620;white-space:nowrap;cursor:pointer;transition:transform 150ms cubic-bezier(0.23,1,0.32,1),background-color 150ms cubic-bezier(0.23,1,0.32,1),filter 150ms cubic-bezier(0.23,1,0.32,1);background:#fff;color:#121417;box-shadow:inset 0 0 0 1px #b9b6ae;}.ds-btn-secundario:hover{background:#f2f2ef;}.ds-btn-secundario:active{transform:scale(0.97);}.ds-btn-secundario:focus-visible{outline:2px solid var(--campana,#121417);outline-offset:2px;}"
     },
     {
       "name": "Eliminar en fila",
@@ -470,15 +470,15 @@
       "refersTo": "input",
       "description": "Etiqueta arriba, control de 44px, foco en color de campaña.",
       "html": "<div class=\"ds-campo\" style=\"--campana:#00607A\"><label class=\"ds-campo-etiqueta\" for=\"ds-c\">Cédula</label><input id=\"ds-c\" class=\"ds-campo-control\" placeholder=\"Ej. 1067845123\"><p class=\"ds-campo-ayuda\">Sin puntos ni espacios.</p></div>",
-      "css": ".ds-campo{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);color:#121417;max-width:320px;}.ds-campo-etiqueta{display:block;margin-bottom:6px;font-size:14px;font-weight:620;}.ds-campo-control{display:block;width:100%;height:44px;padding:0 12px;border:0;border-radius:6px;background:#fff;color:#121417;font:inherit;font-size:16px;box-shadow:inset 0 0 0 1px #b9b6ae;caret-color:var(--campana,#121417);transition:box-shadow 150ms;}.ds-campo-control::placeholder{color:#5f646c;}.ds-campo-control:focus{outline:none;box-shadow:inset 0 0 0 2px var(--campana,#121417);}.ds-campo-ayuda{margin:6px 0 0;font-size:13px;color:#5f646c;}"
+      "css": ".ds-campo{font-family:var(--font-sans,\"Figtree Variable\",Figtree,system-ui,sans-serif);color:#121417;max-width:320px;}.ds-campo-etiqueta{display:block;margin-bottom:6px;font-size:14px;font-weight:620;}.ds-campo-control{display:block;width:100%;height:44px;padding:0 12px;border:0;border-radius:6px;background:#fff;color:#121417;font:inherit;font-size:16px;box-shadow:inset 0 0 0 1px #b9b6ae;caret-color:var(--campana,#121417);transition:box-shadow 150ms;}.ds-campo-control::placeholder{color:#5f646c;}.ds-campo-control:focus{outline:none;box-shadow:inset 0 0 0 2px var(--campana,#121417);}.ds-campo-ayuda{margin:6px 0 0;font-size:13px;color:#5f646c;}"
     },
     {
       "name": "Pendón",
       "kind": "nav",
       "refersTo": "pendon",
-      "description": "Navegación en el color de la campaña con el aspirante principal en condensada; la opción activa se invierte.",
+      "description": "Navegación en el color de la campaña con el aspirante principal en titular de peso 800; la opción activa se invierte.",
       "html": "<aside class=\"ds-pendon\" style=\"--campana:#00607A\"><p class=\"ds-pendon-nombre\">Alcalde Prueba</p><p class=\"ds-pendon-campana\">Alcaldía de prueba</p><p class=\"ds-pendon-territorio\">Alcaldía · Montería, Córdoba</p><nav><a class=\"ds-pendon-op ds-activa\" href=\"#\">Resumen</a><a class=\"ds-pendon-op\" href=\"#\">Líderes</a><a class=\"ds-pendon-op\" href=\"#\">Votantes</a></nav></aside>",
-      "css": ".ds-pendon{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);width:264px;padding:28px 20px 20px;background:var(--campana,#121417);color:#fff;animation:ds-izar 450ms cubic-bezier(0.32,0.72,0,1) both;}@keyframes ds-izar{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}.ds-pendon-nombre{margin:0;font-size:2.9rem;font-weight:800;font-stretch:68%;letter-spacing:-0.01em;word-spacing:0.12em;line-height:0.88;text-transform:uppercase;}.ds-pendon-campana{margin:12px 0 0;font-size:15px;font-weight:650;}.ds-pendon-territorio{margin:4px 0 32px;font-size:13px;font-weight:520;color:rgb(255 255 255/0.8);}.ds-pendon nav{display:flex;flex-direction:column;gap:2px;}.ds-pendon-op{display:flex;align-items:center;height:44px;padding:0 12px;border-radius:6px;font-size:15px;font-weight:620;color:rgb(255 255 255/0.88);text-decoration:none;transition:background-color 150ms,color 150ms;}.ds-pendon-op:hover{background:rgb(255 255 255/0.12);color:#fff;}.ds-pendon-op.ds-activa{background:#fff;color:var(--campana,#121417);}.ds-pendon-op:focus-visible{outline:2px solid #fff;outline-offset:2px;}@media (prefers-reduced-motion:reduce){.ds-pendon{animation:none}}"
+      "css": ".ds-pendon{font-family:var(--font-sans,\"Figtree Variable\",Figtree,system-ui,sans-serif);width:264px;padding:28px 20px 20px;background:var(--campana,#121417);color:#fff;animation:ds-izar 450ms cubic-bezier(0.32,0.72,0,1) both;}@keyframes ds-izar{from{clip-path:inset(0 0 100% 0)}to{clip-path:inset(0)}}.ds-pendon-nombre{margin:0;font-size:2.125rem;font-weight:800;letter-spacing:-0.025em;line-height:0.88;text-transform:uppercase;}.ds-pendon-campana{margin:12px 0 0;font-size:15px;font-weight:650;}.ds-pendon-territorio{margin:4px 0 32px;font-size:13px;font-weight:520;color:rgb(255 255 255/0.8);}.ds-pendon nav{display:flex;flex-direction:column;gap:2px;}.ds-pendon-op{display:flex;align-items:center;height:44px;padding:0 12px;border-radius:6px;font-size:15px;font-weight:620;color:rgb(255 255 255/0.88);text-decoration:none;transition:background-color 150ms,color 150ms;}.ds-pendon-op:hover{background:rgb(255 255 255/0.12);color:#fff;}.ds-pendon-op.ds-activa{background:#fff;color:var(--campana,#121417);}.ds-pendon-op:focus-visible{outline:2px solid #fff;outline-offset:2px;}@media (prefers-reduced-motion:reduce){.ds-pendon{animation:none}}"
     },
     {
       "name": "Cifras titulares",
@@ -486,7 +486,7 @@
       "refersTo": "cifras-celda",
       "description": "Fila de cifras en tinta separadas por filetes; encabeza cada pantalla con números.",
       "html": "<dl class=\"ds-cifras\"><div><dt>Votantes</dt><dd class=\"ds-cifra\">1.284</dd></div><div><dt>Líderes activos</dt><dd class=\"ds-cifra\">37</dd><dd class=\"ds-detalle\">con al menos un votante</dd></div><div><dt>Asistieron</dt><dd class=\"ds-cifra\">642</dd><dd class=\"ds-detalle\">50 % de los votantes</dd></div></dl>",
-      "css": ".ds-cifras{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:1px;margin:0;overflow:hidden;border-radius:8px;background:#dedcd6;box-shadow:0 0 0 1px #dedcd6;color:#121417;}.ds-cifras>div{display:flex;flex-direction:column;background:#fff;padding:20px;}.ds-cifras dt{font-size:0.75rem;font-weight:650;letter-spacing:0.06em;text-transform:uppercase;color:#5f646c;}.ds-cifra{margin:12px 0 0;font-size:4.5rem;font-weight:800;font-stretch:72%;letter-spacing:-0.02em;word-spacing:0.12em;line-height:0.9;font-variant-numeric:tabular-nums lining-nums;}.ds-detalle{margin:8px 0 0;font-size:13px;color:#3d4148;}"
+      "css": ".ds-cifras{font-family:var(--font-sans,\"Figtree Variable\",Figtree,system-ui,sans-serif);display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:1px;margin:0;overflow:hidden;border-radius:8px;background:#dedcd6;box-shadow:0 0 0 1px #dedcd6;color:#121417;}.ds-cifras>div{display:flex;flex-direction:column;background:#fff;padding:20px;}.ds-cifras dt{font-size:0.75rem;font-weight:650;letter-spacing:0.06em;text-transform:uppercase;color:#5f646c;}.ds-cifra{margin:12px 0 0;font-size:3.5rem;font-weight:800;letter-spacing:-0.03em;line-height:0.95;font-variant-numeric:tabular-nums lining-nums;}.ds-detalle{margin:8px 0 0;font-size:13px;color:#3d4148;}"
     },
     {
       "name": "Tabla con filetes",
@@ -494,7 +494,7 @@
       "refersTo": "tabla-encabezado",
       "description": "Papel con filete, encabezados en rótulo, filas separadas por filete, sin cebra.",
       "html": "<div class=\"ds-tabla\"><table><thead><tr><th>Votante</th><th>Líder</th><th>Aspirante</th></tr></thead><tbody><tr><td><b>Votante 1</b><br><small>C.C. 9.970.843.034</small></td><td>Líder de A</td><td>Concejal A</td></tr><tr><td><b>Votante 2</b><br><small>C.C. 99.708.430.341</small></td><td>Sin líder</td><td>Concejal B</td></tr></tbody></table></div>",
-      "css": ".ds-tabla{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);overflow:hidden;border-radius:8px;background:#fff;box-shadow:0 0 0 1px #dedcd6;color:#121417;}.ds-tabla table{width:100%;border-collapse:collapse;font-size:15px;}.ds-tabla th{padding:12px 16px;text-align:left;border-bottom:1px solid #b9b6ae;font-size:0.75rem;font-weight:650;letter-spacing:0.06em;text-transform:uppercase;color:#5f646c;white-space:nowrap;}.ds-tabla td{padding:12px 16px;border-bottom:1px solid #dedcd6;}.ds-tabla tbody tr:last-child td{border-bottom:0;}.ds-tabla tbody tr{transition:background-color 150ms;}.ds-tabla tbody tr:hover{background:rgb(242 242 239/0.7);}.ds-tabla b{font-weight:650;}.ds-tabla small{font-size:13px;color:#5f646c;}"
+      "css": ".ds-tabla{font-family:var(--font-sans,\"Figtree Variable\",Figtree,system-ui,sans-serif);overflow:hidden;border-radius:8px;background:#fff;box-shadow:0 0 0 1px #dedcd6;color:#121417;}.ds-tabla table{width:100%;border-collapse:collapse;font-size:15px;}.ds-tabla th{padding:12px 16px;text-align:left;border-bottom:1px solid #b9b6ae;font-size:0.75rem;font-weight:650;letter-spacing:0.06em;text-transform:uppercase;color:#5f646c;white-space:nowrap;}.ds-tabla td{padding:12px 16px;border-bottom:1px solid #dedcd6;}.ds-tabla tbody tr:last-child td{border-bottom:0;}.ds-tabla tbody tr{transition:background-color 150ms;}.ds-tabla tbody tr:hover{background:rgb(242 242 239/0.7);}.ds-tabla b{font-weight:650;}.ds-tabla small{font-size:13px;color:#5f646c;}"
     },
     {
       "name": "Insignias de estado",
@@ -502,7 +502,7 @@
       "refersTo": "insignia-ok",
       "description": "Píldoras informativas en tono suave del estado o tinta sólida.",
       "html": "<span class=\"ds-insignia ds-neutro\">Administrador</span> <span class=\"ds-insignia ds-ok\">Activa</span> <span class=\"ds-insignia ds-alerta\">Usuario anterior</span> <span class=\"ds-insignia ds-tinta\">Superadmin</span>",
-      "css": ".ds-insignia{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:9999px;font-size:13px;font-weight:620;white-space:nowrap;}.ds-neutro{background:rgb(18 20 23/0.06);color:#3d4148;}.ds-ok{background:#e3f1e8;color:#17683a;}.ds-alerta{background:#fbefd9;color:#8a4a00;}.ds-tinta{background:#121417;color:#fff;}"
+      "css": ".ds-insignia{font-family:var(--font-sans,\"Figtree Variable\",Figtree,system-ui,sans-serif);display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:9999px;font-size:13px;font-weight:620;white-space:nowrap;}.ds-neutro{background:rgb(18 20 23/0.06);color:#3d4148;}.ds-ok{background:#e3f1e8;color:#17683a;}.ds-alerta{background:#fbefd9;color:#8a4a00;}.ds-tinta{background:#121417;color:#fff;}"
     },
     {
       "name": "Placa VOTÓ",
@@ -510,16 +510,16 @@
       "refersTo": "placa-voto",
       "description": "Confirmación de asistencia del día E: la única superficie amarilla de la app.",
       "html": "<div class=\"ds-placa\"><svg viewBox=\"0 0 28 40\" width=\"40\" height=\"56\" aria-hidden=\"true\"><path d=\"M0 0h28v40l-14-8-14 8z\" fill=\"#121417\"/><path d=\"M7 15l5 5 9-10\" fill=\"none\" stroke=\"#FFD23F\" stroke-width=\"3.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg><p class=\"ds-placa-voto\">Votó</p><p class=\"ds-placa-nombre\">Votante 2</p><p class=\"ds-placa-num\">Asistencia número <span>2</span>. Lista la siguiente cédula.</p></div>",
-      "css": ".ds-placa{font-family:var(--font-sans,\"Archivo Variable\",Archivo,system-ui,sans-serif);display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 24px;border-radius:8px;background:#ffd23f;color:#121417;animation:ds-aparecer 180ms cubic-bezier(0.23,1,0.32,1) both;}@keyframes ds-aparecer{from{opacity:0;transform:scale(0.97) translateY(4px)}to{opacity:1;transform:none}}.ds-placa p{margin:0;}.ds-placa-voto{margin-top:16px!important;font-size:3rem;font-weight:800;font-stretch:68%;line-height:1;text-transform:uppercase;}.ds-placa-nombre{margin-top:8px!important;font-size:17px;font-weight:680;}.ds-placa-num{margin-top:4px!important;font-size:14px;}.ds-placa-num span{font-size:1.25rem;font-weight:800;font-stretch:72%;font-variant-numeric:tabular-nums;}"
+      "css": ".ds-placa{font-family:var(--font-sans,\"Figtree Variable\",Figtree,system-ui,sans-serif);display:flex;flex-direction:column;align-items:center;text-align:center;padding:40px 24px;border-radius:8px;background:#ffd23f;color:#121417;animation:ds-aparecer 180ms cubic-bezier(0.23,1,0.32,1) both;}@keyframes ds-aparecer{from{opacity:0;transform:scale(0.97) translateY(4px)}to{opacity:1;transform:none}}.ds-placa p{margin:0;}.ds-placa-voto{margin-top:16px!important;font-size:2.375rem;font-weight:800;letter-spacing:-0.025em;line-height:1;text-transform:uppercase;}.ds-placa-nombre{margin-top:8px!important;font-size:17px;font-weight:680;}.ds-placa-num{margin-top:4px!important;font-size:14px;}.ds-placa-num span{font-size:1.375rem;font-weight:800;letter-spacing:-0.03em;font-variant-numeric:tabular-nums;}"
     }
   ],
   "narrative": {
     "northStar": "El pendón de campaña",
-    "overview": "La app se viste como los pendones, vallas y afiches de campaña en Colombia: una franja vertical en el color de la campaña lleva el nombre del aspirante principal en letra condensada pesada y hace de navegación; todo el trabajo va en tinta sobre papel. La campaña es la protagonista y la plataforma se queda en una firma discreta al pie del pendón.\n\nEs un sistema de operación, denso y sobrio: tablas con filetes finos, encabezados de tabla en mayúsculas por peso, láminas blancas sobre un fondo cálido casi blanco, y cifras tabulares grandes como titular de cada pantalla. La jerarquía se construye con tipografía (ancho condensado, peso 800) y con filetes, no con color ni sombras. El color aparece en tres sitios y en ninguno más; el amarillo voto aparece solo como placa.\n\nRechazos confirmados: el panel genérico de barra oscura con tarjetas de colores y gráficas decorativas; las tablas en cebra; el recargo visual; nada del aspecto anterior de la app se conserva.",
+    "overview": "La app se viste como los pendones, vallas y afiches de campaña en Colombia: una franja vertical en el color de la campaña lleva el nombre del aspirante principal en letra geométrica pesada y hace de navegación; todo el trabajo va en tinta sobre papel. La campaña es la protagonista y la plataforma se queda en una firma discreta al pie del pendón.\n\nEs un sistema de operación, denso y sobrio: tablas con filetes finos, encabezados de tabla en mayúsculas por peso, láminas blancas sobre un fondo cálido casi blanco, y cifras tabulares grandes como titular de cada pantalla. La jerarquía se construye con tipografía (peso 800 con interletra apretada) y con filetes, no con color ni sombras. El color aparece en tres sitios y en ninguno más; el amarillo voto aparece solo como placa.\n\nRechazos confirmados: el panel genérico de barra oscura con tarjetas de colores y gráficas decorativas; las tablas en cebra; el recargo visual; nada del aspecto anterior de la app se conserva.",
     "keyCharacteristics": [
       "Pendón a toda altura en el color de la campaña (264px en escritorio; banda superior de 56px en celular).",
       "Tinta sobre papel; filetes de 1px como única estructura.",
-      "Archivo variable: condensada 800 para nombres, títulos y cifras; ancho normal 400–650 para la interfaz.",
+      "Figtree variable: peso 800 con interletra apretada para nombres, títulos y cifras; pesos 400–680 para la interfaz.",
       "Cifras titulares tabulares en tinta encabezando las pantallas.",
       "Eliminar siempre aislado, discreto y al final de la fila.",
       "Controles táctiles de 44px en todas las pantallas."
@@ -537,17 +537,17 @@
       },
       {
         "name": "The Dynamic en Tinta Rule",
-        "body": "El superadmin no pertenece a ninguna campaña: ve el pendón de Dynamic en tinta (\"Dynamic Electoral\" en condensada) y solo la opción Campañas.",
+        "body": "El superadmin no pertenece a ninguna campaña: ve el pendón de Dynamic en tinta (\"Dynamic Electoral\" en titular) y solo las opciones de gestión (Campañas, Partidos y Ajustes).",
         "section": "colors"
       },
       {
         "name": "The Cifra-Titular Rule",
-        "body": "El número es el titular: cifras en tinta, en condensada tabular, grandes y sin color. Nunca se tiñen con el color de campaña ni con verde o rojo.",
+        "body": "El número es el titular: cifras en tinta, en peso 800 tabular, grandes y sin color. Nunca se tiñen con el color de campaña ni con verde o rojo.",
         "section": "typography"
       },
       {
-        "name": "The Dos Anchos Rule",
-        "body": "Condensada solo para nombres, títulos y cifras; todo lo que se lee o se pulsa va en ancho normal. Los rótulos en mayúsculas etiquetan datos; no van sobre los títulos.",
+        "name": "The Dos Voces Rule",
+        "body": "Peso 800 con interletra apretada (`titular` y `cifra`) solo para nombres, títulos y cifras; todo lo que se lee o se pulsa va en pesos 400–680 con interletra normal. Los tamaños salen de la escala con nombre de `src/index.css`, nunca de valores sueltos. Los rótulos en mayúsculas etiquetan datos; no van sobre los títulos.",
         "section": "typography"
       },
       {
@@ -558,7 +558,7 @@
     ],
     "dos": [
       "**Do** limitar el color de campaña al pendón, el botón principal y el foco (anillo, cursor y casilla).",
-      "**Do** encabezar cada pantalla con un título condensado y, cuando haya números, con la fila de cifras titulares en tinta.",
+      "**Do** encabezar cada pantalla con un título en peso 800 y, cuando haya números, con la fila de cifras titulares en tinta.",
       "**Do** separar láminas, tablas y cifras con filetes de 1px sobre papel.",
       "**Do** dejar eliminar como ícono rojo discreto, último en la fila y separado 16px de editar; el rojo sólido solo en la confirmación.",
       "**Do** mantener 44px de alto táctil y 16px mínimos de letra en campos.",

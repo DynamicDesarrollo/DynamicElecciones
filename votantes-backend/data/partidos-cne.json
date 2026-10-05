@@ -1,0 +1,202 @@
+{
+ "fuente": "https://www.cne.gov.co/index.php/partidos-movimientos-politicos-y-grupos-significativos/778",
+ "generado": "2026-10-05",
+ "partidos": [
+  {
+   "cne_numero": 1,
+   "nombre": "Partido Liberal Colombiano",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/partidos/Liberal_3.png",
+   "resolucion": "4 de 1986"
+  },
+  {
+   "cne_numero": 2,
+   "nombre": "Partido Conservador Colombiano",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/partidos/conservador.jpg",
+   "resolucion": "7 de 1986"
+  },
+  {
+   "cne_numero": 3,
+   "nombre": "Partido Cambio Radical",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/partidos/cambio_radical.jpg",
+   "resolucion": "1305 de 1997"
+  },
+  {
+   "cne_numero": 4,
+   "nombre": "Partido Alianza Verde",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/partidos/Alianza_Verde.jpg",
+   "resolucion": "8 de 1991"
+  },
+  {
+   "cne_numero": 5,
+   "nombre": "Movimiento Autoridades Indígenas de Colombia",
+   "sigla": "AICO",
+   "logo_url": "https://www.cne.gov.co/images/partidos/Aico.jpg",
+   "resolucion": "20 de 1991"
+  },
+  {
+   "cne_numero": 6,
+   "nombre": "Partido Alianza Social Independiente",
+   "sigla": "ASI",
+   "logo_url": "https://www.cne.gov.co/images/partidos/ASI.jpg",
+   "resolucion": "18 de 1992"
+  },
+  {
+   "cne_numero": 7,
+   "nombre": "Partido Político MIRA",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/partidos/Mira.jpg",
+   "resolucion": "0476 de 2000"
+  },
+  {
+   "cne_numero": 8,
+   "nombre": "Partido de la Unión por la Gente",
+   "sigla": "Partido de la U",
+   "logo_url": "https://www.cne.gov.co/images/partidos/U.jpg",
+   "resolucion": "4423 de 2003"
+  },
+  {
+   "cne_numero": 9,
+   "nombre": "Partido Centro Democrático",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/partidos/Centro_Democr%C3%A1tico_3.png",
+   "resolucion": "3035 de 2014"
+  },
+  {
+   "cne_numero": 10,
+   "nombre": "Movimiento Alternativo Indígena y Social",
+   "sigla": "MAIS",
+   "logo_url": "https://www.cne.gov.co/images/maiz.jpg",
+   "resolucion": "1708 de 2015"
+  },
+  {
+   "cne_numero": 11,
+   "nombre": "Partido Comunes",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/Partido_Comunes.png",
+   "resolucion": "2691 de 2017"
+  },
+  {
+   "cne_numero": 12,
+   "nombre": "Partido Colombia Justa Libres",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/justa.jpg",
+   "resolucion": "3198 de 2018"
+  },
+  {
+   "cne_numero": 13,
+   "nombre": "Partido Colombia Renaciente",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/renaciente.jpg",
+   "resolucion": "575 de 2019"
+  },
+  {
+   "cne_numero": 14,
+   "nombre": "Movimiento Alianza Democrática Amplia",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/ADA.jpg",
+   "resolucion": "1748 de 2019"
+  },
+  {
+   "cne_numero": 15,
+   "nombre": "Partido Político Dignidad & Compromiso",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/Dignidad_y_CompromisoD.jpg",
+   "resolucion": "1291 de 2021"
+  },
+  {
+   "cne_numero": 16,
+   "nombre": "Partido Nuevo Liberalismo",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/nuevo_liberalismo.jpg",
+   "resolucion": "7822 de 2021"
+  },
+  {
+   "cne_numero": 17,
+   "nombre": "Movimiento Salvación Nacional",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/Salvaci%C3%B3n_Nacional_2.png",
+   "resolucion": "8804 de 2021"
+  },
+  {
+   "cne_numero": 18,
+   "nombre": "Partido Político Oxígeno",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/partidos/oxigeno_2.png",
+   "resolucion": "8805 de 2021"
+  },
+  {
+   "cne_numero": 19,
+   "nombre": "Partido Republicano",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/partidos/partido-republicano.jpg",
+   "resolucion": "3750 de 2022"
+  },
+  {
+   "cne_numero": 20,
+   "nombre": "Partido Demócrata Colombiano",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/democrata.jpg",
+   "resolucion": "4033 de 2022"
+  },
+  {
+   "cne_numero": 21,
+   "nombre": "Partido Ecologista Colombiano",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/ecologista.jpg",
+   "resolucion": "5107 de 2022"
+  },
+  {
+   "cne_numero": 22,
+   "nombre": "Partido Político La Fuerza",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/La_Fuerza_2.png",
+   "resolucion": "5436 de 2022"
+  },
+  {
+   "cne_numero": 23,
+   "nombre": "Partido Político Esperanza Democrática",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/ESPERANZA_DEMOCRATICA.jpg",
+   "resolucion": "1544 de 2023"
+  },
+  {
+   "cne_numero": 24,
+   "nombre": "Partido Político En Marcha",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/En_Marcha.png",
+   "resolucion": "1929 de 2023"
+  },
+  {
+   "cne_numero": 25,
+   "nombre": "Movimiento Político Pacto Histórico",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/partidos/Pacto_Historico.png",
+   "resolucion": "09673 de 2025"
+  },
+  {
+   "cne_numero": 26,
+   "nombre": "Partido Político Defensores de la Patria",
+   "sigla": null,
+   "logo_url": "https://www.cne.gov.co/images/partidos/defensores_de_la_patria.png",
+   "resolucion": "3564 de 2026"
+  },
+  {
+   "cne_numero": 27,
+   "nombre": "Consejo Comunitario El Naranjo",
+   "sigla": null,
+   "logo_url": null,
+   "resolucion": "3878 de 2026"
+  },
+  {
+   "cne_numero": 28,
+   "nombre": "Movimiento Unidad en Minga por Colombia",
+   "sigla": null,
+   "logo_url": null,
+   "resolucion": "3878 de 2026"
+  }
+ ]
+}

@@ -5,6 +5,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const db = require('./utils/db.js');
 const { verificarToken, requireCampana } = require('./middlewares/auth');
+const { getLogo } = require('./controllers/partidos.controller');
 
 // Rutas públicas
 const authRoutes = require('./routes/auth.routes');
@@ -44,8 +45,9 @@ app.use(morgan('dev'));
 
 app.get('/', (req, res) => res.send('API de Votantes Activa'));
 
-// Único endpoint público: el login
+// Públicos: el login y los logos de los partidos (una etiqueta <img> no envía el token)
 app.use('/api/auth', authRoutes);
+app.get('/api/publico/partidos/:id/logo', getLogo);
 
 // Todo lo demás exige sesión
 app.use('/api', verificarToken);
@@ -56,6 +58,7 @@ app.use('/api/barrios', barriosRoutes);
 app.use('/api/mesas', mesasRoutes);
 app.use('/api/lugares', lugaresRoutes);
 app.use('/api/geografia', geografiaRoutes);
+app.use('/api/ajustes', require('./routes/ajustes.routes'));
 
 app.use('/api/campanas', campanasRoutes);
 app.use('/api/usuarios', requireCampana, usuariosRoutes);
@@ -66,6 +69,7 @@ app.use('/api/lideres', requireCampana, lideresRoutes);
 app.use('/api/votantes', requireCampana, votantesRoutes);
 app.use('/api/reportes', requireCampana, reportesRoutes);
 app.use('/api/asistencia', requireCampana, asistenciaRoutes);
+app.use('/api/puestos-control', requireCampana, require('./routes/puestos.routes'));
 app.use('/api/informes', requireCampana, informesRoutes);
 
 app.use('/api', (req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));

@@ -6,6 +6,9 @@ import { esSuperadmin } from "../lib/campana";
 import { estiloCampana } from "../lib/marca";
 import { Lamina } from "../ui/Pagina";
 
+// El superadmin administra el SaaS (campañas y catálogos); nunca entra a los datos de una campaña
+const RUTAS_SUPERADMIN = ["/campanas", "/partidos", "/ajustes"];
+
 export default function MainLayout() {
   const { usuario } = useAuth();
   const location = useLocation();
@@ -24,11 +27,11 @@ export default function MainLayout() {
       <Pendon />
       <main className="min-w-0 flex-1">
         <div className="mx-auto w-full max-w-[1240px] px-4 pb-16 pt-6 sm:px-8 sm:pt-10">
-          {superadmin && location.pathname !== "/campanas" ? (
+          {superadmin && !RUTAS_SUPERADMIN.includes(location.pathname) ? (
             <Navigate to="/campanas" replace />
           ) : sinCampana ? (
             <Lamina titulo="Sin campaña asignada" className="mx-auto max-w-lg">
-              <p className="text-[15px] text-tinta-2">
+              <p className="text-cuerpo text-tinta-2">
                 Su usuario no tiene una campaña asignada. Contacte al administrador.
               </p>
             </Lamina>

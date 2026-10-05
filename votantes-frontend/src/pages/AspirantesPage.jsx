@@ -28,11 +28,11 @@ function Ficha({ a }) {
     <dl className="flex gap-6 text-right">
       <div>
         <dt className="rotulo text-tinta-3">Líderes</dt>
-        <dd className="cifra mt-1 text-[1.75rem]">{numero(a.total_lideres)}</dd>
+        <dd className="cifra mt-1 text-cifra-xs">{numero(a.total_lideres)}</dd>
       </div>
       <div>
         <dt className="rotulo text-tinta-3">Votantes</dt>
-        <dd className="cifra mt-1 text-[1.75rem]">{numero(a.total_votantes)}</dd>
+        <dd className="cifra mt-1 text-cifra-xs">{numero(a.total_votantes)}</dd>
       </div>
     </dl>
   );
@@ -70,7 +70,7 @@ function FormAspirante({ aspirante, partidos, municipios, onGuardado }) {
 
   return (
     <form onSubmit={guardar} className="flex flex-col gap-5">
-      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-cuerpo font-[560] text-error" role="alert">{error}</p>}
       <Rejilla columnas={2}>
         <Campo etiqueta="Nombre completo" id="a-nombre" className="sm:col-span-2">
           <Entrada id="a-nombre" name="nombre_completo" value={form.nombre_completo} onChange={handleChange} required autoComplete="off" autoFocus />
@@ -170,8 +170,8 @@ export default function AspirantesPage() {
       {principal && (
         <section className="flex flex-col gap-5 rounded-lg bg-papel p-5 ring-1 ring-filete sm:flex-row sm:items-center sm:justify-between sm:p-6">
           <div className="min-w-0">
-            <p className="condensada text-[2.25rem] uppercase leading-[0.9] sm:text-[2.75rem]">{principal.nombre_completo}</p>
-            <p className="mt-2 text-[15px] text-tinta-2">
+            <p className="titular text-nombre-sm uppercase leading-[0.9] sm:text-nombre">{principal.nombre_completo}</p>
+            <p className="mt-2 text-cuerpo text-tinta-2">
               <span className="font-[650] text-tinta">{principal.cargo_nombre} principal</span>
               {principal.partido && <> · {principal.partido}</>}
               {principal.coalicion && <> · en coalición</>}
@@ -186,7 +186,7 @@ export default function AspirantesPage() {
 
       {campana?.cargo_secundario && (
         <section className="mt-8">
-          <h2 className="condensada mb-3 text-[1.75rem] leading-none">
+          <h2 className="titular mb-3 text-seccion leading-none">
             {plural(cargoSecundario)} <span className="text-tinta-3">{secundarios.length}</span>
           </h2>
           <div className="rounded-lg bg-papel ring-1 ring-filete">
@@ -203,8 +203,8 @@ export default function AspirantesPage() {
                 {secundarios.map((a) => (
                   <li key={a.id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:gap-6 sm:px-6">
                     <div className="min-w-0 flex-1">
-                      <p className="text-[17px] font-[700]">{a.nombre_completo}</p>
-                      <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px] text-tinta-2">
+                      <p className="text-destacado font-[700]">{a.nombre_completo}</p>
+                      <p className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-nota text-tinta-2">
                         {a.partido || "Sin partido"}
                         {a.total_usuarios > 0 ? (
                           <Insignia icono="bi-person-check">{a.total_usuarios} usuario{a.total_usuarios > 1 ? "s" : ""}</Insignia>

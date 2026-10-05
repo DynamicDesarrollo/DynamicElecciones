@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "broken-image",
+        "value": "*",
+        "files": [
+          "../votantes-backend/src/services/cne.js"
+        ],
+        "createdAt": "2026-10-05T14:06:20.050Z",
+        "reason": "Claude: falso positivo, es una expresion regular del backend que busca <img> en HTML del CNE, no una imagen de la interfaz"
+      }
+    ]
+  }
+}

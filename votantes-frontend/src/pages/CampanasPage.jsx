@@ -64,7 +64,7 @@ function FormCampana({ tipos, onCreada }) {
 
   return (
     <form onSubmit={crear} className="flex flex-col gap-6">
-      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-cuerpo font-[560] text-error" role="alert">{error}</p>}
       <Rejilla columnas={2}>
         <Campo etiqueta="Tipo de campaña" id="c-tipo" className="sm:col-span-2">
           <Seleccion id="c-tipo" name="tipo" value={form.tipo} onChange={handleChange}>
@@ -92,7 +92,7 @@ function FormCampana({ tipos, onCreada }) {
 
       <fieldset className="border-t border-filete pt-5">
         <legend className="rotulo float-left mb-1 w-full text-tinta-3">Administrador de la campaña</legend>
-        <p className="clear-both mb-4 text-[13px] text-tinta-2">Opcional. Es el acceso que se entrega al cliente; desde ahí crea el resto del equipo.</p>
+        <p className="clear-both mb-4 text-nota text-tinta-2">Opcional. Es el acceso que se entrega al cliente; desde ahí crea el resto del equipo.</p>
         <Rejilla columnas={3}>
           <Campo etiqueta="Nombre" id="c-anombre">
             <Entrada id="c-anombre" name="admin_nombre" value={form.admin_nombre} onChange={handleChange} required={!!form.admin_correo} />
@@ -147,7 +147,7 @@ function FormEditar({ campana, onGuardada }) {
 
   return (
     <form onSubmit={guardar} className="flex flex-col gap-5">
-      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-cuerpo font-[560] text-error" role="alert">{error}</p>}
       <p className="text-sm text-tinta-2">Tipo: <strong className="text-tinta">{campana.tipo_nombre}</strong> (no se puede cambiar).</p>
       <Rejilla columnas={2}>
         <Campo etiqueta="Nombre de la campaña" id="e-nombre" className="sm:col-span-2">
@@ -166,7 +166,7 @@ function FormEditar({ campana, onGuardada }) {
           municipio={form.municipio}
           onCambio={({ departamento, municipio }) => setForm({ ...form, departamento, municipio })}
         />
-        <p className="sm:col-span-2 -mt-2 text-[13px] text-tinta-3">
+        <p className="sm:col-span-2 -mt-2 text-nota text-tinta-3">
           Al cambiar el territorio se cargan sus puestos de votación; los votantes ya registrados se conservan.
         </p>
         <Campo etiqueta={`${nombreCargo(campana.cargo_principal)} (aspirante principal)`} id="e-principal" className="sm:col-span-2">
@@ -200,7 +200,7 @@ function FormAdmin({ campana, onCreado }) {
 
   return (
     <form onSubmit={crear} className="flex flex-col gap-5">
-      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-cuerpo font-[560] text-error" role="alert">{error}</p>}
       <Rejilla columnas={2}>
         <Campo etiqueta="Nombre" id="ad-nombre" className="sm:col-span-2">
           <Entrada id="ad-nombre" name="nombre" value={form.nombre} onChange={handleChange} required />
@@ -239,7 +239,7 @@ function FormRestablecerAdmin({ campana, onListo }) {
 
   return (
     <form onSubmit={guardar} className="flex flex-col gap-5">
-      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-cuerpo font-[560] text-error" role="alert">{error}</p>}
       <Campo etiqueta="Correo del administrador" id="ra-correo" ayuda="Solo funciona con un administrador de esta campaña.">
         <Entrada id="ra-correo" type="email" value={correo} onChange={(e) => setCorreo(e.target.value)} required autoComplete="off" autoFocus />
       </Campo>
@@ -328,9 +328,9 @@ export default function CampanasPage() {
               <div className="flex items-start gap-4">
                 <MiniPendon color={c.activa ? colorCampana(c) : "var(--color-filete-fuerte)"} />
                 <div className="min-w-0 flex-1">
-                  <p className="condensada text-[1.75rem] uppercase leading-[0.95] break-words">{c.aspirante_principal || "Sin aspirante"}</p>
-                  <p className="mt-1.5 text-[15px] font-[650]">{c.nombre}</p>
-                  <p className="text-[13px] text-tinta-3">{c.tipo_nombre} · {territorio(c)}</p>
+                  <p className="titular text-seccion uppercase leading-[0.95] break-words">{c.aspirante_principal || "Sin aspirante"}</p>
+                  <p className="mt-1.5 text-cuerpo font-[650]">{c.nombre}</p>
+                  <p className="text-nota text-tinta-3">{c.tipo_nombre} · {territorio(c)}</p>
                 </div>
               </div>
               {/* Estado de la campaña, con su acción al lado cuando falta el administrador */}

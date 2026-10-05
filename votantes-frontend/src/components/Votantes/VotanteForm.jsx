@@ -44,6 +44,8 @@ export default function VotanteForm({ votante, onGuardado }) {
   const [guardando, setGuardando] = useState(false);
   const [error, setError] = useState(null);
   const [cedulaInfo, setCedulaInfo] = useState(null); // respuesta de validar-cedula
+  const [urlConsulta, setUrlConsulta] = useState(""); // consulta oficial de puesto y mesa
+  const [cedulaCopiada, setCedulaCopiada] = useState(null); // null: aún no se ha consultado
 
   useEffect(() => {
     apiLista("/municipios").then(setMunicipios);
@@ -51,7 +53,22 @@ export default function VotanteForm({ votante, onGuardado }) {
     apiLista("/lideres").then(setLideres);
     apiLista("/mesas").then(setMesas);
     apiLista("/lugares").then(setLugares);
+    api("/ajustes").then(({ ok, data }) => ok && setUrlConsulta(data.url_consulta_votacion || ""));
   }, []);
+
+  // Consulta asistida: la Registraduría no ofrece una API, así que se abre su página oficial
+  // en otra pestaña con la cédula ya copiada. El digitador la pega allá, ve el puesto y la mesa,
+  // y los elige aquí.
+  const consultarRegistraduria = async () => {
+    const cedula = formulario.cedula.trim();
+    try {
+      if (cedula) await navigator.clipboard.writeText(cedula);
+      setCedulaCopiada(!!cedula);
+    } catch {
+      setCedulaCopiada(false); // el navegador no dejó copiar: se escribe a mano allá
+    }
+    window.open(urlConsulta, "_blank", "noopener,noreferrer");
+  };
 
   useEffect(() => {
     setCedulaInfo(null);
@@ -130,7 +147,7 @@ export default function VotanteForm({ votante, onGuardado }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
-      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-cuerpo font-[560] text-error" role="alert">{error}</p>}
 
       <Seccion titulo="Persona">
         <Rejilla columnas={3}>
@@ -183,6 +200,20 @@ export default function VotanteForm({ votante, onGuardado }) {
       </Seccion>
 
       <Seccion titulo="Ubicación">
+        {urlConsulta && (
+          <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-md bg-fondo px-4 py-3">
+            <p className="min-w-0 flex-1 basis-64 text-sm text-tinta-2" aria-live="polite">
+              {cedulaCopiada === null
+                ? "¿No sabe dónde vota? Consulte el puesto y la mesa oficiales y elíjalos aquí."
+                : cedulaCopiada
+                  ? "Cédula copiada: péguela en la página de la Registraduría y elija aquí el puesto y la mesa que le muestre."
+                  : "Escriba la cédula en la página de la Registraduría y elija aquí el puesto y la mesa que le muestre."}
+            </p>
+            <Boton variante="secundario" tamano="sm" onClick={consultarRegistraduria}>
+              Consultar en la Registraduría <i className="bi bi-box-arrow-up-right" aria-hidden="true" />
+            </Boton>
+          </div>
+        )}
         <Rejilla columnas={3}>
           <Campo etiqueta="Municipio" id="v-muni">
             <Seleccion id="v-muni" name="municipio_id" value={formulario.municipio_id} onChange={handleChange} required>

@@ -3,8 +3,12 @@
 import { useEffect, useRef } from "react";
 import { BotonIcono } from "./Boton";
 
-export function Modal({ abierto, alCerrar, titulo, descripcion, ancho = "sm:max-w-2xl", children }) {
+// `cerrarAlFondo`: cerrar con un clic en el fondo oscuro. Apagado por defecto porque los modales
+// llevan formularios y un clic accidental borraría lo escrito; se cierran con la X o con Esc.
+export function Modal({ abierto, alCerrar, titulo, descripcion, ancho = "sm:max-w-2xl", cerrarAlFondo = false, children }) {
   const ref = useRef(null);
+  // El clic solo cuenta si empezó en el fondo: seleccionar texto y soltar fuera no debe cerrar nada
+  const empezoEnFondo = useRef(false);
 
   useEffect(() => {
     const dialogo = ref.current;
@@ -24,7 +28,8 @@ export function Modal({ abierto, alCerrar, titulo, descripcion, ancho = "sm:max-
     <dialog
       ref={ref}
       onClose={alCerrar}
-      onClick={(e) => e.target === ref.current && alCerrar()}
+      onMouseDown={(e) => { empezoEnFondo.current = e.target === ref.current; }}
+      onClick={(e) => cerrarAlFondo && empezoEnFondo.current && e.target === ref.current && alCerrar()}
       aria-labelledby="modal-titulo"
       className={`m-auto w-full max-w-none overflow-hidden bg-papel p-0 text-tinta shadow-[0_24px_64px_-12px_rgb(18_20_23/0.35)]
         backdrop:bg-tinta/55 open:animate-aparecer
@@ -35,7 +40,7 @@ export function Modal({ abierto, alCerrar, titulo, descripcion, ancho = "sm:max-
         <div className="flex max-h-[inherit] flex-col">
           <header className="flex items-start justify-between gap-4 border-b border-filete px-5 py-4 sm:px-6">
             <div>
-              <h2 id="modal-titulo" className="condensada text-[1.75rem] leading-none">{titulo}</h2>
+              <h2 id="modal-titulo" className="titular text-seccion leading-none">{titulo}</h2>
               {descripcion && <p className="mt-1.5 text-sm text-tinta-2">{descripcion}</p>}
             </div>
             <BotonIcono etiqueta="Cerrar" icono="bi-x-lg" onClick={alCerrar} className="-mr-2 -mt-1" />

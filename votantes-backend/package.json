@@ -7,7 +7,8 @@
     "start": "node src/index.js",
     "migrate": "node scripts/migrate.js",
     "crear-superadmin": "node scripts/crear-superadmin.js",
-    "reset-password": "node scripts/reset-password.js"
+    "reset-password": "node scripts/reset-password.js",
+    "partidos-cne": "node scripts/generar-partidos-cne.js"
   },
   "keywords": [],
   "author": "",

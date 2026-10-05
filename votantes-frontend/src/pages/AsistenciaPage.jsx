@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useAuth } from "../context/AuthContext";
-import { api } from "../lib/api";
+import { api, apiLista } from "../lib/api";
+import { nombreCargo } from "../lib/campana";
 import { exportarPDF } from "../lib/exportar";
 import { fechaHora, numero, porcentaje } from "../lib/formato";
 import { Boton } from "../ui/Boton";
-import { Campo, Entrada } from "../ui/Campo";
+import { Campo, Seleccion } from "../ui/Campo";
 import { Cifras, Encabezado } from "../ui/Pagina";
 
-const CLAVE_PUESTO = "dynamic.puestoControl";
+const CLAVE_PUESTO = "dynamic.puestoControlId";
 
-// Recuerda el puesto de control en este dispositivo para no reescribirlo con cada votante
+// Recuerda el puesto de control en este dispositivo para no elegirlo con cada votante
 const leerPuesto = () => {
   try {
     return localStorage.getItem(CLAVE_PUESTO) || "";
@@ -18,9 +20,9 @@ const leerPuesto = () => {
     return "";
   }
 };
-const guardarPuesto = (valor) => {
+const guardarPuesto = (id) => {
   try {
-    localStorage.setItem(CLAVE_PUESTO, valor);
+    localStorage.setItem(CLAVE_PUESTO, id);
   } catch {
     /* almacenamiento bloqueado: el puesto solo dura esta sesión */
   }
@@ -30,7 +32,7 @@ function Dato({ etiqueta, children }) {
   return (
     <div>
       <dt className="rotulo text-tinta-3">{etiqueta}</dt>
-      <dd className="mt-1 text-[16px] font-[620]">{children || "—"}</dd>
+      <dd className="mt-1 text-base font-[620]">{children || "—"}</dd>
     </div>
   );
 }
@@ -41,7 +43,8 @@ export default function AsistenciaPage() {
   const [votante, setVotante] = useState(null);
   const [noEncontrado, setNoEncontrado] = useState(null);
   const [buscando, setBuscando] = useState(false);
-  const [puesto, setPuesto] = useState(leerPuesto);
+  const [puestos, setPuestos] = useState(null); // puestos de control que este usuario puede usar
+  const [puestoId, setPuestoId] = useState(leerPuesto);
   // Con un puesto ya guardado, el campo se muestra compacto para dejar la confirmación a la vista
   const [editandoPuesto, setEditandoPuesto] = useState(() => !leerPuesto());
   const [confirmando, setConfirmando] = useState(false);
@@ -50,12 +53,22 @@ export default function AsistenciaPage() {
   const entradaRef = useRef(null);
 
   const cargarResumen = useCallback(async () => {
-    const [vt, as] = await Promise.all([api("/votantes/total"), api("/asistencia/resumen")]);
+    const [vt, as, lista] = await Promise.all([api("/votantes/total"), api("/asistencia/resumen"), apiLista("/puestos-control")]);
     setResumen({
       total: vt.ok ? vt.data.total : 0,
       asistieron: as.ok ? as.data.total_asistencias : 0,
     });
+    setPuestos(lista);
   }, []);
+
+  // El puesto recordado puede haberse eliminado o ser de otra campaña
+  const puesto = puestos?.find((p) => p.id === puestoId) || null;
+  const sinPuestos = puestos?.length === 0;
+  const elegirPuesto = (id) => {
+    setPuestoId(id);
+    guardarPuesto(id);
+    if (id) setEditandoPuesto(false);
+  };
 
   // El conteo se actualiza solo cada 15 segundos
   useEffect(() => {
@@ -83,20 +96,18 @@ export default function AsistenciaPage() {
   };
 
   const confirmar = async () => {
-    if (!puesto.trim()) {
+    if (!puesto) {
       setEditandoPuesto(true);
-      toast.warning("Escriba el puesto de control antes de confirmar");
+      toast.warning(sinPuestos ? "Primero cree un puesto de control" : "Elija el puesto de control antes de confirmar");
       return;
     }
     setConfirmando(true);
     const { ok, data } = await api("/asistencia", {
       method: "POST",
-      body: { votante_uuid: votante.id, puesto_control: puesto.trim() },
+      body: { votante_uuid: votante.id, puesto_control_id: puesto.id },
     });
     setConfirmando(false);
     if (!ok) return toast.error(data?.error || "No se pudo registrar la asistencia");
-    guardarPuesto(puesto.trim());
-    setEditandoPuesto(false);
     setConfirmado(votante);
     setVotante(null);
     setCedula("");
@@ -114,6 +125,7 @@ export default function AsistenciaPage() {
         ["Votantes", numero(resumen.total)],
         ["Asistieron", `${numero(resumen.asistieron)} (${porcentaje(resumen.asistieron, resumen.total)})`],
         ["Faltan", numero(faltan)],
+        ...(puestos || []).map((p) => [`Puesto: ${p.nombre}`, numero(p.total_asistencias)]),
       ],
       archivo: "asistencia.pdf",
     });
@@ -136,7 +148,7 @@ export default function AsistenciaPage() {
 
       <div className="mt-6 grid grid-cols-1 gap-6 max-sm:order-2 max-sm:mt-0 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
         <form onSubmit={buscar} className="rounded-lg bg-papel p-5 ring-1 ring-filete sm:p-6">
-          <label htmlFor="cedula-asistencia" className="condensada block text-[1.6rem] leading-none">Cédula del votante</label>
+          <label htmlFor="cedula-asistencia" className="titular block text-subseccion leading-none">Cédula del votante</label>
           <div className="mt-4 flex gap-2">
             <input
               id="cedula-asistencia"
@@ -148,22 +160,34 @@ export default function AsistenciaPage() {
               autoFocus
               placeholder="Ej. 1067845123"
               aria-invalid={!!noEncontrado}
-              className="cifra h-16 min-w-0 flex-1 rounded-md bg-papel px-4 text-[2rem] ring-1 ring-inset ring-filete-fuerte placeholder:text-[1.25rem] placeholder:font-[500] placeholder:text-tinta-3 focus:outline-none focus:ring-2 focus:ring-campana"
+              className="cifra h-16 min-w-0 flex-1 rounded-md bg-papel px-4 text-cifra-sm ring-1 ring-inset ring-filete-fuerte placeholder:text-base placeholder:font-[500] placeholder:text-tinta-3 focus:outline-none focus:ring-2 focus:ring-campana"
             />
-            <Boton type="submit" cargando={buscando} className="h-16 px-5 text-[17px]" icono="bi-search">
+            <Boton type="submit" cargando={buscando} className="h-16 px-5 text-destacado" icono="bi-search">
               <span className="max-sm:sr-only">Buscar</span>
             </Boton>
           </div>
-          {noEncontrado && <p className="mt-3 text-[15px] font-[560] text-error" role="alert">{noEncontrado}</p>}
+          {noEncontrado && <p className="mt-3 text-cuerpo font-[560] text-error" role="alert">{noEncontrado}</p>}
 
-          {editandoPuesto ? (
+          {sinPuestos ? (
+            <p className="mt-6 rounded-md bg-alerta-suave px-4 py-3 text-cuerpo text-alerta">
+              Aún no hay puestos de control.{" "}
+              <Link to="/puestos" className="font-[650] underline">Cree el primero</Link> para poder confirmar asistencia.
+            </p>
+          ) : !puestos ? null : editandoPuesto || !puesto ? (
             <Campo etiqueta="Puesto de control" id="puesto" ayuda="Queda guardado en este dispositivo." className="mt-6">
-              <Entrada id="puesto" value={puesto} onChange={(e) => setPuesto(e.target.value)} placeholder="Ej. Colegio San José, entrada norte" />
+              <Seleccion id="puesto" value={puesto?.id || ""} onChange={(e) => elegirPuesto(e.target.value)}>
+                <option value="">Elija dónde está…</option>
+                {puestos.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.nombre}{p.aspirante_id ? ` · ${nombreCargo(p.aspirante_cargo)} ${p.aspirante_nombre}` : ""}
+                  </option>
+                ))}
+              </Seleccion>
             </Campo>
           ) : (
-            <p className="mt-4 flex flex-wrap items-center gap-x-2 text-[15px] text-tinta-2">
+            <p className="mt-4 flex flex-wrap items-center gap-x-2 text-cuerpo text-tinta-2">
               <i className="bi bi-geo-alt" aria-hidden="true" />
-              Puesto: <strong className="font-[650] text-tinta">{puesto}</strong>
+              Puesto: <strong className="font-[650] text-tinta">{puesto.nombre}</strong>
               <button type="button" onClick={() => setEditandoPuesto(true)} className="inline-flex min-h-11 items-center font-[620] text-tinta underline">
                 Cambiar
               </button>
@@ -175,12 +199,12 @@ export default function AsistenciaPage() {
           {votante ? (
             <div className="overflow-hidden rounded-lg bg-papel ring-1 ring-filete animate-aparecer">
               <div className="border-b border-dashed border-filete-fuerte px-5 py-5 sm:px-6">
-                <p className="condensada text-[2.25rem] uppercase leading-[0.92]">{votante.nombre_completo}</p>
-                <p className="mt-1.5 text-[15px] tabular-nums text-tinta-2">C.C. {numero(votante.cedula)}</p>
+                <p className="titular text-nombre-sm uppercase leading-[0.92]">{votante.nombre_completo}</p>
+                <p className="mt-1.5 text-cuerpo tabular-nums text-tinta-2">C.C. {numero(votante.cedula)}</p>
               </div>
               <dl className="grid grid-cols-2 gap-x-6 gap-y-4 px-5 py-5 sm:grid-cols-3 sm:px-6">
                 <Dato etiqueta="Lugar">{votante.lugar_nombre}</Dato>
-                <Dato etiqueta="Mesa"><span className="cifra text-[1.6rem]">{votante.mesa_numero || "—"}</span></Dato>
+                <Dato etiqueta="Mesa"><span className="cifra text-cifra-xs">{votante.mesa_numero || "—"}</span></Dato>
                 <Dato etiqueta="Zona">{votante.zona}</Dato>
                 <Dato etiqueta="Barrio">{votante.barrio_nombre}</Dato>
                 <Dato etiqueta="Municipio">{votante.municipio_nombre}</Dato>
@@ -193,7 +217,7 @@ export default function AsistenciaPage() {
                 </p>
               )}
               <div className="border-t border-filete bg-fondo/60 px-5 py-4 sm:px-6">
-                <Boton onClick={confirmar} cargando={confirmando} icono="bi-check2-circle" className="h-14 w-full justify-center text-[17px]">
+                <Boton onClick={confirmar} cargando={confirmando} icono="bi-check2-circle" className="h-14 w-full justify-center text-destacado">
                   Confirmar asistencia
                 </Boton>
               </div>
@@ -204,21 +228,44 @@ export default function AsistenciaPage() {
                 <path d="M0 0h28v40l-14-8-14 8z" fill="#121417" />
                 <path d="M7 15l5 5 9-10" fill="none" stroke="#FFD23F" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
-              <p className="condensada mt-4 text-[3rem] uppercase leading-none">Votó</p>
-              <p className="mt-2 text-[17px] font-[680]">{confirmado.nombre_completo}</p>
-              <p className="mt-1 text-sm">Asistencia número <span className="cifra text-[1.25rem]">{numero(resumen.asistieron)}</span>. Lista la siguiente cédula.</p>
+              <p className="titular mt-4 text-pagina uppercase leading-none">Votó</p>
+              <p className="mt-2 text-destacado font-[680]">{confirmado.nombre_completo}</p>
+              <p className="mt-1 text-sm">Asistencia número <span className="cifra text-base">{numero(resumen.asistieron)}</span>. Lista la siguiente cédula.</p>
             </div>
           ) : (
             <div className="flex h-full flex-col items-center justify-center rounded-lg border border-dashed border-filete-fuerte px-6 py-10 text-center">
-              <i className="bi bi-person-vcard text-[2rem] text-tinta-3" aria-hidden="true" />
-              <p className="mt-3 text-[17px] font-[680]">Aquí aparece el votante</p>
-              <p className="mt-1 max-w-[36ch] text-[15px] text-tinta-2">Con su lugar y mesa, para confirmar en un toque.</p>
+              <i className="bi bi-person-vcard text-3xl text-tinta-3" aria-hidden="true" />
+              <p className="mt-3 text-destacado font-[680]">Aquí aparece el votante</p>
+              <p className="mt-1 max-w-[36ch] text-cuerpo text-tinta-2">Con su lugar y mesa, para confirmar en un toque.</p>
             </div>
           )}
         </section>
       </div>
 
-      <Boton variante="secundario" icono="bi-file-earmark-pdf" onClick={exportar} className="order-4 mt-4 justify-center sm:hidden">
+      {puestos?.length > 0 && (
+        <section className="order-4 mt-6 rounded-lg bg-papel ring-1 ring-filete">
+          <div className="flex items-baseline justify-between gap-4 px-5 pt-5 sm:px-6">
+            <h2 className="titular text-subseccion leading-none">Por puesto de control</h2>
+            <Link to="/puestos" className="text-sm font-[620] text-tinta underline">Administrar</Link>
+          </div>
+          <ul className="mt-3 divide-y divide-filete">
+            {puestos.map((p) => (
+              <li key={p.id} className="flex items-center justify-between gap-4 px-5 py-3 sm:px-6">
+                <div className="min-w-0">
+                  <p className="font-[650]">{p.nombre}</p>
+                  <p className="text-nota text-tinta-3">
+                    {p.aspirante_id ? `${nombreCargo(p.aspirante_cargo)} ${p.aspirante_nombre}` : "Toda la campaña"}
+                    {p.referencia ? ` · ${p.referencia}` : ""}
+                  </p>
+                </div>
+                <span className="cifra shrink-0 text-cifra-sm">{numero(p.total_asistencias)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <Boton variante="secundario" icono="bi-file-earmark-pdf" onClick={exportar} className="order-5 mt-4 justify-center sm:hidden">
         Exportar resumen
       </Boton>
     </div>

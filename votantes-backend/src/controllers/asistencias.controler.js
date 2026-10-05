@@ -1,6 +1,7 @@
 // controllers/asistencias.controler.js
 import db from '../utils/db.js';
 import { filtroVotantes } from '../utils/scope.js';
+import { filtroPuestos } from './puestos.controller.js';
 
 // Buscar votante por cédula para marcar asistencia.
 // El día de la elección los puestos de control buscan en toda la campaña;
@@ -53,12 +54,23 @@ export const getAsistencias = async (req, res) => {
 };
 
 export const createAsistencia = async (req, res) => {
-  const { votante_uuid, puesto_control } = req.body;
-  if (!votante_uuid || !puesto_control) {
-    return res.status(400).json({ error: "Falta votante_uuid o puesto_control" });
+  const { votante_uuid, puesto_control_id } = req.body;
+  if (!votante_uuid || !puesto_control_id) {
+    return res.status(400).json({ error: "Elija el puesto de control antes de confirmar" });
   }
 
   try {
+    // El puesto tiene que ser uno de los que el usuario puede usar
+    const { where, valores } = filtroPuestos(req.usuario);
+    const puestoRes = await db.query(
+      `SELECT pc.id, pc.nombre FROM puestos_control pc ${where} AND pc.id::text = $${valores.push(String(puesto_control_id))}`,
+      valores
+    );
+    const puesto = puestoRes.rows[0];
+    if (!puesto) {
+      return res.status(400).json({ error: "El puesto de control ya no existe. Elija otro." });
+    }
+
     // Verificar que el votante exista en la campaña
     const votanteRes = await db.query(
       "SELECT id FROM prospectos_votantes WHERE id = $1 AND campana_id = $2",
@@ -70,9 +82,9 @@ export const createAsistencia = async (req, res) => {
 
     // Insertar la asistencia (puede repetirse en diferente puesto_control)
     await db.query(
-      `INSERT INTO asistencia_votantes (votante_uuid, puesto_control, fecha_registro)
-       VALUES ($1, $2, NOW())`,
-      [votante_uuid, puesto_control]
+      `INSERT INTO asistencia_votantes (votante_uuid, puesto_control, puesto_control_id, usuario_id, fecha_registro)
+       VALUES ($1, $2, $3, $4, NOW())`,
+      [votante_uuid, puesto.nombre, puesto.id, req.usuario.id]
     );
 
     res.json({ ok: true });

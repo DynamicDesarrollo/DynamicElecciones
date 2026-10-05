@@ -14,12 +14,12 @@ function FilaDesglose({ nombre, detalle, total, maximo, totalGeneral, cabeza }) 
   return (
     <li className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-x-4 gap-y-2 py-3.5">
       <div className="min-w-0">
-        <p className={cabeza ? "condensada text-[1.6rem] uppercase leading-none" : "truncate text-[16px] font-[680]"}>{nombre}</p>
-        {detalle && <p className="text-[13px] text-tinta-3">{detalle}</p>}
+        <p className={cabeza ? "titular text-subseccion uppercase leading-none" : "truncate text-base font-[680]"}>{nombre}</p>
+        {detalle && <p className="text-nota text-tinta-3">{detalle}</p>}
       </div>
       <p className="text-right">
-        <span className="cifra text-[2rem]">{numero(total)}</span>
-        <span className="ml-2 text-[13px] font-[600] text-tinta-3">{porcentaje(total, totalGeneral)}</span>
+        <span className="cifra text-cifra-sm">{numero(total)}</span>
+        <span className="ml-2 text-nota font-[600] text-tinta-3">{porcentaje(total, totalGeneral)}</span>
       </p>
       <div className="col-span-2 h-2 overflow-hidden rounded-full bg-tinta/[0.07]">
         <div

@@ -3,6 +3,9 @@
 
 const BASE = import.meta.env.VITE_API_URL;
 
+// Evento que emite el cliente cuando el servidor rechaza la sesión
+export const SESION_VENCIDA = "dynamic:sesion-vencida";
+
 export async function api(ruta, { method = "GET", body } = {}) {
   const token = localStorage.getItem("token");
   const res = await fetch(`${BASE}/api${ruta}`, {
@@ -21,11 +24,10 @@ export async function api(ruta, { method = "GET", body } = {}) {
     data = null;
   }
 
-  // Sesión vencida o usuario eliminado: volver al login
+  // Sesión vencida o usuario eliminado: se avisa a la app, que cierra la sesión y lleva al login
+  // sin recargar la página (ver AuthContext)
   if (res.status === 401 && ruta !== "/auth/login") {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-    window.location.assign("/");
+    window.dispatchEvent(new Event(SESION_VENCIDA));
   }
 
   return { ok: res.ok, status: res.status, data };

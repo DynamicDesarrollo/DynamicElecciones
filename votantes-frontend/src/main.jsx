@@ -12,7 +12,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <ConfirmarProvider>
         <App />
       </ConfirmarProvider>
-      <Toaster position="top-center" richColors closeButton duration={3500} />
+      {/* Avisos abajo a la derecha (abajo a lo ancho en celular): no tapan el título ni las acciones */}
+      <Toaster position="bottom-right" theme="dark" duration={4000} gap={8} offset={24} mobileOffset={16} />
     </AuthProvider>
   </React.StrictMode>
 );

@@ -14,9 +14,9 @@ export function Campo({ etiqueta, id, ayuda, error, className = "", children }) 
       </label>
       {children}
       {error ? (
-        <p className="mt-1.5 text-[13px] font-[560] text-error" role="alert">{error}</p>
+        <p className="mt-1.5 text-nota font-[560] text-error" role="alert">{error}</p>
       ) : (
-        ayuda && <p className="mt-1.5 text-[13px] text-tinta-3">{ayuda}</p>
+        ayuda && <p className="mt-1.5 text-nota text-tinta-3">{ayuda}</p>
       )}
     </div>
   );
@@ -42,7 +42,7 @@ export function Seleccion({ className = "", children, ...props }) {
 
 export function Casilla({ etiqueta, id, ...props }) {
   return (
-    <label htmlFor={id} className="inline-flex min-h-11 cursor-pointer items-center gap-3 text-[15px] font-[560]">
+    <label htmlFor={id} className="inline-flex min-h-11 cursor-pointer items-center gap-3 text-cuerpo font-[560]">
       <input id={id} type="checkbox" className="size-5 rounded accent-campana" {...props} />
       {etiqueta}
     </label>

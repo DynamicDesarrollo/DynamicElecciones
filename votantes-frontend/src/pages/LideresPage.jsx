@@ -132,13 +132,13 @@ export default function LideresPage() {
               <tr key={l.id}>
                 <td className="max-sm:!block max-sm:!text-left max-sm:pb-2">
                   <p className="font-[680]">{l.nombre_completo}</p>
-                  {l.cedula && <p className="text-[13px] tabular-nums text-tinta-3">C.C. {numero(l.cedula)}</p>}
+                  {l.cedula && <p className="text-nota tabular-nums text-tinta-3">C.C. {numero(l.cedula)}</p>}
                 </td>
                 <td data-etiqueta="Teléfono" className="tabular-nums">{l.telefono || "—"}</td>
                 <td data-etiqueta="Barrio">
                   <span>
                     {l.barrio_nombre || "—"}
-                    {l.municipio_nombre && <span className="block text-[13px] text-tinta-3">{l.municipio_nombre}</span>}
+                    {l.municipio_nombre && <span className="block text-nota text-tinta-3">{l.municipio_nombre}</span>}
                   </span>
                 </td>
                 <td data-etiqueta="Pertenece a">{l.direccion || "—"}</td>
@@ -146,12 +146,12 @@ export default function LideresPage() {
                   <td data-etiqueta="Aspirante">
                     <span>
                       {l.aspirante_nombre}
-                      <span className="block text-[13px] text-tinta-3">{nombreCargo(l.aspirante_cargo)}</span>
+                      <span className="block text-nota text-tinta-3">{nombreCargo(l.aspirante_cargo)}</span>
                     </span>
                   </td>
                 )}
                 <td data-etiqueta="Votantes" className="text-right">
-                  <span className="cifra text-[1.6rem]">{numero(l.total_votantes)}</span>
+                  <span className="cifra text-cifra-xs">{numero(l.total_votantes)}</span>
                 </td>
                 <td className="max-sm:!justify-end max-sm:pt-2">
                   <div className="flex items-center justify-end">

@@ -35,7 +35,7 @@ function FormUsuario({ admin, campana, aspirantes, onCreado }) {
 
   return (
     <form onSubmit={crear} className="flex flex-col gap-5">
-      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-cuerpo font-[560] text-error" role="alert">{error}</p>}
       <Rejilla columnas={2}>
         {admin && (
           <Campo etiqueta="Tipo de usuario" id="u-rol" className="sm:col-span-2">
@@ -98,7 +98,7 @@ function FormRestablecer({ usuarioObjetivo, onListo }) {
 
   return (
     <form onSubmit={guardar} className="flex flex-col gap-5">
-      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-cuerpo font-[560] text-error" role="alert">{error}</p>}
       <CampoPassword id="r-pass" value={password} onChange={setPassword} autoFocus />
       <p className="text-sm text-tinta-2">La contraseña anterior deja de funcionar de inmediato. Pídale que la cambie al entrar, desde su nombre en el menú.</p>
       <div className="flex justify-end border-t border-filete pt-4">
@@ -176,7 +176,7 @@ export default function UsuariosPage() {
                     {u.nombre}
                     {u.id === usuario.id && <span className="ml-2 align-middle"><Insignia>Usted</Insignia></span>}
                   </p>
-                  <p className="text-[13px] text-tinta-3">{u.correo}</p>
+                  <p className="text-nota text-tinta-3">{u.correo}</p>
                 </td>
                 <td data-etiqueta="Tipo"><Insignia tono={TONO_ROL[u.rol]}>{ROLES[u.rol] || u.rol}</Insignia></td>
                 {admin && (

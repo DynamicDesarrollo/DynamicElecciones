@@ -30,8 +30,8 @@ export function ConfirmarProvider({ children }) {
   return (
     <ConfirmarContext.Provider value={confirmar}>
       {children}
-      <Modal abierto={!!opciones} alCerrar={() => cerrar(false)} titulo={opciones?.titulo} ancho="sm:max-w-md">
-        {opciones?.texto && <p className="text-[15px] leading-relaxed text-tinta-2">{opciones.texto}</p>}
+      <Modal abierto={!!opciones} alCerrar={() => cerrar(false)} titulo={opciones?.titulo} ancho="sm:max-w-md" cerrarAlFondo>
+        {opciones?.texto && <p className="text-cuerpo leading-relaxed text-tinta-2">{opciones.texto}</p>}
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Boton variante="secundario" onClick={() => cerrar(false)}>Cancelar</Boton>
           <Boton variante={opciones?.peligro === false ? "primario" : "peligro-solido"} onClick={() => cerrar(true)} data-autofocus>

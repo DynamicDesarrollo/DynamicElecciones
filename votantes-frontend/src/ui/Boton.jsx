@@ -11,9 +11,9 @@ const VARIANTES = {
 };
 
 const TAMANOS = {
-  md: "h-11 px-4 gap-2 text-[15px]",
+  md: "h-11 px-4 gap-2 text-cuerpo",
   sm: "h-9 px-3 gap-1.5 text-sm",
-  icono: "size-10 justify-center text-[17px]",
+  icono: "size-10 justify-center text-destacado",
 };
 
 export function Boton({

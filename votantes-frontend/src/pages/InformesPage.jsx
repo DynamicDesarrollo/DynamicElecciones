@@ -90,7 +90,7 @@ export default function InformesPage() {
             type="button"
             aria-selected={vista === clave}
             onClick={() => setVista(clave)}
-            className={`h-10 rounded-md px-4 text-[15px] font-[620] transition-colors duration-150 ${
+            className={`h-10 rounded-md px-4 text-cuerpo font-[620] transition-colors duration-150 ${
               vista === clave ? "bg-papel text-tinta shadow-[0_1px_2px_rgb(18_20_23/0.12)]" : "text-tinta-2 hover:text-tinta"
             }`}
           >
@@ -119,14 +119,14 @@ export default function InformesPage() {
               <li key={g.cedula} className="rounded-lg bg-papel ring-1 ring-filete">
                 <div className="flex items-baseline justify-between gap-4 border-b border-filete px-5 py-4">
                   <div className="min-w-0">
-                    <p className="truncate text-[17px] font-[700]">{g.nombre}</p>
-                    <p className="text-[13px] tabular-nums text-tinta-3">C.C. {numero(g.cedula)}</p>
+                    <p className="truncate text-destacado font-[700]">{g.nombre}</p>
+                    <p className="text-nota tabular-nums text-tinta-3">C.C. {numero(g.cedula)}</p>
                   </div>
-                  <span className="cifra shrink-0 text-[1.9rem]">×{g.filas.length}</span>
+                  <span className="cifra shrink-0 text-cifra-sm">×{g.filas.length}</span>
                 </div>
                 <ul className="divide-y divide-filete">
                   {g.filas.map((f, i) => (
-                    <li key={i} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-5 py-3 text-[15px]">
+                    <li key={i} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-5 py-3 text-cuerpo">
                       {vista === "votantes" ? (
                         <>
                           <span className="font-[620]">{f.nombre_aspirante || "Sin aspirante"}</span>

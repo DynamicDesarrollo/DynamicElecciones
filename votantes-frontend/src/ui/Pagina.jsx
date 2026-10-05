@@ -6,8 +6,8 @@ export function Encabezado({ titulo, descripcion, children }) {
   return (
     <header className="mb-7 flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
       <div className="min-w-0">
-        <h1 className="condensada text-[2.5rem] leading-[0.95] text-balance sm:text-[3.25rem]">{titulo}</h1>
-        {descripcion && <p className="mt-2.5 max-w-[62ch] text-[15px] text-tinta-2">{descripcion}</p>}
+        <h1 className="titular text-pagina-sm leading-[0.95] text-balance sm:text-pagina">{titulo}</h1>
+        {descripcion && <p className="mt-2.5 max-w-[62ch] text-cuerpo text-tinta-2">{descripcion}</p>}
       </div>
       {children && <div className="flex flex-wrap items-center gap-2">{children}</div>}
     </header>
@@ -25,10 +25,10 @@ export function Cifras({ items, className = "" }) {
           className={`flex flex-col bg-papel px-4 py-4 sm:px-5 sm:py-5 ${items.length % 2 && items.length !== 3 && i === items.length - 1 ? "col-span-2 sm:col-span-1" : ""}`}
         >
           <dt className="rotulo text-tinta-3">{c.etiqueta}</dt>
-          <dd className={`cifra mt-3 ${items.length === 3 ? "text-[2.25rem]" : "text-[2.75rem]"} sm:text-[4.5rem]`}>
+          <dd className={`cifra mt-3 ${items.length === 3 ? "text-cifra-md" : "text-cifra-lg"} sm:text-cifra-xl`}>
             {typeof c.valor === "number" ? numero(c.valor) : c.valor}
           </dd>
-          {c.detalle && <dd className="mt-2 text-[13px] text-tinta-2">{c.detalle}</dd>}
+          {c.detalle && <dd className="mt-2 text-nota text-tinta-2">{c.detalle}</dd>}
         </div>
       ))}
     </dl>
@@ -41,7 +41,7 @@ export function Tabla({ children, className = "" }) {
     <div className={`overflow-hidden rounded-lg bg-papel ring-1 ring-filete ${className}`}>
       <div className="overflow-x-auto">
         <table
-          className="w-full border-collapse text-[15px]
+          className="w-full border-collapse text-cuerpo
             [&_th]:rotulo [&_th]:whitespace-nowrap [&_th]:border-b [&_th]:border-filete-fuerte [&_th]:px-4 [&_th]:py-3 [&_th]:text-left [&_th]:text-tinta-3
             [&_td]:border-b [&_td]:border-filete [&_td]:px-4 [&_td]:py-3 [&_td]:align-middle
             [&_tbody_tr:last-child_td]:border-b-0 [&_tbody_tr]:transition-colors [&_tbody_tr:hover]:bg-fondo/70
@@ -68,7 +68,7 @@ const TONOS = {
 
 export function Insignia({ tono = "neutro", icono, children }) {
   return (
-    <span className={`inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-[13px] font-[620] ${TONOS[tono]}`}>
+    <span className={`inline-flex h-6 items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 text-nota font-[620] ${TONOS[tono]}`}>
       {icono && <i className={`bi ${icono}`} aria-hidden="true" />}
       {children}
     </span>
@@ -78,9 +78,9 @@ export function Insignia({ tono = "neutro", icono, children }) {
 export function Vacio({ icono = "bi-inbox", titulo, texto, children }) {
   return (
     <div className="flex flex-col items-center px-6 py-14 text-center">
-      <i className={`bi ${icono} text-[2rem] text-tinta-3`} aria-hidden="true" />
-      <p className="mt-3 text-[17px] font-[680]">{titulo}</p>
-      {texto && <p className="mt-1.5 max-w-[46ch] text-[15px] text-tinta-2">{texto}</p>}
+      <i className={`bi ${icono} text-3xl text-tinta-3`} aria-hidden="true" />
+      <p className="mt-3 text-destacado font-[680]">{titulo}</p>
+      {texto && <p className="mt-1.5 max-w-[46ch] text-cuerpo text-tinta-2">{texto}</p>}
       {children && <div className="mt-5">{children}</div>}
     </div>
   );
@@ -111,7 +111,7 @@ export function Paginacion({ pagina, totalPaginas, total, porPagina, alCambiar }
 export function Lamina({ titulo, descripcion, children, className = "" }) {
   return (
     <section className={`rounded-lg bg-papel p-5 ring-1 ring-filete sm:p-6 ${className}`}>
-      {titulo && <h2 className="condensada text-[1.6rem] leading-none">{titulo}</h2>}
+      {titulo && <h2 className="titular text-subseccion leading-none">{titulo}</h2>}
       {descripcion && <p className="mt-1.5 text-sm text-tinta-2">{descripcion}</p>}
       <div className={titulo ? "mt-5" : ""}>{children}</div>
     </section>

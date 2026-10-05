@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@fontsource-variable/archivo/wdth.css";
+@import "@fontsource-variable/figtree";
 @import "bootstrap-icons/font/bootstrap-icons.css";
 
 /* ------------------------------------------------------------------
@@ -9,7 +9,29 @@
    ------------------------------------------------------------------ */
 
 @theme {
-  --font-sans: "Archivo Variable", "Archivo", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Figtree Variable", "Figtree", ui-sans-serif, system-ui, sans-serif;
+
+  /* Escala tipográfica. Los títulos y las cifras usan además las utilidades "titular" y "cifra". */
+  --text-nota: 0.8125rem;        /* 13px: ayudas, datos secundarios */
+  --text-cuerpo: 0.9375rem;      /* 15px: texto e interfaz */
+  --text-destacado: 1.0625rem;   /* 17px: nombres en listas, acciones grandes */
+  --text-subseccion: 1.125rem;   /* títulos de lámina, banda del celular */
+  --text-seccion: 1.25rem;       /* títulos de modal y de bloque */
+  --text-nombre-sm: 1.625rem;    /* nombre protagonista en celular */
+  --text-nombre: 2rem;           /* nombre protagonista (aspirante principal, pase) */
+  --text-pagina-sm: 1.875rem;    /* título de pantalla en celular */
+  --text-pagina: 2.375rem;       /* título de pantalla */
+  --text-pendon-sm: 1.375rem;    /* nombre largo en el pendón */
+  --text-pendon-md: 1.75rem;
+  --text-pendon: 2.125rem;       /* nombre en el pendón */
+  --text-heroe-sm: 2.625rem;     /* marca en el login */
+  --text-heroe-md: 3.5rem;
+  --text-heroe: clamp(3.5rem, 5.2vw, 6rem);   /* crece con la pantalla hasta el tope de 6rem */
+  --text-cifra-xs: 1.375rem;     /* cifras dentro de filas */
+  --text-cifra-sm: 1.625rem;
+  --text-cifra-md: 1.75rem;      /* cifra titular en celular */
+  --text-cifra-lg: 2.125rem;
+  --text-cifra-xl: 3.5rem;       /* cifra titular */
 
   --color-tinta: #121417;
   --color-tinta-2: #3d4148;   /* texto secundario: 9.6:1 sobre blanco */
@@ -25,11 +47,15 @@
   --color-alerta-suave: #fbefd9;
   --color-error: #b42318;
   --color-error-suave: #fbe7e4;
+  /* Versiones claras para íconos sobre tinta (avisos) */
+  --color-ok-claro: #6fdc9f;
+  --color-error-claro: #ff9a8f;
 
   --ease-salida: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-pendon: cubic-bezier(0.32, 0.72, 0, 1);
 
   --animate-izar: izar 450ms var(--ease-pendon) both;
+  --animate-colgar: izar 700ms var(--ease-pendon) 120ms both;
   --animate-aparecer: aparecer 180ms var(--ease-salida) both;
 
   @keyframes izar {
@@ -51,19 +77,15 @@
 }
 
 /* Utilidades del mundo */
-@utility condensada {
-  font-stretch: 68%;
+@utility titular {
   font-weight: 800;
-  letter-spacing: -0.01em;
-  word-spacing: 0.12em;
+  letter-spacing: -0.025em;
 }
 @utility cifra {
-  font-stretch: 72%;
   font-weight: 800;
-  word-spacing: 0.12em;
   font-variant-numeric: tabular-nums lining-nums;
-  letter-spacing: -0.02em;
-  line-height: 0.9;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
 }
 @utility rotulo {
   font-size: 0.75rem;
@@ -115,7 +137,29 @@
   }
 }
 
-/* Avisos (Sonner) con la tipografía y la tinta del sistema */
+/* Avisos (Sonner): placa de tinta con la tipografía del sistema; el estado lo marca el ícono */
 [data-sonner-toaster] {
   --font-family: var(--font-sans);
+  --normal-bg: var(--color-tinta);
+  --normal-text: #ffffff;
+  --normal-border: transparent;
+  --border-radius: 8px;
+  --width: 360px;
 }
+[data-sonner-toaster] [data-sonner-toast][data-styled="true"] {
+  background: var(--color-tinta);
+  color: #ffffff;
+  border-color: transparent;
+  padding: 14px 16px;
+  font-size: 15px;
+  font-weight: 560;
+  line-height: 1.35;
+  box-shadow: 0 12px 32px -8px rgb(18 20 23 / 0.45);
+}
+[data-sonner-toast] [data-icon] {
+  margin-right: 4px;
+}
+[data-sonner-toast][data-type="success"] [data-icon] { color: var(--color-ok-claro); }
+[data-sonner-toast][data-type="error"] [data-icon] { color: var(--color-error-claro); }
+[data-sonner-toast][data-type="warning"] [data-icon] { color: var(--color-voto); }
+[data-sonner-toast][data-type="info"] [data-icon] { color: #ffffff; }

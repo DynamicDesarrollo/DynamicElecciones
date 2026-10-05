@@ -18,11 +18,14 @@ const opcionesMenu = (usuario) => {
   const conCampana = !!usuario?.campana;
   return [
     { to: "/campanas", icono: "bi-flag", texto: "Campañas", visible: esSuperadmin(usuario) },
+    { to: "/partidos", icono: "bi-bookmark-star", texto: "Partidos", visible: esSuperadmin(usuario) },
+    { to: "/ajustes", icono: "bi-gear", texto: "Ajustes", visible: esSuperadmin(usuario) },
     { to: "/dashboard", icono: "bi-bar-chart-line", texto: "Resumen", visible: conCampana },
     { to: "/aspirantes", icono: "bi-person-badge", texto: "Aspirantes", visible: conCampana && admin },
     { to: "/lideres", icono: "bi-megaphone", texto: "Líderes", visible: conCampana },
     { to: "/votantes", icono: "bi-people", texto: "Votantes", visible: conCampana },
     { to: "/asistencia", icono: "bi-check2-square", texto: "Asistencia día E", visible: conCampana && (admin || equipo) },
+    { to: "/puestos", icono: "bi-geo-alt", texto: "Puestos de control", visible: conCampana && (admin || equipo) },
     { to: "/usuarios", icono: "bi-person-gear", texto: admin ? "Usuarios" : "Mi equipo", visible: conCampana && (admin || equipo) },
     { to: "/informes", icono: "bi-files", texto: "Duplicados", visible: conCampana && admin },
   ].filter((o) => o.visible);
@@ -30,7 +33,7 @@ const opcionesMenu = (usuario) => {
 
 // Tamaño del nombre según su largo, para que el pendón no se desborde
 const tamanoNombre = (nombre = "") =>
-  nombre.length > 30 ? "text-[1.85rem]" : nombre.length > 18 ? "text-[2.35rem]" : "text-[2.9rem]";
+  nombre.length > 30 ? "text-pendon-sm" : nombre.length > 18 ? "text-pendon-md" : "text-pendon";
 
 // Cada usuario cambia su propia contraseña (exige la actual)
 function FormCambiarClave({ onListo }) {
@@ -52,7 +55,7 @@ function FormCambiarClave({ onListo }) {
 
   return (
     <form onSubmit={guardar} className="flex flex-col gap-4">
-      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-[15px] font-[560] text-error" role="alert">{error}</p>}
+      {error && <p className="rounded-md bg-error-suave px-4 py-3 text-cuerpo font-[560] text-error" role="alert">{error}</p>}
       <Campo etiqueta="Contraseña actual" id="cc-actual">
         <Entrada id="cc-actual" type="password" value={actual} onChange={(e) => setActual(e.target.value)} required autoComplete="current-password" autoFocus />
       </Campo>
@@ -80,16 +83,16 @@ function ContenidoPendon({ alNavegar }) {
     <div className="flex min-h-full flex-col px-5 pb-5 pt-7">
       {campana ? (
         <div>
-          <p className={`condensada uppercase leading-[0.88] break-words ${tamanoNombre(principal)}`}>
+          <p className={`titular uppercase leading-[0.88] break-words ${tamanoNombre(principal)}`}>
             {principal || campana.nombre}
           </p>
-          {principal && <p className="mt-3 text-[15px] font-[650] leading-snug">{campana.nombre}</p>}
-          <p className="mt-1 text-[13px] font-[520] text-white/80">
+          {principal && <p className="mt-3 text-cuerpo font-[650] leading-snug">{campana.nombre}</p>}
+          <p className="mt-1 text-nota font-[520] text-white/80">
             {campana.tipo_nombre} · {territorio(campana)}
           </p>
         </div>
       ) : (
-        <p className="condensada text-[2.6rem] uppercase leading-[0.88]">Dynamic<br />Electoral</p>
+        <p className="titular text-pendon uppercase leading-[0.88]">Dynamic<br />Electoral</p>
       )}
 
       <nav className="mt-8" aria-label="Principal">
@@ -100,12 +103,12 @@ function ContenidoPendon({ alNavegar }) {
                 to={o.to}
                 onClick={alNavegar}
                 className={({ isActive }) =>
-                  `flex h-11 items-center gap-3 rounded-md px-3 text-[15px] font-[620] transition-colors duration-150 ${
+                  `flex h-11 items-center gap-3 rounded-md px-3 text-cuerpo font-[620] transition-colors duration-150 ${
                     isActive ? "bg-white text-campana" : "text-white/88 hover:bg-white/12 hover:text-white"
                   }`
                 }
               >
-                <i className={`bi ${o.icono} text-[17px]`} aria-hidden="true" />
+                <i className={`bi ${o.icono} text-destacado`} aria-hidden="true" />
                 {o.texto}
               </NavLink>
             </li>
@@ -115,8 +118,8 @@ function ContenidoPendon({ alNavegar }) {
 
       <div className="mt-auto pt-8">
         <div className="border-t border-white/25 pt-4">
-          <p className="truncate text-[15px] font-[650]">{usuario?.nombre}</p>
-          <p className="truncate text-[13px] text-white/80">
+          <p className="truncate text-cuerpo font-[650]">{usuario?.nombre}</p>
+          <p className="truncate text-nota text-white/80">
             {usuario?.nombre_aspirante
               ? `${nombreCargo(usuario.cargo_aspirante)} ${usuario.nombre_aspirante}`
               : ROLES[usuario?.rol] || usuario?.rol}
@@ -143,7 +146,7 @@ function ContenidoPendon({ alNavegar }) {
         </Modal>
         {/* Firma discreta de la plataforma, solo cuando el pendón es de una campaña */}
         {campana && (
-          <p className="mt-4 flex items-center gap-2 text-[12px] font-[560] text-white/65">
+          <p className="mt-4 flex items-center gap-2 text-xs font-[560] text-white/65">
             <img src="/pendon.svg" alt="" className="size-4 rounded-[4px]" /> Dynamic Electoral
           </p>
         )}
@@ -183,7 +186,7 @@ export default function Pendon() {
         >
           <i className="bi bi-list" aria-hidden="true" />
         </button>
-        <p className="condensada truncate text-[1.45rem] uppercase leading-none">
+        <p className="titular truncate text-subseccion uppercase leading-none">
           {campana?.aspirante_principal || campana?.nombre || "Dynamic Electoral"}
         </p>
       </div>
